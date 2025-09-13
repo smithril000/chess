@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 /**
@@ -10,7 +11,12 @@ import java.util.List;
  */
 public class ChessPiece {
 
-    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+    private final ChessGame.TeamColor pieceColor;
+    private final PieceType type;
+
+    public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
+        this.pieceColor = pieceColor;
+        this.type = type;
     }
 
     /**
@@ -29,14 +35,14 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        throw new RuntimeException("Not implemented");
+        return pieceColor;
     }
 
     /**
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        throw new RuntimeException("Not implemented");
+        return type;
     }
 
     /**
@@ -47,6 +53,47 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        return List.of();
+        ChessPiece piece = board.getPiece(myPosition);
+        if(piece.getPieceType() == PieceType.BISHOP){
+            //return List.of(new ChessMove(new ChessPosition(5,4), new ChessPosition(1,8), null));
+            List<ChessMove> moves = new ArrayList<>();
+            //pos pos
+            int x = myPosition.getRow() + 1;
+            int y = myPosition.getColumn() + 1;
+            while(x <= 8 && y <= 8){
+                moves.add(new ChessMove(myPosition, new ChessPosition(x,y),null));
+                x++;
+                y++;
+            }
+            //neg neg
+            x = myPosition.getRow() - 1;
+            y = myPosition.getColumn() - 1;
+            while (x > 0 && y > 0) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(x,y),null));
+                x--;
+                y--;
+            }
+            //pos neg
+            x = myPosition.getRow() + 1;
+            y = myPosition.getColumn() - 1;
+            while(x <= 8 && y > 0){
+                moves.add(new ChessMove(myPosition, new ChessPosition(x,y),null));
+                x++;
+                y--;
+            }
+            //neg pos
+            x = myPosition.getRow() - 1;
+            y = myPosition.getColumn() + 1;
+            while(x > 0 && y <= 8){
+                moves.add(new ChessMove(myPosition, new ChessPosition(x,y),null));
+                x--;
+                y++;
+            }
+            return moves;
+        }else if(piece.getPieceType() == PieceType.PAWN){
+            //can move up 2 if starting and 1 anytime else
+
+        }
+         return List.of();
     }
 }
