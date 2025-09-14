@@ -59,47 +59,182 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece piece = board.getPiece(myPosition);
         if(piece.getPieceType() == PieceType.BISHOP){
-            //return List.of(new ChessMove(new ChessPosition(5,4), new ChessPosition(1,8), null));
-            List<ChessMove> moves = new ArrayList<>();
-            //pos pos
-            int x = myPosition.getRow() + 1;
-            int y = myPosition.getColumn() + 1;
-            while(x <= 8 && y <= 8){
-                moves.add(new ChessMove(myPosition, new ChessPosition(x,y),null));
-                x++;
-                y++;
-            }
-            //neg neg
-            x = myPosition.getRow() - 1;
-            y = myPosition.getColumn() - 1;
-            while (x > 0 && y > 0) {
-                moves.add(new ChessMove(myPosition, new ChessPosition(x,y),null));
-                x--;
-                y--;
-            }
-            //pos neg
-            x = myPosition.getRow() + 1;
-            y = myPosition.getColumn() - 1;
-            while(x <= 8 && y > 0){
-                moves.add(new ChessMove(myPosition, new ChessPosition(x,y),null));
-                x++;
-                y--;
-            }
-            //neg pos
-            x = myPosition.getRow() - 1;
-            y = myPosition.getColumn() + 1;
-            while(x > 0 && y <= 8){
-                moves.add(new ChessMove(myPosition, new ChessPosition(x,y),null));
-                x--;
-                y++;
-            }
-            return moves;
+            return bishMove(board, myPosition, piece);
         }else if(piece.getPieceType() == PieceType.PAWN){
             //can move up 2 if starting and 1 anytime else
-
+            return pawnMove(board, myPosition, piece);
         }
          return List.of();
     }
+
+    private Collection<ChessMove> bishMove(ChessBoard board, ChessPosition myPosition, ChessPiece piece){
+        //return List.of(new ChessMove(new ChessPosition(5,4), new ChessPosition(1,8), null));
+        List<ChessMove> moves = new ArrayList<>();
+        //pos pos
+        int x = myPosition.getRow() + 1;
+        int y = myPosition.getColumn() + 1;
+        while(x <= 8 && y <= 8){
+            if(board.getPiece(new ChessPosition(x,y)) == null) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(x, y), null));
+                x++;
+                y++;
+            }else{
+                //there is a peice there, see if its opposite color to take
+                if(board.getPiece(new ChessPosition(x,y)).getTeamColor() == piece.getTeamColor()){
+                    //cannot take is blocked
+                    x = 10;
+                    y = 10;
+                }else{
+                    //can take
+
+                    moves.add(new ChessMove(myPosition, new ChessPosition(x, y), null));
+                    x = 10;
+                    y = 10;
+
+                }
+
+            }
+        }
+        //neg neg
+        x = myPosition.getRow() - 1;
+        y = myPosition.getColumn() - 1;
+        while (x > 0 && y > 0) {
+            if(board.getPiece(new ChessPosition(x,y)) == null) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(x, y), null));
+                x--;
+                y--;
+            }else{
+                //there is a peice there, see if its opposite color to take
+                if(board.getPiece(new ChessPosition(x,y)).getTeamColor() == piece.getTeamColor()){
+                    //cannot take is blocked
+                    x = -1;
+                    y = -1;
+                }else{
+                    //can take
+
+                    moves.add(new ChessMove(myPosition, new ChessPosition(x, y), null));
+                    x = -1;
+                    y = -1;
+
+                }
+
+            }
+        }
+        //pos neg
+        x = myPosition.getRow() + 1;
+        y = myPosition.getColumn() - 1;
+        while(x <= 8 && y > 0){
+            if(board.getPiece(new ChessPosition(x,y)) == null) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(x, y), null));
+                x++;
+                y--;
+            }else{
+                //there is a peice there, see if its opposite color to take
+                if(board.getPiece(new ChessPosition(x,y)).getTeamColor() == piece.getTeamColor()){
+                    //cannot take is blocked
+                    x = 10;
+                    y = -1;
+                }else{
+                    //can take
+
+                    moves.add(new ChessMove(myPosition, new ChessPosition(x, y), null));
+                    x = 10;
+                    y = -1;
+
+                }
+
+            }
+        }
+        //neg pos
+        x = myPosition.getRow() - 1;
+        y = myPosition.getColumn() + 1;
+        while(x > 0 && y <= 8){
+            if(board.getPiece(new ChessPosition(x,y)) == null) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(x, y), null));
+                x--;
+                y++;
+            }else{
+                //there is a peice there, see if its opposite color to take
+                if(board.getPiece(new ChessPosition(x,y)).getTeamColor() == piece.getTeamColor()){
+                    //cannot take is blocked
+                    x = -1;
+                    y = 10;
+                }else{
+                    //can take
+
+                    moves.add(new ChessMove(myPosition, new ChessPosition(x, y), null));
+                    x = -1;
+                    y = 10;
+
+                }
+
+            }
+        }
+        return moves;
+    }
+    private Collection<ChessMove> pawnMove(ChessBoard board, ChessPosition myPosition, ChessPiece piece){
+        List<ChessMove> moves = new ArrayList<>();
+        //if pawn is white
+        if(piece.getTeamColor() == ChessGame.TeamColor.WHITE){
+            //if it is its first turn it can more one or two
+            if(myPosition.getRow() == 2 && board.getPiece(new ChessPosition(myPosition.getRow() + 2, myPosition.getColumn())) == null){
+                //moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()), null));
+                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow()+2, myPosition.getColumn()), null));
+            }
+            //any foward movement that isn't blocked an dnot a promotion
+            if(board.getPiece(new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn())) == null && myPosition.getRow() < 8){
+                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()), null));
+            }
+            //taking peices movement
+            if(myPosition.getColumn() < 8 && board.getPiece(new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn()+1)) != null){
+                //taking to right
+                if(board.getPiece(new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn()+1)).getTeamColor() == ChessGame.TeamColor.BLACK) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() + 1), null));
+                }
+            }
+            if(myPosition.getColumn() > 0 && board.getPiece(new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn()-1)) != null){
+                //taking to right
+                if(board.getPiece(new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn()-1)).getTeamColor() == ChessGame.TeamColor.BLACK) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() - 1), null));
+                }
+            }
+            //promotions
+            //unblocked
+            if(myPosition.getRow() == 7 && board.getPiece(new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn())) == null){
+                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn()), PieceType.QUEEN));
+            }
+
+        }
+        //if pawn is black\
+        if(piece.getTeamColor() == ChessGame.TeamColor.BLACK){
+            //if it is its first turn it can more one or two
+            if(myPosition.getRow() == 7 && board.getPiece(new ChessPosition(myPosition.getRow() - 2, myPosition.getColumn())) == null){
+                //moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()), null));
+                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow()-2, myPosition.getColumn()), null));
+            }
+            //any foward movement that isn't blocked an dnot a promotion
+            if(board.getPiece(new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn())) == null && myPosition.getRow() > 0){
+                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()), null));
+            }
+            //taking peices movement
+            if(myPosition.getColumn() < 8 && board.getPiece(new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn()+1)) != null){
+                //taking to right
+                if(board.getPiece(new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn()+1)).getTeamColor() == ChessGame.TeamColor.WHITE) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() + 1), null));
+                }
+            }
+            if(myPosition.getColumn() > 0 && board.getPiece(new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn()-1)) != null){
+                //taking to right
+                if(board.getPiece(new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn()-1)).getTeamColor() == ChessGame.TeamColor.WHITE) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() - 1), null));
+                }
+            }
+        }
+
+        return moves;
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
