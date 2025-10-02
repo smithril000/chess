@@ -26,6 +26,9 @@ public class ChessBoard {
 
         squares[position.getRow()-1][position.getColumn()-1] = piece;
     }
+    public void removePiece(ChessPosition position){
+        squares[position.getRow()-1][position.getColumn()-1] = null;
+    }
 
     /**
      * Gets a chess piece on the chessboard
@@ -128,5 +131,12 @@ public class ChessBoard {
     @Override
     public int hashCode() {
         return Arrays.deepHashCode(squares);
+    }
+
+    @Override
+    public String toString() {
+        return "ChessBoard{" +
+                "squares=" + Arrays.toString(squares) +
+                '}';
     }
 }

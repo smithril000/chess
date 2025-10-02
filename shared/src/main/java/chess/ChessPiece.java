@@ -21,6 +21,11 @@ public class ChessPiece {
         this.type = type;
     }
 
+    @Override
+    public String toString() {
+        return String.format("[%s]", type);
+    }
+
     /**
      * The various different chess piece options
      */
