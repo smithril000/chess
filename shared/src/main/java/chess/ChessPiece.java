@@ -21,10 +21,7 @@ public class ChessPiece {
         this.type = type;
     }
 
-    @Override
-    public String toString() {
-        return String.format("[%s]", type);
-    }
+
 
     /**
      * The various different chess piece options
@@ -285,5 +282,10 @@ public class ChessPiece {
     @Override
     public int hashCode() {
         return Objects.hash(pieceColor, type);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("[%s]", type);
     }
 }

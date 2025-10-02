@@ -48,13 +48,22 @@ public class ChessGame {
             return false;
         }
         ChessGame chessGame = (ChessGame) o;
-        return turn == chessGame.turn && Objects.equals(board, chessGame.board);
+        return Objects.equals(board, chessGame.board);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(turn, board);
+        return Objects.hash(board, turn);
     }
+
+    @Override
+    public String toString() {
+        return "ChessGame{" +
+                "turn=" + turn +
+                ", board=" + board +
+                '}';
+    }
+
 
     /**
      * Enum identifying the 2 possible teams in a chess game
@@ -91,26 +100,40 @@ public class ChessGame {
         //we need to see if we are currently in check
         if(this.isInCheck(piece.getTeamColor())){
             //we are in check, so the moves have to remove that
+
+            Collection<ChessMove> movesToRemove = new ArrayList<>();
             for (ChessMove move : moves) {
-                ChessGame tempGame = new ChessGame(this);
-                tempGame.makeTempMove(move, tempGame);
-                if (tempGame.isInCheck(piece.getTeamColor())) {
+                ChessBoard copy = this.board.copyBoard();
+
+                this.makeTempMove(move, this);
+                if (this.isInCheck(piece.getTeamColor())) {
                     //we cant use that move
-                    moves.remove(move);
+                    movesToRemove.add(move);
                 }
                 //we need to put the board back
+                this.board.squares = copy.squares;
+            }
+            //now to remove the moves we can't use
+            for(ChessMove move : movesToRemove){
+                moves.remove(move);
             }
         }else {
-            //now we need to filter if the any of the moves leave the king in check
-
+            //we need to make a copy of the moves to not mess things up
+            Collection<ChessMove> movesToRemove = new ArrayList<>();
             for (ChessMove move : moves) {
-                ChessGame tempGame = new ChessGame(this);
-                tempGame.makeTempMove(move, tempGame);
-                if (tempGame.isInCheck(piece.getTeamColor())) {
+                ChessBoard copy = this.board.copyBoard();
+
+                this.makeTempMove(move, this);
+                if (this.isInCheck(piece.getTeamColor())) {
                     //we cant use that move
-                    moves.remove(move);
+                    movesToRemove.add(move);
                 }
                 //we need to put the board back
+                this.board.squares = copy.squares;
+            }
+            //now to remove the moves we can't use
+            for(ChessMove move : movesToRemove){
+                moves.remove(move);
             }
         }
         return moves;
@@ -134,6 +157,10 @@ public class ChessGame {
         Collection<ChessMove> moves = this.validMoves(move.getStartPosition());
         if(piece != null && piece.getTeamColor() == turn && moves.contains(move)){
             //we are good to make the move
+            //check if we are promoting
+            if(move.getPromotionPiece() != null){
+                piece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
+            }
             board.addPiece(move.getEndPosition(), piece);
             board.removePiece(move.getStartPosition());
             this.changeTeam();
@@ -224,4 +251,7 @@ public class ChessGame {
     public ChessBoard getBoard() {
         return this.board;
     }
+
+
+
 }

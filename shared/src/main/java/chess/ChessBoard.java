@@ -15,6 +15,9 @@ public class ChessBoard {
     public ChessBoard() {
         //resetBoard();
     }
+    public ChessBoard(ChessBoard other){
+        this.squares = other.squares;
+    }
 
     /**
      * Adds a chess piece to the chessboard
@@ -40,6 +43,16 @@ public class ChessBoard {
     public ChessPiece getPiece(ChessPosition position) {
 
         return squares[position.getRow()-1][position.getColumn()-1];
+    }
+
+    public ChessBoard copyBoard(){
+        ChessBoard copy = new ChessBoard();
+        for(int x = 0; x < 8; x++){
+            for(int y = 0; y < 8; y++){
+                copy.squares[y][x] = this.squares[y][x];
+            }
+        }
+        return copy;
     }
 
     /**
@@ -118,9 +131,9 @@ public class ChessBoard {
         this.addPiece(new ChessPosition(7,8), bPawn8);
     }
 
+
     @Override
     public boolean equals(Object o) {
-        if(this == o){return true;}
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
