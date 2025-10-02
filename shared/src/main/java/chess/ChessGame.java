@@ -43,19 +43,7 @@ public class ChessGame {
         }
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ChessGame chessGame = (ChessGame) o;
-        return Objects.equals(board, chessGame.board);
-    }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(board, turn);
-    }
 
     @Override
     public String toString() {
@@ -63,6 +51,20 @@ public class ChessGame {
                 "turn=" + turn +
                 ", board=" + board +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessGame chessGame = (ChessGame) o;
+        return turn == chessGame.turn && Objects.equals(board, chessGame.board);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(turn, board);
     }
 
 
