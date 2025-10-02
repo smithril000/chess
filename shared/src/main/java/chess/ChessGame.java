@@ -250,6 +250,11 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
+        //we can do something similar.
+        //if we run thorugh all the pieces and none have valid moves it is stalemate
+        if(!this.isInCheck(teamColor)) {
+            return isInCheckmate(teamColor);
+        }
         return false;
     }
 
