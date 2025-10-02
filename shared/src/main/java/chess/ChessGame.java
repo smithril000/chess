@@ -220,7 +220,25 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        boolean checkmate = false;
+        Collection<ChessMove> moves = new ArrayList<>();
+        //run through each piece of the team side and see if any of their moves will not be in check
+        //we can do this by seeing if there are any valid moves
+        for(int x = 1; x <= 8; x++){
+            for(int y =1; y <= 8; y++){
+                //check if we are looking at the right piece
+                if(this.board.getPiece(new ChessPosition(y,x)) != null && this.board.getPiece(new ChessPosition(y,x)).getTeamColor() == teamColor){
+                    //see what valid moves it has
+                    moves.addAll(this.validMoves(new ChessPosition(y,x)));
+                }
+            }
+        }
+        //if our list of moves is empty we are in checkmate
+        if(moves.isEmpty()){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     /**
