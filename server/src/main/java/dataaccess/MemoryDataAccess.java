@@ -8,7 +8,7 @@ public class MemoryDataAccess implements DataAccess{
     private final HashMap<String, UserData> users = new HashMap<>();
     @Override
     public void clear() {
-
+        users.clear();
     }
 
     @Override

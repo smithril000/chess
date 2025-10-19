@@ -1,11 +1,21 @@
 package service;
 
+import dataaccess.DataAccess;
 import datamodel.AuthData;
 import datamodel.UserData;
 
 public class UserService {
-    public AuthData register(UserData userData){
-        return new AuthData(userData.username(), generateAuth());
+    private final DataAccess dataAccess;
+    public UserService(DataAccess dataAccess){
+        this.dataAccess = dataAccess;
+    }
+    public AuthData register(UserData user) throws Exception {
+        if(dataAccess.getUser(user.username())!= null){
+            throw new Exception("already exists");
+        }
+        dataAccess.createUser(user);
+        var authData = new AuthData(user.username(), generateAuth());
+        return authData;
     }
     //finsih this
     private String generateAuth(){
