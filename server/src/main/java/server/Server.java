@@ -33,19 +33,16 @@ public class Server {
         //maybe fake?
         //check if we got both username and password
 
-        if(req.get("username") == null || req.get("password") == null){
-            ctx.status(400);
-            ctx.result(serializer.toJson(new ResponseException(400, "Error: bad request")));
-        }else {
+
             try {
                 var user = serializer.fromJson(reqJson, UserData.class);
                 var authData = userService.login(user);
                 ctx.result(serializer.toJson(authData));
-            }catch(Exception ex){
-                ctx.status(401);
-                ctx.result(serializer.toJson(new ResponseException(401, "Error: unauthorized")));
+            }catch(ResponseException ex){
+                ctx.status(ex.getCode());
+                ctx.result(ex.toJson());
             }
-        }
+
 
     }
     //this can be the handler
@@ -59,10 +56,7 @@ public class Server {
             var authData = userService.register(user);
             ctx.result(serializer.toJson(authData));
         }catch(ResponseException ex){
-            //change the error message to a json response
-            //var err = new Exception("Error: already taken");
-            //ctx.status(403).result(err.getMessage());
-            //var serializer = new Gson();
+
             ctx.status(ex.getCode());
             ctx.result(ex.toJson());
         }

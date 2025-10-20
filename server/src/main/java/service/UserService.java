@@ -13,22 +13,22 @@ public class UserService {
 
     public AuthData register(UserData user) throws ResponseException {
         if(dataAccess.getUser(user.username())!= null){
-            throw new ResponseException(403, "Error, already exists");
+            throw new ResponseException(403, "Error: already exists");
         }
         dataAccess.createUser(user);
         var authData = new AuthData(user.username(), generateAuth());
         return authData;
     }
 
-    public AuthData login(UserData user) throws Exception{
-        if(dataAccess.getUser(user.username()) == null){
+    public AuthData login(UserData user) throws ResponseException{
+        if(user.username() == null || user.password() == null){
             //havent registered yet
-            throw new Exception("No account with that name");
+            throw new ResponseException(400,"Error: bad request");
         }
         //since the username does exist make sure the password is the same
-        else if(user.password() != dataAccess.getUser(user.username()).password()){
+        else if(dataAccess.getUser(user.username()) == null || user.password() != dataAccess.getUser(user.username()).password()){
             //wrong password
-            throw new Exception("Wrong Password");
+            throw new ResponseException(401, "Error: Unauthorized");
         }
         var authData = new AuthData(user.username(), generateAuth());
         return authData;
