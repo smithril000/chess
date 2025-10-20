@@ -14,6 +14,8 @@ public class UserService {
     public AuthData register(UserData user) throws ResponseException {
         if(dataAccess.getUser(user.username())!= null){
             throw new ResponseException(403, "Error: already exists");
+        }else if(user.username() == null || user.password() == null){
+            throw new ResponseException(400, "Error: bad request");
         }
         dataAccess.createUser(user);
         var authData = new AuthData(user.username(), generateAuth());
