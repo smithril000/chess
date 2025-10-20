@@ -21,14 +21,33 @@ public class Server {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
         // Register your endpoints and exception handlers here.
-        javalin.delete("db", ctx -> ctx.result("{}"));
+        javalin.delete("db", ctx->clear(ctx));
         javalin.post("user", ctx -> register(ctx));
         javalin.post("session", ctx -> login(ctx));
+        javalin.delete("session", ctx -> logout(ctx));
     }
+    private void clear(Context ctx){
+        userService.clear();
+    }
+    private void logout(Context ctx){
+        var serializer = new Gson();
+        String reqJson = ctx.header("authorization");
+        var base = serializer.fromJson(reqJson, String.class);
+        var auth = "0";
+        try{
+            //
+            userService.logout(base);
+            ctx.status(200).result("{}");
+
+        }catch(ResponseException ex){
+            ctx.status(ex.getCode()).result(ex.toJson());
+        }
+    }
+
     private void login(Context ctx){
         var serializer = new Gson();
         String reqJson = ctx.body();
-        var req = serializer.fromJson(reqJson, Map.class);
+        //var req = serializer.fromJson(reqJson, Map.class);
 
         //maybe fake?
         //check if we got both username and password
