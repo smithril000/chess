@@ -25,10 +25,37 @@ public class Server {
         javalin.post("user", ctx -> register(ctx));
         javalin.post("session", ctx -> login(ctx));
         javalin.delete("session", ctx -> logout(ctx));
+        javalin.get("game", ctx -> listGames(ctx));
+        javalin.post("game", ctx -> createGame(ctx));
     }
     private void clear(Context ctx){
         userService.clear();
     }
+
+    private void listGames(Context ctx){
+        var serializer = new Gson();
+        String reqJson = ctx.header("authorization");
+        String authToken = serializer.fromJson(reqJson, String.class);
+
+    }
+    private void createGame(Context ctx){
+        var serializer = new Gson();
+        String headerJson = ctx.header("authorization");
+        String reqJson = ctx.body();
+        String authToken = serializer.fromJson(headerJson, String.class);
+        Map<String, String> gameNameMap = serializer.fromJson(reqJson, Map.class);
+        String gameName = gameNameMap.get("gameName");
+
+        try {
+
+            int gameID = userService.createGame(gameName, authToken);
+            String outJson = serializer.toJson(Map.of("gameID", gameID));
+            ctx.status(200).result(outJson);
+        }catch(ResponseException ex){
+            ctx.status(ex.getCode()).result(ex.toJson());
+        }
+    }
+
     private void logout(Context ctx){
         var serializer = new Gson();
         String reqJson = ctx.header("authorization");

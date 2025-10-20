@@ -1,7 +1,9 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.DataAccess;
 import datamodel.AuthData;
+import datamodel.GameData;
 import datamodel.UserData;
 import server.ResponseException;
 
@@ -61,5 +63,22 @@ public class UserService {
     //finsih this
     private String generateAuth(){
         return "xyz";
+    }
+
+    public int createGame(String gameName, String authToken) throws ResponseException{
+        //check auth
+        if(gameName == null){
+            throw new ResponseException(400, "Error: bad request");
+        }
+        else if(dataAccess.getLoggedInData(authToken) == null){
+            throw new ResponseException(401, "Error: unauthorized");
+        }
+        ChessGame game = new ChessGame();
+        //fix this
+        int gameID = 1234;
+        //create the actualy game data
+        GameData gameData = new GameData(gameID, null, null, gameName, game);
+        dataAccess.createGame(gameData);
+        return gameID;
     }
 }
