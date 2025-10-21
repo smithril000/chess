@@ -17,10 +17,12 @@ public class MemoryDataAccess implements DataAccess{
     private final HashMap<String, UserData> users = new HashMap<>();
     private final HashMap<String, AuthData> loggedInUsers = new HashMap<>();
     private final HashMap<Integer, GameData> games = new HashMap<>();
+    private int gameID_Counter = 1;
     @Override
     public void clear() {
         loggedInUsers.clear();
         users.clear();
+        games.clear();
     }
 
     @Override
@@ -81,5 +83,8 @@ public class MemoryDataAccess implements DataAccess{
     @Override
     public GameData getGame(int gameID){
         return games.get(gameID);
+    }
+    public int getID(){
+        return gameID_Counter++;
     }
 }

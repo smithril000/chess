@@ -12,6 +12,7 @@ import server.ResponseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.UUID;
 
 public class UserService {
     private final DataAccess dataAccess;
@@ -68,7 +69,7 @@ public class UserService {
     }
     //finsih this
     private String generateAuth(){
-        return "xyz";
+        return UUID.randomUUID().toString();
     }
 
     public int createGame(String gameName, String authToken) throws ResponseException{
@@ -81,7 +82,7 @@ public class UserService {
         }
         ChessGame game = new ChessGame();
         //fix this
-        int gameID = 1234;
+        int gameID = dataAccess.getID();
         //create the actualy game data
         GameData gameData = new GameData(gameID, null, null, gameName, game);
         dataAccess.createGame(gameData);
@@ -99,6 +100,10 @@ public class UserService {
             throw new ResponseException(403, "Error: already taken");
         }else if(Objects.equals(playerColor, "BLACK") && dataAccess.getGame(gameID).getBlackUsername() != null){
             throw new ResponseException(403, "Error: already taken");
+        }else if(!Objects.equals(playerColor, "WHITE")){
+            if(!Objects.equals(playerColor, "BLACK")){
+                throw new ResponseException(400, "Error: bad request");
+            }
         }
         //now get the user info to set name and to know what color to do
         //first grab players username
