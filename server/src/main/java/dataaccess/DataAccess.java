@@ -21,5 +21,6 @@ public interface DataAccess {
     void setWhiteName(String name, int gameID);
     void setBlackName(String name, int gameID);
     ArrayList<BareGameData> getGames();
+    GameData getGame(int gameID);
 
 }

@@ -41,11 +41,18 @@ public class Server {
     private void joinGame(Context ctx){
         var serializer = new Gson();
         String reqJson = ctx.header("authorization");
-        String authToken = serializer.fromJson(reqJson, String.class);
-        reqJson = ctx.body();
-        JoinGameData data = serializer.fromJson(reqJson, JoinGameData.class);
-
         try{
+            String authToken;
+            if(reqJson !=null){
+                authToken = userService.checkAuth(reqJson);
+            }else{
+                authToken = "0";
+            }
+
+            reqJson = ctx.body();
+            JoinGameData data = serializer.fromJson(reqJson, JoinGameData.class);
+
+
             userService.joinGame(data.gameID(), authToken, data.playerColor());
             ctx.status(200).result("{}");
         }catch(ResponseException ex){

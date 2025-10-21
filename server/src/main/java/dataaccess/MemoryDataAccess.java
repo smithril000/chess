@@ -78,4 +78,8 @@ public class MemoryDataAccess implements DataAccess{
         }
         return bareGames;
     }
+    @Override
+    public GameData getGame(int gameID){
+        return games.get(gameID);
+    }
 }

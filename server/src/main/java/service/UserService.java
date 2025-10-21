@@ -1,6 +1,7 @@
 package service;
 
 import chess.ChessGame;
+import com.google.gson.Gson;
 import dataaccess.DataAccess;
 import datamodel.AuthData;
 import datamodel.BareGameData;
@@ -89,10 +90,15 @@ public class UserService {
 
     public void joinGame(int gameID, String authToken, String playerColor) throws ResponseException{
         //do all fo the checks
+        //String testAuth = dataAccess.getLoggedInData(authToken).authToken();
         if(gameID == 0){
             throw new ResponseException(400, "Error: bad request");
         }else if(dataAccess.getLoggedInData(authToken) == null){
             throw new ResponseException(401, "Error: unauthorized");
+        }else if(Objects.equals(playerColor, "WHITE") && dataAccess.getGame(gameID).getWhiteUsername() != null){
+            throw new ResponseException(403, "Error: already taken");
+        }else if(Objects.equals(playerColor, "BLACK") && dataAccess.getGame(gameID).getBlackUsername() != null){
+            throw new ResponseException(403, "Error: already taken");
         }
         //now get the user info to set name and to know what color to do
         //first grab players username
@@ -112,5 +118,12 @@ public class UserService {
 
 
         return dataAccess.getGames();
+    }
+    public String checkAuth(String reqJson) throws ResponseException{
+        if(reqJson.contains(" ")){
+            throw new ResponseException(401, "Error: Unauthorized");
+        }else{
+            return new Gson().fromJson(reqJson, String.class);
+        }
     }
 }
