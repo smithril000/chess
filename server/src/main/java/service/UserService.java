@@ -3,9 +3,14 @@ package service;
 import chess.ChessGame;
 import dataaccess.DataAccess;
 import datamodel.AuthData;
+import datamodel.BareGameData;
 import datamodel.GameData;
 import datamodel.UserData;
 import server.ResponseException;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Objects;
 
 public class UserService {
     private final DataAccess dataAccess;
@@ -80,5 +85,32 @@ public class UserService {
         GameData gameData = new GameData(gameID, null, null, gameName, game);
         dataAccess.createGame(gameData);
         return gameID;
+    }
+
+    public void joinGame(int gameID, String authToken, String playerColor) throws ResponseException{
+        //do all fo the checks
+        if(gameID == 0){
+            throw new ResponseException(400, "Error: bad request");
+        }else if(dataAccess.getLoggedInData(authToken) == null){
+            throw new ResponseException(401, "Error: unauthorized");
+        }
+        //now get the user info to set name and to know what color to do
+        //first grab players username
+        String username = dataAccess.getLoggedInData(authToken).username();
+        if(Objects.equals(playerColor, "BLACK")){
+            dataAccess.setBlackName(username, gameID);
+        }else{
+            dataAccess.setWhiteName(username, gameID);
+        }
+
+    }
+    public ArrayList<BareGameData> listGames(String authToken) throws ResponseException{
+        if(dataAccess.getLoggedInData(authToken) == null){
+            throw new ResponseException(401, "Error: unauthorized");
+        }
+        //we need to return the map without the actaul game
+
+
+        return dataAccess.getGames();
     }
 }

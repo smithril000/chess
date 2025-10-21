@@ -2,11 +2,13 @@ package dataaccess;
 
 import chess.ChessGame;
 import datamodel.AuthData;
+import datamodel.BareGameData;
 import datamodel.GameData;
 import datamodel.UserData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,6 +51,31 @@ public class MemoryDataAccess implements DataAccess{
     }
     @Override
     public void createGame(GameData gameData){
-        games.put(gameData.gameID(), gameData);
+        games.put(gameData.getGameID(), gameData);
+    }
+    @Override
+    public void setWhiteName(String name, int gameID){
+        games.get(gameID).setWhiteUsername(name);
+    }
+    public void setBlackName(String name, int gameID){
+        games.get(gameID).setBlackUsername(name);
+    }
+    @Override
+    public ArrayList<BareGameData> getGames(){
+        ArrayList<BareGameData> bareGames = new ArrayList<>();
+        for(int id : games.keySet()){
+            //check if any of the names are null
+            String blackName = games.get(id).getBlackUsername();
+            String whiteName = games.get(id).getWhiteUsername();
+//            if(blackName == null){
+//                blackName = "null";
+//            }
+//            if(whiteName == null){
+//                whiteName = "null";
+//            }
+
+            bareGames.add(new BareGameData(id, whiteName, blackName, games.get(id).getGameName()));
+        }
+        return bareGames;
     }
 }
