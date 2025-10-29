@@ -1,11 +1,15 @@
 package dataaccess;
 
+import com.google.gson.Gson;
 import datamodel.AuthData;
 import datamodel.BareGameData;
 import datamodel.GameData;
 import datamodel.UserData;
 import server.ResponseException;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +24,7 @@ public class DatabaseAccess implements DataAccess{
     }
     @Override
     public void clear() {
-        var statment = "drop database chess";
+        var statment = new String[]{"TRUNCATE TABLE users", "TRUNCATE TABLE authData", "TRUNCATE TABLE games"};
         try {
             executeUpdate(statment);
         }catch(DataAccessException ex){
@@ -30,22 +34,76 @@ public class DatabaseAccess implements DataAccess{
 
     @Override
     public void createUser(UserData user) {
+        //basically register user
+        //can i get the whole object as a json string?
+        String jsonString = new Gson().toJson(user);
+        var statement = new String[] {String.format("insert into users (username, email, password, json) values ('%s', '%s', '%s', '%s')", user.username(), user.email(), user.password(), jsonString)};
+        try{
+            executeUpdate(statement);
+        }catch(DataAccessException ex){
 
+        }
+    }
+    private UserData readUser(ResultSet rs) throws SQLException {
+        var username = rs.getString("username");
+        var json = rs.getString("json");
+        UserData user = new Gson().fromJson(json, UserData.class);
+        return user;
     }
 
     @Override
     public UserData getUser(String username) {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT username, json FROM users WHERE username=?";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setString(1, username);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readUser(rs);
+                    }
+                }
+            }
+        } catch (Exception e){
+
+        }
         return null;
     }
 
     @Override
     public void createLoginUser(AuthData authData) {
+        //adding to my authdata database
+        String jsonString = new Gson().toJson(authData);
+        var statement = new String[] {String.format("insert into authData (username, authToken, json) values ('%s', '%s', '%s')", authData.username(), authData.authToken(), jsonString)};
+        try{
+            executeUpdate(statement);
+        }catch(DataAccessException ex){
 
+        }
     }
 
     @Override
-    public AuthData getLoggedInData(String username) {
+    public AuthData getLoggedInData(String authToken) {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            var statement = String.format("SELECT authToken, json FROM authData WHERE authToken='%s'", authToken);
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                //ps.setString(1, authToken);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readAuth(rs);
+                    }
+                }
+            }
+        } catch (Exception e){
+
+        }
+
         return null;
+    }
+    private AuthData readAuth(ResultSet rs) throws SQLException {
+        var authToken = rs.getString("authToken");
+        var json = rs.getString("json");
+        AuthData data = new Gson().fromJson(json, AuthData.class);
+        return data;
     }
 
     @Override
@@ -60,7 +118,13 @@ public class DatabaseAccess implements DataAccess{
 
     @Override
     public void createGame(GameData gameData) {
+        String jsonString = new Gson().toJson(gameData);
+        var statement = new String[] {String.format("insert into games (gameID, whiteUsername, blackUsername, gameName, json) values ('%s', '%s', '%s', '%s', '%s')",gameData.getGameID(), gameData.getWhiteUsername(), gameData.getBlackUsername(), gameData.getGameName(), jsonString)};
+        try{
+            executeUpdate(statement);
+        }catch(DataAccessException ex){
 
+        }
     }
 
     @Override
@@ -103,7 +167,7 @@ public class DatabaseAccess implements DataAccess{
             CREATE TABLE IF NOT EXISTS  authData (
               `id` int NOT NULL AUTO_INCREMENT,
               `username` varchar(256) NOT NULL,
-              `authData` varchar(256) NOT NULL,
+              `authToken` varchar(256) NOT NULL,
               `json` TEXT DEFAULT NULL,
               PRIMARY KEY (`username`),
               INDEX(id)
@@ -123,7 +187,7 @@ public class DatabaseAccess implements DataAccess{
 
     private void configureDatabase() throws DataAccessException {
         //temp remove the database for testing
-        clear();
+        //clear();
         DatabaseManager.createDatabase();
         try(var conn = DatabaseManager.getConnection()){
             for(var statement : createUserStatements){
@@ -135,10 +199,12 @@ public class DatabaseAccess implements DataAccess{
             throw new DataAccessException("Bad Database");
         }
     }
-    private void executeUpdate(String statement)throws DataAccessException{
+    private void executeUpdate(String[] statements)throws DataAccessException{
         try (var conn = DatabaseManager.getConnection()){
-            try(var preparedStatement = conn.prepareStatement(statement)){
-                preparedStatement.executeUpdate();
+            for(var statement : statements) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
             }
         }catch(SQLException ex){
             throw new DataAccessException("Bad Database");
