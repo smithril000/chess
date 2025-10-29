@@ -115,7 +115,7 @@ public class UserService {
         }
 
     }
-    public ArrayList<BareGameData> listGames(String authToken) throws ResponseException{
+    public ArrayList<GameData> listGames(String authToken) throws ResponseException{
         if(dataAccess.getLoggedInData(authToken) == null){
             throw new ResponseException(401, "Error: unauthorized");
         }

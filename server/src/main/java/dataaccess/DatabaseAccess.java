@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DatabaseAccess implements DataAccess{
-    private ArrayList<BareGameData> games = new ArrayList<>();
+    private ArrayList<GameData> games = new ArrayList<>();
 
     public DatabaseAccess(){
         try {
@@ -121,7 +121,7 @@ public class DatabaseAccess implements DataAccess{
     @Override
     public void createGame(GameData gameData) {
         String jsonString = new Gson().toJson(gameData);
-        var statement = new String[] {String.format("insert into games (gameID, whiteUsername, blackUsername, gameName, json) values ('%s', '%s', '%s', '%s', '%s')",gameData.getGameID(), gameData.getWhiteUsername(), gameData.getBlackUsername(), gameData.getGameName(), jsonString)};
+        var statement = new String[] {String.format("insert into games (whiteUsername, blackUsername, gameName, json) values ('%s', '%s', '%s', '%s')",gameData.getWhiteUsername(), gameData.getBlackUsername(), gameData.getGameName(), jsonString)};
         try{
             executeUpdate(statement);
         }catch(DataAccessException ex){
@@ -132,6 +132,7 @@ public class DatabaseAccess implements DataAccess{
     @Override
     public void setWhiteName(String name, int gameID) {
         var statement = new String[] {String.format("UPDATE games SET whiteUsername = '%s' WHERE gameID = '%s'",name, gameID)};
+        //we also need to update our json
         try{
             executeUpdate(statement);
         }catch(DataAccessException ex){
@@ -150,9 +151,9 @@ public class DatabaseAccess implements DataAccess{
     }
 
     @Override
-    public ArrayList<BareGameData> getGames() {
+    public ArrayList<GameData> getGames() {
         try (Connection conn = DatabaseManager.getConnection()) {
-            var statement = String.format("SELECT json FROM games");
+            var statement = String.format("SELECT whiteUsername, blackUsername, json FROM games");
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
                 //ps.setString(1, authToken);
                 try (ResultSet rs = ps.executeQuery()) {
@@ -166,10 +167,13 @@ public class DatabaseAccess implements DataAccess{
         }
         return games;
     }
-    private BareGameData readGames(ResultSet rs) throws SQLException {
+    private GameData readGames(ResultSet rs) throws SQLException {
+        var white = rs.getString("whiteUsername");
+        var black = rs.getString("blackUsername");
         var json = rs.getString("json");
-        var out = new Gson().fromJson(json, BareGameData.class);
-        return out;
+        var out = new Gson().fromJson(json, GameData.class);
+        GameData newGame = new GameData(out.getGameID(),white, black, out.getGameName(),out.getGame());
+        return newGame;
     }
 
     @Override

@@ -69,7 +69,7 @@ public class Server {
         String authToken = serializer.fromJson(reqJson, String.class);
         //we mostly just need to verify the auth token one furth up
         try {
-            ArrayList<BareGameData> out = userService.listGames(authToken);
+            ArrayList<GameData> out = userService.listGames(authToken);
             String outJson = String.format("{ \"games\": %s }", serializer.toJson(out));
             ctx.status(200).result(outJson);
         }catch(ResponseException ex){

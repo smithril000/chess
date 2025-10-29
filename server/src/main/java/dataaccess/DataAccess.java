@@ -20,7 +20,7 @@ public interface DataAccess {
     void createGame(GameData gameData);
     void setWhiteName(String name, int gameID);
     void setBlackName(String name, int gameID);
-    ArrayList<BareGameData> getGames();
+    ArrayList<GameData> getGames();
     GameData getGame(int gameID);
     int getID();
 

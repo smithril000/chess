@@ -63,8 +63,8 @@ public class MemoryDataAccess implements DataAccess{
         games.get(gameID).setBlackUsername(name);
     }
     @Override
-    public ArrayList<BareGameData> getGames(){
-        ArrayList<BareGameData> bareGames = new ArrayList<>();
+    public ArrayList<GameData> getGames(){
+        ArrayList<GameData> bareGames = new ArrayList<>();
         for(int id : games.keySet()){
             //check if any of the names are null
             String blackName = games.get(id).getBlackUsername();
@@ -76,7 +76,7 @@ public class MemoryDataAccess implements DataAccess{
 //                whiteName = "null";
 //            }
 
-            bareGames.add(new BareGameData(id, whiteName, blackName, games.get(id).getGameName()));
+            //bareGames.add(new GameData(id, whiteName, blackName, games.get(id).getGameName()));
         }
         return bareGames;
     }
