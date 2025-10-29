@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
+import dataaccess.DatabaseAccess;
 import dataaccess.MemoryDataAccess;
 import datamodel.BareGameData;
 import datamodel.GameData;
@@ -21,7 +22,8 @@ public class Server {
     private final UserService userService;
 
     public Server() {
-        var dataAccess = new MemoryDataAccess();
+
+        var dataAccess = new DatabaseAccess();
         userService = new UserService(dataAccess);
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
