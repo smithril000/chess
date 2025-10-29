@@ -129,12 +129,22 @@ public class DatabaseAccess implements DataAccess{
 
     @Override
     public void setWhiteName(String name, int gameID) {
+        var statement = new String[] {String.format("UPDATE games SET whiteUsername = '%s' WHERE gameID = '%s'",name, gameID)};
+        try{
+            executeUpdate(statement);
+        }catch(DataAccessException ex){
 
+        }
     }
 
     @Override
     public void setBlackName(String name, int gameID) {
+        var statement = new String[] {String.format("UPDATE games SET blackUsername = '%s' WHERE gameID = '%s'",name, gameID)};
+        try{
+            executeUpdate(statement);
+        }catch(DataAccessException ex){
 
+        }
     }
 
     @Override
@@ -144,12 +154,33 @@ public class DatabaseAccess implements DataAccess{
 
     @Override
     public GameData getGame(int gameID) {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            var statement = String.format("SELECT json FROM games WHERE gameID='%s'", gameID);
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                //ps.setString(1, authToken);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readGame(rs);
+                    }
+                }
+            }
+        } catch (Exception e){
+
+        }
+
+
         return null;
+    }
+    private GameData readGame(ResultSet rs) throws SQLException {
+        var json = rs.getString("json");
+        var game = new Gson().fromJson(json, GameData.class);
+        return game;
     }
 
     @Override
     public int getID() {
-        return 0;
+        //FIX THIS
+        return 1;
     }
     private final String[] createUserStatements = {
             """
