@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DatabaseAccess implements DataAccess{
+    private ArrayList<BareGameData> games = new ArrayList<>();
+
     public DatabaseAccess(){
         try {
             configureDatabase();
@@ -149,7 +151,25 @@ public class DatabaseAccess implements DataAccess{
 
     @Override
     public ArrayList<BareGameData> getGames() {
-        return null;
+        try (Connection conn = DatabaseManager.getConnection()) {
+            var statement = String.format("SELECT json FROM games");
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                //ps.setString(1, authToken);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        games.add(readGames(rs));
+                    }
+                }
+            }
+        } catch (Exception e){
+
+        }
+        return games;
+    }
+    private BareGameData readGames(ResultSet rs) throws SQLException {
+        var json = rs.getString("json");
+        var out = new Gson().fromJson(json, BareGameData.class);
+        return out;
     }
 
     @Override
