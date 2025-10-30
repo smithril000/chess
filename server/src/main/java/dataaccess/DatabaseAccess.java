@@ -5,6 +5,7 @@ import datamodel.AuthData;
 import datamodel.BareGameData;
 import datamodel.GameData;
 import datamodel.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import server.ResponseException;
 
 import java.sql.Connection;
@@ -38,18 +39,28 @@ public class DatabaseAccess implements DataAccess{
     public void createUser(UserData user) {
         //basically register user
         //can i get the whole object as a json string?
-        String jsonString = new Gson().toJson(user);
-        var statement = new String[] {String.format("insert into users (username, email, password, json) values ('%s', '%s', '%s', '%s')", user.username(), user.email(), user.password(), jsonString)};
+
+        //we need to hash the passwords
+        String hashPass = hashPass(user.password());
+        UserData newUser = new UserData(user.username(), user.email(), hashPass);
+        String jsonString = new Gson().toJson(newUser);
+        var statement = new String[] {String.format("insert into users (username, email, password, json) values ('%s', '%s', '%s', '%s')", user.username(), user.email(), hashPass, jsonString)};
         try{
             executeUpdate(statement);
         }catch(DataAccessException ex){
 
         }
     }
+    private String hashPass(String pass){
+        String hashedPassword = BCrypt.hashpw(pass, BCrypt.gensalt());
+        return hashedPassword;
+    }
     private UserData readUser(ResultSet rs) throws SQLException {
         var username = rs.getString("username");
         var json = rs.getString("json");
         UserData user = new Gson().fromJson(json, UserData.class);
+        //rehash the pass
+
         return user;
     }
 
