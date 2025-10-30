@@ -26,17 +26,17 @@ public class DatabaseAccess implements DataAccess{
         }
     }
     @Override
-    public void clear() {
+    public void clear() throws ResponseException {
         var statment = new String[]{"TRUNCATE TABLE users", "TRUNCATE TABLE authData", "TRUNCATE TABLE games"};
         try {
             executeUpdate(statment);
         }catch(DataAccessException ex){
-
+            throw new ResponseException(500, "Error with database");
         }
     }
 
     @Override
-    public void createUser(UserData user) {
+    public void createUser(UserData user) throws ResponseException {
         //basically register user
         //can i get the whole object as a json string?
 
@@ -48,7 +48,7 @@ public class DatabaseAccess implements DataAccess{
         try{
             executeUpdate(statement);
         }catch(DataAccessException ex){
-
+            throw new ResponseException(500, "Error with database");
         }
     }
     private String hashPass(String pass){
@@ -56,7 +56,7 @@ public class DatabaseAccess implements DataAccess{
         return hashedPassword;
     }
 
-    public boolean verifyUser(String username, String providedClearTextPassword) {
+    public boolean verifyUser(String username, String providedClearTextPassword) throws ResponseException {
         // read the previously hashed password from the database
         var hashedPassword = getUser(username).password();
 
@@ -73,7 +73,7 @@ public class DatabaseAccess implements DataAccess{
     }
 
     @Override
-    public UserData getUser(String username) {
+    public UserData getUser(String username) throws ResponseException {
         try (Connection conn = DatabaseManager.getConnection()) {
             var statement = "SELECT username, json FROM users WHERE username=?";
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
@@ -85,7 +85,7 @@ public class DatabaseAccess implements DataAccess{
                 }
             }
         } catch (Exception e){
-
+            throw new ResponseException(500, "Error with database");
         }
         return null;
     }
@@ -103,7 +103,7 @@ public class DatabaseAccess implements DataAccess{
     }
 
     @Override
-    public AuthData getLoggedInData(String authToken) {
+    public AuthData getLoggedInData(String authToken) throws ResponseException {
         try (Connection conn = DatabaseManager.getConnection()) {
             var statement = String.format("SELECT authToken, json FROM authData WHERE authToken='%s'", authToken);
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
@@ -115,7 +115,7 @@ public class DatabaseAccess implements DataAccess{
                 }
             }
         } catch (Exception e){
-
+            throw new ResponseException(500, "Error with database");
         }
 
         return null;
@@ -138,39 +138,39 @@ public class DatabaseAccess implements DataAccess{
     }
 
     @Override
-    public void createGame(GameData gameData) {
+    public void createGame(GameData gameData) throws ResponseException {
         String jsonString = new Gson().toJson(gameData);
         var statement = new String[] {String.format("insert into games (whiteUsername, blackUsername, gameName, json) values ('%s', '%s', '%s', '%s')",gameData.getWhiteUsername(), gameData.getBlackUsername(), gameData.getGameName(), jsonString)};
         try{
             executeUpdate(statement);
         }catch(DataAccessException ex){
-
+            throw new ResponseException(500, "Error with database");
         }
     }
 
     @Override
-    public void setWhiteName(String name, int gameID) {
+    public void setWhiteName(String name, int gameID) throws ResponseException {
         var statement = new String[] {String.format("UPDATE games SET whiteUsername = '%s' WHERE gameID = '%s'",name, gameID)};
         //we also need to update our json
         try{
             executeUpdate(statement);
         }catch(DataAccessException ex){
-
+            throw new ResponseException(500, "Error with database");
         }
     }
 
     @Override
-    public void setBlackName(String name, int gameID) {
+    public void setBlackName(String name, int gameID) throws ResponseException {
         var statement = new String[] {String.format("UPDATE games SET blackUsername = '%s' WHERE gameID = '%s'",name, gameID)};
         try{
             executeUpdate(statement);
         }catch(DataAccessException ex){
-
+            throw new ResponseException(500, "Error with database");
         }
     }
 
     @Override
-    public ArrayList<GameData> getGames() {
+    public ArrayList<GameData> getGames() throws ResponseException {
         try (Connection conn = DatabaseManager.getConnection()) {
             var statement = String.format("SELECT whiteUsername, blackUsername, json FROM games");
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
@@ -182,7 +182,7 @@ public class DatabaseAccess implements DataAccess{
                 }
             }
         } catch (Exception e){
-
+            throw new ResponseException(500, "Error with database");
         }
         return games;
     }
@@ -196,7 +196,7 @@ public class DatabaseAccess implements DataAccess{
     }
 
     @Override
-    public GameData getGame(int gameID) {
+    public GameData getGame(int gameID) throws ResponseException {
         try (Connection conn = DatabaseManager.getConnection()) {
             var statement = String.format("SELECT json FROM games WHERE gameID='%s'", gameID);
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
@@ -208,7 +208,7 @@ public class DatabaseAccess implements DataAccess{
                 }
             }
         } catch (Exception e){
-
+            throw new ResponseException(500, "Error with database");
         }
 
 
