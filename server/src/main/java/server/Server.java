@@ -37,7 +37,11 @@ public class Server {
         javalin.put("game", ctx -> joinGame(ctx));
     }
     private void clear(Context ctx){
-        userService.clear();
+        try {
+            userService.clear();
+        }catch(ResponseException ex){
+            ctx.status(ex.getCode()).result(ex.toJson());
+        }
     }
 
     private void joinGame(Context ctx){

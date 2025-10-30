@@ -2,28 +2,29 @@ package dataaccess;
 
 import chess.ChessGame;
 import datamodel.*;
+import server.ResponseException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public interface DataAccess {
-    void clear();
-    void createUser(UserData user);
-    UserData getUser(String username);
+    void clear() throws ResponseException;
+    void createUser(UserData user) throws ResponseException;
+    UserData getUser(String username) throws ResponseException;
     //stuff for login data
-    void createLoginUser(AuthData authData);
-    AuthData getLoggedInData(String username);
+    void createLoginUser(AuthData authData) throws ResponseException;
+    AuthData getLoggedInData(String username) throws ResponseException;
     void removeLoggedInUser(String authToken);
     //stuff for game data
     HashMap<Integer, GameData> listGames();
-    void createGame(GameData gameData);
-    void setWhiteName(String name, int gameID);
-    void setBlackName(String name, int gameID);
-    ArrayList<GameData> getGames();
-    GameData getGame(int gameID);
+    void createGame(GameData gameData) throws ResponseException;
+    void setWhiteName(String name, int gameID) throws ResponseException;
+    void setBlackName(String name, int gameID) throws ResponseException;
+    ArrayList<GameData> getGames() throws ResponseException;
+    GameData getGame(int gameID) throws ResponseException;
     int getID();
 
-    boolean verifyUser(String username, String password);
+    boolean verifyUser(String username, String password) throws ResponseException;
     //boolean verifyUser(String username, String password);
 }

@@ -64,7 +64,8 @@ public class UserService {
         }
     }
 
-    public void clear(){
+    public void clear() throws ResponseException {
+
         dataAccess.clear();
     }
     //finsih this
