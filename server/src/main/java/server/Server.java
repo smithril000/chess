@@ -23,7 +23,7 @@ public class Server {
 
     public Server() {
 
-        var dataAccess = new DatabaseAccess();
+        var dataAccess = new MemoryDataAccess();
         userService = new UserService(dataAccess);
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 

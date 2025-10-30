@@ -28,7 +28,13 @@ public class MemoryDataAccess implements DataAccess{
 
     @Override
     public void createUser(UserData user) {
-        users.put(user.username(), user);
+        //we need to hash their password
+        UserData newUser = new UserData(user.username(), user.email(), hashPass(user.password()));
+        users.put(user.username(), newUser);
+    }
+    private String hashPass(String pass){
+        String hashedPassword = BCrypt.hashpw(pass, BCrypt.gensalt());
+        return hashedPassword;
     }
 
     @Override
