@@ -26,17 +26,17 @@ public class DatabaseAccess implements DataAccess{
         }
     }
     @Override
-    public void clear() throws ResponseException {
+    public void clear() {
         var statment = new String[]{"TRUNCATE TABLE users", "TRUNCATE TABLE authData", "TRUNCATE TABLE games"};
         try {
             executeUpdate(statment);
         }catch(DataAccessException ex){
-            throw new ResponseException(500, "Error in database");
+
         }
     }
 
     @Override
-    public void createUser(UserData user) throws ResponseException {
+    public void createUser(UserData user) {
         //basically register user
         //can i get the whole object as a json string?
 
@@ -48,7 +48,7 @@ public class DatabaseAccess implements DataAccess{
         try{
             executeUpdate(statement);
         }catch(DataAccessException ex){
-            throw new ResponseException(500, "Error in database(reg)");
+
         }
     }
     private String hashPass(String pass){
@@ -56,7 +56,7 @@ public class DatabaseAccess implements DataAccess{
         return hashedPassword;
     }
 
-    public boolean verifyUser(String username, String providedClearTextPassword) throws ResponseException {
+    public boolean verifyUser(String username, String providedClearTextPassword) {
         // read the previously hashed password from the database
         var hashedPassword = getUser(username).password();
 
@@ -73,7 +73,7 @@ public class DatabaseAccess implements DataAccess{
     }
 
     @Override
-    public UserData getUser(String username) throws ResponseException {
+    public UserData getUser(String username) {
         try (Connection conn = DatabaseManager.getConnection()) {
             var statement = "SELECT username, json FROM users WHERE username=?";
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
@@ -85,25 +85,25 @@ public class DatabaseAccess implements DataAccess{
                 }
             }
         } catch (Exception e){
-            throw new ResponseException(500, "Error in database");
+
         }
         return null;
     }
 
     @Override
-    public void createLoginUser(AuthData authData) throws ResponseException {
+    public void createLoginUser(AuthData authData) {
         //adding to my authdata database
         String jsonString = new Gson().toJson(authData);
         var statement = new String[] {String.format("insert into authData (username, authToken, json) values ('%s', '%s', '%s')", authData.username(), authData.authToken(), jsonString)};
         try{
             executeUpdate(statement);
         }catch(DataAccessException ex){
-            //throw new ResponseException(500, "Error in database");
+
         }
     }
 
     @Override
-    public AuthData getLoggedInData(String authToken) throws ResponseException {
+    public AuthData getLoggedInData(String authToken) {
         try (Connection conn = DatabaseManager.getConnection()) {
             var statement = String.format("SELECT authToken, json FROM authData WHERE authToken='%s'", authToken);
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
@@ -115,7 +115,7 @@ public class DatabaseAccess implements DataAccess{
                 }
             }
         } catch (Exception e){
-            throw new ResponseException(500, "Error in database");
+
         }
 
         return null;

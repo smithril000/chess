@@ -18,11 +18,11 @@ public interface DataAccess {
     void removeLoggedInUser(String authToken);
     //stuff for game data
     HashMap<Integer, GameData> listGames();
-    void createGame(GameData gameData);
-    void setWhiteName(String name, int gameID);
-    void setBlackName(String name, int gameID);
-    ArrayList<GameData> getGames();
-    GameData getGame(int gameID);
+    void createGame(GameData gameData) throws ResponseException;
+    void setWhiteName(String name, int gameID) throws ResponseException;
+    void setBlackName(String name, int gameID) throws ResponseException;
+    ArrayList<GameData> getGames() throws ResponseException;
+    GameData getGame(int gameID) throws ResponseException;
     int getID();
 
     boolean verifyUser(String username, String password) throws ResponseException;
