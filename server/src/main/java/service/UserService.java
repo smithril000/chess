@@ -82,16 +82,16 @@ public class UserService {
         }
         ChessGame game = new ChessGame();
         //fix this
-        int gameID = dataAccess.getID();
+        int gameID = 1;
         //create the actualy game data
         GameData gameData = new GameData(gameID, null, null, gameName, game);
         dataAccess.createGame(gameData);
-        return gameID;
+        return dataAccess.getID(gameName);
     }
 
     public void joinGame(int gameID, String authToken, String playerColor) throws ResponseException{
         //do all fo the checks
-        //String testAuth = dataAccess.getLoggedInData(authToken).authToken();
+        //String test = dataAccess.getGame(gameID).getBlackUsername();
         if(gameID == 0){
             throw new ResponseException(400, "Error: bad request");
         }else if(dataAccess.getLoggedInData(authToken) == null){

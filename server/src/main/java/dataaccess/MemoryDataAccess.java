@@ -97,7 +97,7 @@ public class MemoryDataAccess implements DataAccess{
     public GameData getGame(int gameID){
         return games.get(gameID);
     }
-    public int getID(){
+    public int getID(String gameName){
         return gameID_Counter++;
     }
 }

@@ -23,7 +23,7 @@ public interface DataAccess {
     void setBlackName(String name, int gameID) throws ResponseException;
     ArrayList<GameData> getGames() throws ResponseException;
     GameData getGame(int gameID) throws ResponseException;
-    int getID();
+    int getID(String gameName) throws ResponseException;
 
     boolean verifyUser(String username, String password) throws ResponseException;
     //boolean verifyUser(String username, String password);
