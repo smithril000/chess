@@ -24,4 +24,6 @@ public interface DataAccess {
     GameData getGame(int gameID);
     int getID();
 
+    boolean verifyUser(String username, String password);
+    //boolean verifyUser(String username, String password);
 }

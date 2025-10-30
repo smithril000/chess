@@ -5,6 +5,7 @@ import datamodel.AuthData;
 import datamodel.BareGameData;
 import datamodel.GameData;
 import datamodel.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +62,12 @@ public class MemoryDataAccess implements DataAccess{
     }
     public void setBlackName(String name, int gameID){
         games.get(gameID).setBlackUsername(name);
+    }
+    public boolean verifyUser(String username, String providedClearTextPassword){
+        // read the previously hashed password from the database
+        var hashedPassword = getUser(username).password();
+
+        return BCrypt.checkpw(providedClearTextPassword, hashedPassword);
     }
     @Override
     public ArrayList<GameData> getGames(){

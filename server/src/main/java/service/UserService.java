@@ -43,7 +43,7 @@ public class UserService {
         else if(dataAccess.getUser(user.username()) == null){
             //wrong password
             throw new ResponseException(401, "Error: Unauthorized");
-        }else if(!user.password().equals(dataAccess.getUser(user.username()).password())){
+        }else if(!dataAccess.verifyUser(user.username(), user.password())){//!user.password().equals(dataAccess.getUser(user.username()).password())
 
             throw new ResponseException(401, "Error: Unauthorized");
         }

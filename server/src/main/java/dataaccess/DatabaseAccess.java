@@ -55,6 +55,14 @@ public class DatabaseAccess implements DataAccess{
         String hashedPassword = BCrypt.hashpw(pass, BCrypt.gensalt());
         return hashedPassword;
     }
+
+    public boolean verifyUser(String username, String providedClearTextPassword) {
+        // read the previously hashed password from the database
+        var hashedPassword = getUser(username).password();
+
+        return BCrypt.checkpw(providedClearTextPassword, hashedPassword);
+    }
+
     private UserData readUser(ResultSet rs) throws SQLException {
         var username = rs.getString("username");
         var json = rs.getString("json");
