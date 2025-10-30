@@ -29,10 +29,25 @@ public class DatabaseAccess implements DataAccess{
     @Override
     public void clear() throws ResponseException {
         var statment = new String[]{"TRUNCATE TABLE users", "TRUNCATE TABLE authData", "TRUNCATE TABLE games"};
-        try {
-            executeUpdate(statment);
-        }catch(DataAccessException ex){
-            throw new ResponseException(500, "Error with database");
+
+        try (var conn = DatabaseManager.getConnection()){
+            var statement1 = "TRUNCATE TABLE users";
+            var statement2 = "TRUNCATE TABLE authData";
+            var statement3 = "TRUNCATE TABLE games";
+            try (var ps = conn.prepareStatement(statement1)) {
+
+                ps.executeUpdate();
+            }
+            try (var ps = conn.prepareStatement(statement2)) {
+
+                ps.executeUpdate();
+            }
+            try (var ps = conn.prepareStatement(statement3)) {
+
+                ps.executeUpdate();
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -348,15 +363,15 @@ public class DatabaseAccess implements DataAccess{
               `username` varchar(256) NOT NULL,
               `authToken` varchar(256) NOT NULL,
               `json` TEXT DEFAULT NULL,
-              PRIMARY KEY (`username`),
+              PRIMARY KEY (`authToken`),
               INDEX(id)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """,
             """
             CREATE TABLE IF NOT EXISTS  games (
               `gameID` int NOT NULL AUTO_INCREMENT,
-              `whiteUsername` varchar(256) NOT NULL,
-              `blackUsername` varchar(256) NOT NULL,
+              `whiteUsername` varchar(256),
+              `blackUsername` varchar(256),
               `gameName` varchar(256) NOT NULL,
               `json` TEXT DEFAULT NULL,
               PRIMARY KEY (`gameID`)
