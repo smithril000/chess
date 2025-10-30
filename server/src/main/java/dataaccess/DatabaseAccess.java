@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class DatabaseAccess implements DataAccess{
     private ArrayList<GameData> games = new ArrayList<>();
@@ -128,8 +129,13 @@ public class DatabaseAccess implements DataAccess{
     }
 
     @Override
-    public void removeLoggedInUser(String authToken) {
-
+    public void removeLoggedInUser(String authToken) throws ResponseException {
+        var statment = new String[]{String.format("DELETE FROM authData WHERE authToken = '%s'", authToken)};
+        try {
+            executeUpdate(statment);
+        }catch(DataAccessException ex){
+            throw new ResponseException(500, "Error with database");
+        }
     }
 
     @Override
@@ -191,6 +197,12 @@ public class DatabaseAccess implements DataAccess{
         var black = rs.getString("blackUsername");
         var json = rs.getString("json");
         var out = new Gson().fromJson(json, GameData.class);
+        if(Objects.equals(white, "null")){
+            white = null;
+        }
+        if(Objects.equals(black, "null")){
+            black = null;
+        }
         GameData newGame = new GameData(out.getGameID(),white, black, out.getGameName(),out.getGame());
         return newGame;
     }

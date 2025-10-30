@@ -15,7 +15,7 @@ public interface DataAccess {
     //stuff for login data
     void createLoginUser(AuthData authData) throws ResponseException;
     AuthData getLoggedInData(String username) throws ResponseException;
-    void removeLoggedInUser(String authToken);
+    void removeLoggedInUser(String authToken) throws ResponseException;
     //stuff for game data
     HashMap<Integer, GameData> listGames();
     void createGame(GameData gameData) throws ResponseException;

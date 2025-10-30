@@ -21,10 +21,13 @@ public class Server {
     private final Javalin javalin;
     private final UserService userService;
 
+
     public Server() {
 
         var dataAccess = new DatabaseAccess();
+        //var dataAccess2 = new DatabaseAccess();
         userService = new UserService(dataAccess);
+
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
         // Register your endpoints and exception handlers here.
