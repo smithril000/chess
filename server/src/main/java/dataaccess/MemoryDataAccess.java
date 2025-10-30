@@ -88,7 +88,7 @@ public class MemoryDataAccess implements DataAccess{
 //            if(whiteName == null){
 //                whiteName = "null";
 //            }
-
+            bareGames.add(games.get(id));
             //bareGames.add(new GameData(id, whiteName, blackName, games.get(id).getGameName()));
         }
         return bareGames;
