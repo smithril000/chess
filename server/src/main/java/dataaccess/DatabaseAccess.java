@@ -47,7 +47,7 @@ public class DatabaseAccess implements DataAccess{
                 ps.executeUpdate();
             }
         } catch (SQLException | DataAccessException e) {
-            throw new RuntimeException(e);
+            throw new ResponseException(500, "Error in database");
         }
     }
 
@@ -237,8 +237,9 @@ public class DatabaseAccess implements DataAccess{
 
     @Override
     public ArrayList<GameData> getGames() throws ResponseException {
+        games.clear();
         try (Connection conn = DatabaseManager.getConnection()) {
-            var statement = String.format("SELECT gameID, whiteUsername, blackUsername, json FROM games");
+            var statement = "SELECT gameID, whiteUsername, blackUsername, json FROM games";
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
                 //ps.setString(1, authToken);
                 try (ResultSet rs = ps.executeQuery()) {
