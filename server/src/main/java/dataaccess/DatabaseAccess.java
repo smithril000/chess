@@ -289,25 +289,7 @@ public class DatabaseAccess implements DataAccess{
         return null;
     }
 
-//    private void updateGame(GameData game, GameData oldGame){
-//        //func that will update the json for my game whereiver it is cchanged;
-//        var statement = "UPDATE games SET json = ? WHERE json =?";
-//        //getting new json for a new game
-//        String json = new Gson().toJson(game);
-//        String oldJson = new Gson().toJson(oldGame);
-//        try (var conn = DatabaseManager.getConnection()){
-//
-//                try (var ps = conn.prepareStatement(statement)) {
-//                    ps.setString(1,json);
-//                    ps.setString(2,oldJson);
-//                    ps.executeUpdate();
-//                }
-//
-//
-//        } catch (SQLException | DataAccessException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+
     private GameData readGame(ResultSet rs) throws SQLException {
         var gameID = rs.getInt("gameID");
         var white = rs.getString("whiteUsername");

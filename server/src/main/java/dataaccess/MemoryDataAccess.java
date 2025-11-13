@@ -1,24 +1,19 @@
 package dataaccess;
 
-import chess.ChessGame;
 import datamodel.AuthData;
-import datamodel.BareGameData;
 import datamodel.GameData;
 import datamodel.UserData;
 import org.mindrot.jbcrypt.BCrypt;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 public class MemoryDataAccess implements DataAccess{
-    private static final Logger log = LoggerFactory.getLogger(MemoryDataAccess.class);
+    //private static final Logger log = LoggerFactory.getLogger(MemoryDataAccess.class);
     private final HashMap<String, UserData> users = new HashMap<>();
     private final HashMap<String, AuthData> loggedInUsers = new HashMap<>();
     private final HashMap<Integer, GameData> games = new HashMap<>();
-    private int gameID_Counter = 1;
+    private int gameCounter = 1;
     @Override
     public void clear() {
         loggedInUsers.clear();
@@ -98,6 +93,6 @@ public class MemoryDataAccess implements DataAccess{
         return games.get(gameID);
     }
     public int getID(String gameName){
-        return gameID_Counter++;
+        return gameCounter++;
     }
 }

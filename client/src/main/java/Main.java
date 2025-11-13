@@ -1,5 +1,5 @@
 import chess.*;
-
+//this runs the acutaly client
 public class Main {
     public static void main(String[] args) {
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
