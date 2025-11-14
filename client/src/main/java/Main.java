@@ -1,8 +1,13 @@
+import Client_Stuff.ClientLogin;
 import chess.*;
 //this runs the acutaly client
 public class Main {
     public static void main(String[] args) {
-        var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
-        System.out.println("♕ 240 Chess Client: " + piece);
+
+        try{
+            new ClientLogin("http://localhost:8080").run();
+        }catch(Throwable ex){
+
+        }
     }
 }
