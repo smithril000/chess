@@ -1,7 +1,9 @@
 package server;
 
 import com.google.gson.Gson;
+import org.eclipse.jetty.http.HttpStatus;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class ResponseException extends Exception{
@@ -21,5 +23,12 @@ public class ResponseException extends Exception{
     }
     public String toJson() {
         return new Gson().toJson(Map.of("message", getMessage(), "status", code));
+    }
+
+    public static ResponseException fromJson(String json){
+        var map = new Gson().fromJson(json, HashMap.class);
+        //var status = value(map.get("status"));
+        String message = map.get("message").toString();
+        return new ResponseException(200, message);
     }
 }

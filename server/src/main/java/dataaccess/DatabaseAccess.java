@@ -221,7 +221,7 @@ public class DatabaseAccess implements DataAccess{
         try{
             executeUpdate(statement);
         }catch(DataAccessException ex){
-            throw new ResponseException(500, "Error with database");
+            throw new ResponseException(500, "Error with database4 ");
         }
     }
 
@@ -282,7 +282,7 @@ public class DatabaseAccess implements DataAccess{
                 }
             }
         } catch (Exception e){
-            throw new ResponseException(500, "Error with database");
+            throw new ResponseException(500, "Error with database 2");
         }
 
 
@@ -320,7 +320,7 @@ public class DatabaseAccess implements DataAccess{
                 }
             }
         } catch (Exception e){
-            throw new ResponseException(500, "Error with database");
+            throw new ResponseException(500, "Error with database3");
         }
         return 2;
     }

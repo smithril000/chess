@@ -11,6 +11,7 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.util.Map;
+import server.ResponseException;
 
 
 public class ServerFacade {
@@ -21,23 +22,48 @@ public class ServerFacade {
         serverUrl = serverURL;
     }
 
-    public Object register(Map<String, String> testUser) throws Exception {
-        var request = buildRequest("POST", "/user", testUser);
+    public Map<String, String> register(Map<String, String> testUser) throws Exception {
+        var request = buildRequest("POST", "/user", testUser, null);
+        var response = sendRequest(request);
+        return handleResponse(response, Map.class);
+    }
+    public Map<String, String> login(Map<String, String> userData) throws Exception{
+        var request = buildRequest("POST", "/session", userData, null);
+        var response = sendRequest(request);
+        return handleResponse(response, Map.class);
+    }
+
+    public Map<String, String> logout(String authToken) throws Exception{
+        var serializer = new Gson();
+        String json = serializer.toJson(authToken);
+        var request = buildRequest("DELETE", "/session", authToken, authToken);
+        var response = sendRequest(request);
+        return handleResponse(response, Map.class);
+    }
+    public Map<String, String> create(Map<String, String> gameName, String authToken) throws Exception{
+        var request = buildRequest("POST", "/game", gameName, authToken);
+        var response = sendRequest(request);
+        return handleResponse(response, Map.class);
+    }
+    public String join(Map<String, String> gameInfo, String authToken) throws Exception {
+        var request = buildRequest("PUT", "/game", gameInfo, authToken);
         var response = sendRequest(request);
         return handleResponse(response, String.class);
     }
 
-    public String getGames() throws Exception {
-        var request = buildRequest("GET", "/game", null);
+    public Map<String, String> getGames(String authToken) throws Exception {
+        var serializer = new Gson();
+        String json = serializer.toJson(authToken);
+        var request = buildRequest("GET", "/game", null, authToken);
         var response = sendRequest(request);
-        return handleResponse(response, String.class);
+        return handleResponse(response, Map.class);
     }
-    private HttpRequest buildRequest(String method, String path, Object body){
+    private HttpRequest buildRequest(String method, String path, Object body, String authToken){
         var request = HttpRequest.newBuilder()
                 .uri(URI.create(serverUrl + path))
                 .method(method, makeRequestBody(body));
-        if (body != null) {
-            request.setHeader("Content-Type", "application/json");
+        if (authToken != null) {
+            request.setHeader("authorization", authToken);
         }
         return request.build();
     }
@@ -63,7 +89,7 @@ public class ServerFacade {
             var body = response.body();
             if (body != null) {
                 //throw ResponseException.fromJson(body);
-                throw new Exception("error");
+                throw ResponseException.fromJson(body);
             }
 
             //throw new ResponseException(ResponseException.fromHttpStatusCode(status), "other failure: " + status);
