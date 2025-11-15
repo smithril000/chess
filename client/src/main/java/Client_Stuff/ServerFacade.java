@@ -10,6 +10,7 @@ import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.util.ArrayList;
 import java.util.Map;
 import server.ResponseException;
 
@@ -51,10 +52,10 @@ public class ServerFacade {
         return handleResponse(response, String.class);
     }
 
-    public Map<String, String> getGames(String authToken) throws Exception {
+    public Map<String, Map> getGames(String authToken) throws Exception {
         var serializer = new Gson();
         String json = serializer.toJson(authToken);
-        var request = buildRequest("GET", "/game", null, authToken);
+        var request = buildRequest("GET", "/game", authToken, authToken);
         var response = sendRequest(request);
         return handleResponse(response, Map.class);
     }

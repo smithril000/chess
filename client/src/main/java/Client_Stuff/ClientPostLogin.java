@@ -1,5 +1,6 @@
 package Client_Stuff;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Scanner;
@@ -66,8 +67,14 @@ public class ClientPostLogin {
 
     private String list(String authToken){
         try{
-            Map<String, String> games = server.getGames(authToken);
+            var games = server.getGames(authToken);
             //now we actually list the games
+            //we need to run it into a string
+            ArrayList gameName = (ArrayList) games.get("games");
+
+
+            String temp = "test";
+
         }catch(Exception ex){
             return ex.getMessage();
         }
