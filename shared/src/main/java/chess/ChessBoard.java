@@ -1,5 +1,6 @@
 package chess;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -11,7 +12,7 @@ public class ChessBoard {
     //allocate an array
     ChessPiece[][] squares = new ChessPiece[8][8];
     public ChessBoard() {
-        resetBoard();
+        //resetBoard();
     }
 
     /**
@@ -47,21 +48,41 @@ public class ChessBoard {
         ChessPiece.PieceType[] pieceFrame = new ChessPiece.PieceType[16];
         pieceFrame = setPieceFrame(pieceFrame);
         //black at top - we will make that 0 for now
-
+        for(int i = 0; i < 16; i++){
+            addPiece(new ChessPosition((i / 8)+1, (i % 8)+1), new ChessPiece(ChessGame.TeamColor.BLACK, pieceFrame[i]));
+        }
+        //now white at bottom
+        for(int i = 0; i < 16; i++){
+            addPiece(new ChessPosition((i / 8) + 7, (i % 8)+1), new ChessPiece(ChessGame.TeamColor.WHITE, pieceFrame[i]));
+        }
     }
 
     private ChessPiece.PieceType[] setPieceFrame(ChessPiece.PieceType[] arr){
-        for(int i = 0; i <=8; i++){
+        for(int i = 0; i <8; i++){
             arr[i] = ChessPiece.PieceType.PAWN;
         }
-        arr[9] = ChessPiece.PieceType.ROOK;
-        arr[10] = ChessPiece.PieceType.KNIGHT;
-        arr[11] = ChessPiece.PieceType.BISHOP;
-        arr[12] = ChessPiece.PieceType.QUEEN;
-        arr[13] = ChessPiece.PieceType.KING;
-        arr[14] = ChessPiece.PieceType.BISHOP;
-        arr[15] = ChessPiece.PieceType.KNIGHT;
-        arr[16] = ChessPiece.PieceType.ROOK;
+        arr[8] = ChessPiece.PieceType.ROOK;
+        arr[9] = ChessPiece.PieceType.KNIGHT;
+        arr[10] = ChessPiece.PieceType.BISHOP;
+        arr[11] = ChessPiece.PieceType.QUEEN;
+        arr[12] = ChessPiece.PieceType.KING;
+        arr[13] = ChessPiece.PieceType.BISHOP;
+        arr[14] = ChessPiece.PieceType.KNIGHT;
+        arr[15] = ChessPiece.PieceType.ROOK;
         return arr;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessBoard that = (ChessBoard) o;
+        return Objects.deepEquals(squares, that.squares);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(squares);
     }
 }
