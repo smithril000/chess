@@ -48,12 +48,15 @@ public class ChessBoard {
         ChessPiece.PieceType[] pieceFrame = new ChessPiece.PieceType[16];
         pieceFrame = setPieceFrame(pieceFrame);
         //black at top - we will make that 0 for now
-        for(int i = 0; i < 16; i++){
-            addPiece(new ChessPosition((i / 8)+1, (i % 8)+1), new ChessPiece(ChessGame.TeamColor.BLACK, pieceFrame[i]));
+        for(int i = 0; i < 8; i++){
+            addPiece(new ChessPosition((i / 8) + 2, (i % 8)+1), new ChessPiece(ChessGame.TeamColor.WHITE, pieceFrame[i]));
+        }
+        for(int i = 8; i < 16; i++){
+            addPiece(new ChessPosition((i / 8), (i % 8)+1), new ChessPiece(ChessGame.TeamColor.WHITE, pieceFrame[i]));
         }
         //now white at bottom
         for(int i = 0; i < 16; i++){
-            addPiece(new ChessPosition((i / 8) + 7, (i % 8)+1), new ChessPiece(ChessGame.TeamColor.WHITE, pieceFrame[i]));
+            addPiece(new ChessPosition((i / 8) + 7, (i % 8)+1), new ChessPiece(ChessGame.TeamColor.BLACK, pieceFrame[i]));
         }
     }
 
