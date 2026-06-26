@@ -46,10 +46,10 @@ public class ChessBoard {
         //set the board up for a base game
 
         ChessPiece.PieceType[] pieceFrame = new ChessPiece.PieceType[16];
-        pieceFrame = setPieceFrame(pieceFrame);
+        setPieceFrame(pieceFrame);
         //black at top - we will make that 0 for now
         for(int i = 0; i < 8; i++){
-            addPiece(new ChessPosition((i / 8) + 2, (i % 8)+1), new ChessPiece(ChessGame.TeamColor.WHITE, pieceFrame[i]));
+            addPiece(new ChessPosition(2, (i % 8)+1), new ChessPiece(ChessGame.TeamColor.WHITE, pieceFrame[i]));
         }
         for(int i = 8; i < 16; i++){
             addPiece(new ChessPosition((i / 8), (i % 8)+1), new ChessPiece(ChessGame.TeamColor.WHITE, pieceFrame[i]));
@@ -60,7 +60,7 @@ public class ChessBoard {
         }
     }
 
-    private ChessPiece.PieceType[] setPieceFrame(ChessPiece.PieceType[] arr){
+    private void setPieceFrame(ChessPiece.PieceType[] arr){
         for(int i = 0; i <8; i++){
             arr[i] = ChessPiece.PieceType.PAWN;
         }
@@ -72,7 +72,6 @@ public class ChessBoard {
         arr[13] = ChessPiece.PieceType.BISHOP;
         arr[14] = ChessPiece.PieceType.KNIGHT;
         arr[15] = ChessPiece.PieceType.ROOK;
-        return arr;
     }
 
     @Override
