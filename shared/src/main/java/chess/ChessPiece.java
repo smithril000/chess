@@ -89,8 +89,8 @@ public class ChessPiece {
     private List<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, List<ChessMove> moves){
         //for pawns they can move 2 foward at the start, one if nothing in front, and diagonal if taking
 
-        int row = myPosition.getRow();
-        int col = myPosition.getColumn();
+        int row = myPosition.getRow()+1;
+        int col = myPosition.getColumn()+1;
         //first check if we are at starting position for black and white
         if(row == 2 && piece.getTeamColor() == ChessGame.TeamColor.BLACK){
             //now check if the area is unblocked
@@ -101,8 +101,47 @@ public class ChessPiece {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row + 2, col), null));
             }
         }
-        //now check if we can move foward, not hitting edge of board
+        if(row == 7 && piece.getTeamColor() == ChessGame.TeamColor.WHITE){
+            //now check if the area is unblocked
+            if(board.getPiece(new ChessPosition(row-1, col)) == null) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col), null));
+            }
+            if(board.getPiece(new ChessPosition(row-2, col)) == null){
+                moves.add(new ChessMove(myPosition, new ChessPosition(row + 2, col), null));
+            }
+        }
+        //now check if we can move foward or back, not hitting edge of board
+        int row_dir = 0;
+        if(piece.getTeamColor() == ChessGame.TeamColor.WHITE){
+            row_dir = -1;
+        }else{
+            row_dir = 1;
+        }
+        int start = -1;
+        int end = 1;
+        if(col == 1){
+            start = 0;
+        }else if(col == 8){
+            end = 0;
+        }
+        while(start <= end){
+            ChessPosition pos = new ChessPosition(row + row_dir, col + start);
+            if(moveOrTake(pos, board, piece.getTeamColor())){
+                moves.add(new ChessMove(myPosition, pos, null));
+            }
+            start++;
+        }
 
-        return null;
+        return moves;
+    }
+
+    private Boolean moveOrTake(ChessPosition pos, ChessBoard board, ChessGame.TeamColor color){
+        if(board.getPiece(pos) == null){
+            return true;
+        }else if(board.getPiece(pos).getTeamColor() != color){
+            return true;
+        }else{
+            return false;
+        }
     }
 }
