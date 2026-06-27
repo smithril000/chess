@@ -1,6 +1,8 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -75,6 +77,32 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        //first find out what piece we've got
+        ChessPiece piece = board.getPiece(myPosition);
+        //create our collection
+        List<ChessMove> moves = new ArrayList<>();
+        if(piece.getPieceType() == PieceType.PAWN){
+            moves = pawnMoves(board, myPosition, piece, moves);
+        }
+        return moves;
+    }
+    private List<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, List<ChessMove> moves){
+        //for pawns they can move 2 foward at the start, one if nothing in front, and diagonal if taking
+
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
+        //first check if we are at starting position for black and white
+        if(row == 2 && piece.getTeamColor() == ChessGame.TeamColor.BLACK){
+            //now check if the area is unblocked
+            if(board.getPiece(new ChessPosition(row+1, col)) == null) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col), null));
+            }
+            if(board.getPiece(new ChessPosition(row+2, col)) == null){
+                moves.add(new ChessMove(myPosition, new ChessPosition(row + 2, col), null));
+            }
+        }
+        //now check if we can move foward, not hitting edge of board
+
+        return null;
     }
 }
