@@ -130,7 +130,7 @@ public class ChessPiece {
         }
         while(start <= end){
             ChessPosition pos = new ChessPosition(row + row_dir, col + start);
-            if(moveOrTake(pos, board, piece.getTeamColor())){
+            if(moveOrTake(pos, board, piece.getTeamColor()).equals("true") || moveOrTake(pos, board, piece.getTeamColor()).equals("take")){
                 //our move or take func doesn't really work with pawns, so we need to check manually if they can take
                 //this is if there is nothing in front of them
                 if(col - 1 == pos.getColumn() && board.getPiece(pos) == null ){
@@ -163,16 +163,59 @@ public class ChessPiece {
         return moves;
     }
     private List<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, List<ChessMove> moves){
-
+        //I want to use my move or take function
+        //lets start with moving up - shouldn't matter the color
+        loop_helper(-1, 0, myPosition, board, piece.getTeamColor(), moves);
+        //now down
+        loop_helper(1, 0, myPosition, board, piece.getTeamColor(), moves);
+        //left
+        loop_helper(0, -1, myPosition, board, piece.getTeamColor(), moves);
+        //right
+        loop_helper(0, 1, myPosition, board, piece.getTeamColor(), moves);
         return moves;
+
+
     }
-    private Boolean moveOrTake(ChessPosition pos, ChessBoard board, ChessGame.TeamColor color){
+    private void loop_helper(int row_dir, int col_dir, ChessPosition pos, ChessBoard board, ChessGame.TeamColor color, List<ChessMove> moves){
+        int row = pos.getRow()+1;
+        int col = pos.getColumn()+1;
+        while(row >= 1 && row <= 8 && col >= 1 && col <= 8){
+            if(row == 1 && row_dir == -1){
+                return;
+            }else if(row == 8 && row_dir == 1){
+                return;
+            }
+            if(col == 1 && col_dir == -1){
+                return;
+            }else if(col == 8 && col_dir == 1){
+                return;
+            }
+            ChessPosition newPos = new ChessPosition(row + row_dir, col + col_dir);
+            String check = moveOrTake(newPos, board, color);
+            if(check.equals("true")){
+                //add move
+                moves.add(new ChessMove(pos, newPos, null));
+                row = row + row_dir;
+                col = col + col_dir;
+            }else if(check.equals("take")){
+                //row = row + row_dir;
+                //col = col + col_dir;
+                //add move
+                moves.add(new ChessMove(pos, newPos, null));
+                row = -1;
+            }else{
+                return;
+            }
+        }
+        return;
+    }
+    private String moveOrTake(ChessPosition pos, ChessBoard board, ChessGame.TeamColor color){
         if(board.getPiece(pos) == null){
-            return true;
+            return "true";
         }else if(board.getPiece(pos).getTeamColor() != color){
-            return true;
+            return "take";
         }else{
-            return false;
+            return "false";
         }
     }
 
