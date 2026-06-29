@@ -94,23 +94,25 @@ public class ChessPiece {
         int row = myPosition.getRow()+1;
         int col = myPosition.getColumn()+1;
         //first check if we are at starting position for black and white
-        if(row == 2 && piece.getTeamColor() == ChessGame.TeamColor.BLACK){
+        if(row == 2 && piece.getTeamColor() == ChessGame.TeamColor.WHITE){
             //now check if the area is unblocked
             if(board.getPiece(new ChessPosition(row+1, col)) == null) {
-                moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col), null));
+                //moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col), null));
+                if(board.getPiece(new ChessPosition(row+2, col)) == null){
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 2, col), null));
+                }
             }
-            if(board.getPiece(new ChessPosition(row+2, col)) == null){
-                moves.add(new ChessMove(myPosition, new ChessPosition(row + 2, col), null));
-            }
+
         }
-        if(row == 7 && piece.getTeamColor() == ChessGame.TeamColor.WHITE){
+        if(row == 7 && piece.getTeamColor() == ChessGame.TeamColor.BLACK){
             //now check if the area is unblocked
             if(board.getPiece(new ChessPosition(row-1, col)) == null) {
-                moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col), null));
+                //moves.add(new ChessMove(myPosition, new ChessPosition(row + 1, col), null));
+                if(board.getPiece(new ChessPosition(row-2, col)) == null){
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 2, col), null));
+                }
             }
-            if(board.getPiece(new ChessPosition(row-2, col)) == null){
-                moves.add(new ChessMove(myPosition, new ChessPosition(row + 2, col), null));
-            }
+
         }
         //now check if we can move foward or back, not hitting edge of board
         int row_dir;
@@ -130,25 +132,34 @@ public class ChessPiece {
             ChessPosition pos = new ChessPosition(row + row_dir, col + start);
             if(moveOrTake(pos, board, piece.getTeamColor())){
                 //our move or take func doesn't really work with pawns, so we need to check manually if they can take
+                //this is if there is nothing in front of them
                 if(col - 1 == pos.getColumn() && board.getPiece(pos) == null ){
-                    moves.add(new ChessMove(myPosition, pos, null));
+                    //we need to check if we are promoting
+                    if(pos.getRow() == 7 || pos.getRow() == 0){
+                        moves.add(new ChessMove(myPosition, pos, PieceType.QUEEN));
+                        moves.add(new ChessMove(myPosition, pos, PieceType.BISHOP));
+                        moves.add(new ChessMove(myPosition, pos, PieceType.ROOK));
+                        moves.add(new ChessMove(myPosition, pos, PieceType.KNIGHT));
+                    }else {
+                        moves.add(new ChessMove(myPosition, pos, null));
+                    }
                 }else if(board.getPiece(pos)!= null && board.getPiece(pos).getTeamColor() != piece.getTeamColor() && col-1 != pos.getColumn()){
-                    //we MUST take
-                    moves.add(new ChessMove(myPosition, pos, null));
+                    //we MUST take and check if we promote
+                    if(pos.getRow() == 7 || pos.getRow() == 0) {
+                        moves.add(new ChessMove(myPosition, pos, PieceType.QUEEN));
+                        moves.add(new ChessMove(myPosition, pos, PieceType.BISHOP));
+                        moves.add(new ChessMove(myPosition, pos, PieceType.ROOK));
+                        moves.add(new ChessMove(myPosition, pos, PieceType.KNIGHT));
+                    }else {
+                        moves.add(new ChessMove(myPosition, pos, null));
+                    }
                 }
 
             }
             start++;
         }
-        //check if any of our moves are promotions
-        for(int i = 0; i < moves.size(); i++){
-            if(piece.getTeamColor() == ChessGame.TeamColor.WHITE){
-                //if its white they are moving to 8
-                if(moves.get(i).getEndPosition().getRow() == 8){
 
-                }
-            }
-        }
+
         return moves;
     }
     private List<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, List<ChessMove> moves){
@@ -164,4 +175,5 @@ public class ChessPiece {
             return false;
         }
     }
+
 }
