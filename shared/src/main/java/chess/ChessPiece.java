@@ -83,6 +83,8 @@ public class ChessPiece {
         List<ChessMove> moves = new ArrayList<>();
         if(piece.getPieceType() == PieceType.PAWN){
             moves = pawnMoves(board, myPosition, piece, moves);
+        }else if (piece.getPieceType() == PieceType.ROOK){
+            moves = rookMoves(board, myPosition, piece, moves);
         }
         return moves;
     }
@@ -111,11 +113,11 @@ public class ChessPiece {
             }
         }
         //now check if we can move foward or back, not hitting edge of board
-        int row_dir = 0;
+        int row_dir;
         if(piece.getTeamColor() == ChessGame.TeamColor.WHITE){
-            row_dir = -1;
-        }else{
             row_dir = 1;
+        }else{
+            row_dir = -1;
         }
         int start = -1;
         int end = 1;
@@ -127,14 +129,32 @@ public class ChessPiece {
         while(start <= end){
             ChessPosition pos = new ChessPosition(row + row_dir, col + start);
             if(moveOrTake(pos, board, piece.getTeamColor())){
-                moves.add(new ChessMove(myPosition, pos, null));
+                //our move or take func doesn't really work with pawns, so we need to check manually if they can take
+                if(col - 1 == pos.getColumn() && board.getPiece(pos) == null ){
+                    moves.add(new ChessMove(myPosition, pos, null));
+                }else if(board.getPiece(pos)!= null && board.getPiece(pos).getTeamColor() != piece.getTeamColor() && col-1 != pos.getColumn()){
+                    //we MUST take
+                    moves.add(new ChessMove(myPosition, pos, null));
+                }
+
             }
             start++;
         }
+        //check if any of our moves are promotions
+        for(int i = 0; i < moves.size(); i++){
+            if(piece.getTeamColor() == ChessGame.TeamColor.WHITE){
+                //if its white they are moving to 8
+                if(moves.get(i).getEndPosition().getRow() == 8){
+
+                }
+            }
+        }
+        return moves;
+    }
+    private List<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, List<ChessMove> moves){
 
         return moves;
     }
-
     private Boolean moveOrTake(ChessPosition pos, ChessBoard board, ChessGame.TeamColor color){
         if(board.getPiece(pos) == null){
             return true;
