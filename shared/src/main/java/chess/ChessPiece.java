@@ -85,6 +85,8 @@ public class ChessPiece {
             moves = pawnMoves(board, myPosition, piece, moves);
         }else if (piece.getPieceType() == PieceType.ROOK){
             moves = rookMoves(board, myPosition, piece, moves);
+        }else if(piece.getPieceType() == PieceType.BISHOP){
+            moves = bishopMoves(board, myPosition, piece, moves);
         }
         return moves;
     }
@@ -175,6 +177,18 @@ public class ChessPiece {
         return moves;
 
 
+    }
+    private List<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, List<ChessMove> moves){
+        //up-left
+        loop_helper(-1,-1, myPosition, board, piece.getTeamColor(), moves);
+        //up-right
+        loop_helper(-1,1,myPosition, board, piece.getTeamColor(), moves);
+        //down-right
+        loop_helper(1,1,myPosition, board, piece.getTeamColor(), moves);
+        //downleft
+        loop_helper(1,-1,myPosition, board, piece.getTeamColor(), moves);
+
+        return moves;
     }
     private void loop_helper(int row_dir, int col_dir, ChessPosition pos, ChessBoard board, ChessGame.TeamColor color, List<ChessMove> moves){
         int row = pos.getRow()+1;
