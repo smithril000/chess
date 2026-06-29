@@ -87,6 +87,9 @@ public class ChessPiece {
             moves = rookMoves(board, myPosition, piece, moves);
         }else if(piece.getPieceType() == PieceType.BISHOP){
             moves = bishopMoves(board, myPosition, piece, moves);
+        }else if(piece.getPieceType() == PieceType.QUEEN){
+            rookMoves(board, myPosition, piece, moves);
+            bishopMoves(board, myPosition, piece, moves);
         }
         return moves;
     }
