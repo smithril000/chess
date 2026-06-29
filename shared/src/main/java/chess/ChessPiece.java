@@ -216,7 +216,7 @@ public class ChessPiece {
         loop_helper(2,1, myPosition, board, piece.getTeamColor(), moves, false);
     }
     private void kingMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, List<ChessMove> moves){
-        //up-left
+        //up-left2
         loop_helper(-1,-1, myPosition, board, piece.getTeamColor(), moves, false);
         //up-right
         loop_helper(-1,1,myPosition, board, piece.getTeamColor(), moves, false);
