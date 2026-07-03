@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -11,6 +12,7 @@ import java.util.Collection;
 public class ChessGame {
 
     private TeamColor teamTurn;
+    private ChessBoard board;
     public ChessGame() {
         this.teamTurn = TeamColor.WHITE;
     }
@@ -47,7 +49,10 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece = this.board.getPiece(startPosition);
+        Collection<ChessMove> moves = piece.pieceMoves(this.board, startPosition);
+        //we need to filter which ones don't put us in check
+        return moves;
     }
 
     /**
@@ -67,7 +72,29 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        //we need to check if there are any moves from the opps that can hit the king
+        Collection<ChessMove> moves = new ArrayList<>();
+        ChessPosition kingPos = null;
+        for(int i = 0; i < 64; i++){
+            ChessPosition pos = new ChessPosition(i / 8, i % 8);
+            ChessPiece pieceCheck = this.board.getPiece(pos);
+            if(pieceCheck != null) {
+                if (pieceCheck.getTeamColor() != this.teamTurn) {
+                    //add its possible moves to our moves
+                    moves.addAll(pieceCheck.pieceMoves(this.board, pos));
+                }
+                //we also want to find our king
+                if (pieceCheck.getTeamColor() == this.teamTurn && pieceCheck.getPieceType() == ChessPiece.PieceType.KING) {
+                    kingPos = pos;
+                }
+            }
+        }
+        for(ChessMove move : moves){
+            if(move.getEndPosition() == kingPos){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -97,7 +124,8 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+
+        this.board = board;
     }
 
     /**
@@ -106,6 +134,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return this.board;
     }
 }
