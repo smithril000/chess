@@ -17,6 +17,8 @@ public class ChessGame {
     private ChessBoard board;
     public ChessGame() {
         this.teamTurn = TeamColor.WHITE;
+        this.board = new ChessBoard();
+        this.board.resetBoard();
     }
 
     /**
@@ -78,7 +80,12 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        //we want to add and delete the peice from each move
+        ChessPiece piece = this.board.getPiece(move.getStartPosition());
+        //add
+        this.board.addPiece(move.getEndPosition(), piece);
+        //delete
+        this.board.removePiece(move.getStartPosition());
     }
 
     /**
@@ -157,6 +164,12 @@ public class ChessGame {
         temp.addPiece(move.getEndPosition(), piece);
         //delete
         temp.removePiece(move.getEndPosition());
+        //change the move
+        if(this.teamTurn == TeamColor.WHITE){
+            this.teamTurn = TeamColor.BLACK;
+        }else{
+            this.teamTurn = TeamColor.WHITE;
+        }
     }
 
 
