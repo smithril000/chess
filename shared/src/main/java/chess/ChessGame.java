@@ -2,7 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+
 import java.util.Objects;
 
 /**
@@ -78,21 +78,11 @@ public class ChessGame {
             //make the move in a temp board
             ChessBoard temp = this.board.copyBoard();
             //check if we are in check and move puts us out of check
-            if(checkHelper(piece.getTeamColor(), temp)){
-                makeTempMove(move, temp);
-                if(!checkHelper(piece.getTeamColor(), temp)){
-                    //still in check - not valid
-                    goodMoves.add(move);
-                }
-            }else {
-                makeTempMove(move, temp);
-
-
-                //check if the move puts us in check
-                if (!checkHelper(piece.getTeamColor(), temp)) {
-                    //cant use this move
-                    goodMoves.add(move);
-                }
+            //cant use this move
+            makeTempMove(move, temp);
+            if(!checkHelper(piece.getTeamColor(), temp)){
+                //still in check - not valid
+                goodMoves.add(move);
             }
         }
         return goodMoves;
@@ -178,7 +168,6 @@ public class ChessGame {
     public boolean isInCheckmate(TeamColor teamColor) {
         //this only works if the turn is the teamcolor implemented
         Collection<ChessMove> moves = new ArrayList<>();
-        ChessPosition kingPos = null;
         for(int i = 0; i < 64; i++){
             ChessPosition pos = new ChessPosition((i / 8)+1, (i % 8)+1);
             ChessPiece pieceCheck = this.board.getPiece(pos);
