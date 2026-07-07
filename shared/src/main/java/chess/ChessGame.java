@@ -3,6 +3,7 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A class that can manage a chess game, making moves on a board
@@ -32,6 +33,20 @@ public class ChessGame {
      */
     public void setTeamTurn(TeamColor team) {
         this.teamTurn = team;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessGame chessGame = (ChessGame) o;
+        return teamTurn == chessGame.teamTurn && Objects.equals(board, chessGame.board);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(teamTurn, board);
     }
 
     /**
@@ -73,16 +88,20 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
+        return checkHelper(teamColor, this.board);
+    }
+
+    private boolean checkHelper(TeamColor color, ChessBoard board){
         //we need to check if there are any moves from the opps that can hit the king
         Collection<ChessMove> moves = new ArrayList<>();
         ChessPosition kingPos = null;
         for(int i = 0; i < 64; i++){
             ChessPosition pos = new ChessPosition(i / 8, i % 8);
-            ChessPiece pieceCheck = this.board.getPiece(pos);
+            ChessPiece pieceCheck = board.getPiece(pos);
             if(pieceCheck != null) {
                 if (pieceCheck.getTeamColor() != this.teamTurn) {
                     //add its possible moves to our moves
-                    moves.addAll(pieceCheck.pieceMoves(this.board, pos));
+                    moves.addAll(pieceCheck.pieceMoves(board, pos));
                 }
                 //we also want to find our king
                 if (pieceCheck.getTeamColor() == this.teamTurn && pieceCheck.getPieceType() == ChessPiece.PieceType.KING) {
@@ -120,14 +139,24 @@ public class ChessGame {
         }
         for(ChessMove move : moves){
             //we want to test making the move to see if we are still in check
-
+            //create a new board
+            ChessBoard temp = new ChessBoard(this.board);
+            makeTempMove(move, temp);
+            //check if we are still in check
+            if(!checkHelper(teamColor, temp)){
+                return false;
+            }
         }
-        return false;
+        return true;
     }
 
-    private void makeTempMove(){
-        //create a new board
-        ChessBoard temp = new ChessBoard();
+    private void makeTempMove(ChessMove move, ChessBoard temp){
+        //we want to add and delete the peice from each move
+        ChessPiece piece = temp.getPiece(move.getStartPosition());
+        //add
+        temp.addPiece(move.getEndPosition(), piece);
+        //delete
+        temp.removePiece(move.getEndPosition());
     }
 
 
