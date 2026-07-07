@@ -68,6 +68,7 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = this.board.getPiece(startPosition);
+        if(piece == null)return null;
         Collection<ChessMove> moves = piece.pieceMoves(this.board, startPosition);
         Collection<ChessMove> goodMoves = new ArrayList<>();
         //we need to filter which ones don't put us in check
@@ -106,7 +107,7 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         //check if move is valid
         Collection<ChessMove> moves = validMoves(move.getStartPosition());
-        if(!moves.contains(move)){
+        if(moves == null || !moves.contains(move)){
             throw new InvalidMoveException("Cant make that move");
         }
         //we want to add and delete the peice from each move
