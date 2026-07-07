@@ -112,6 +112,10 @@ public class ChessGame {
         }
         //we want to add and delete the peice from each move
         ChessPiece piece = this.board.getPiece(move.getStartPosition());
+        //check if we are promoting
+        if(piece.getPieceType() == ChessPiece.PieceType.PAWN && move.getPromotionPiece()!=null){
+            piece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
+        }
         //add
         this.board.addPiece(move.getEndPosition(), piece);
         //delete
