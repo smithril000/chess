@@ -69,6 +69,7 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = this.board.getPiece(startPosition);
         Collection<ChessMove> moves = piece.pieceMoves(this.board, startPosition);
+        Collection<ChessMove> goodMoves = new ArrayList<>();
         //we need to filter which ones don't put us in check
         //we can start to see if it is even our turn
         if(piece.getTeamColor() != this.teamTurn)return null;
@@ -78,22 +79,22 @@ public class ChessGame {
             //check if we are in check and move puts us out of check
             if(checkHelper(piece.getTeamColor(), temp)){
                 makeTempMove(move, temp);
-                if(checkHelper(piece.getTeamColor(), temp)){
+                if(!checkHelper(piece.getTeamColor(), temp)){
                     //still in check - not valid
-                    moves.remove(move);
+                    goodMoves.add(move);
                 }
             }else {
                 makeTempMove(move, temp);
 
 
                 //check if the move puts us in check
-                if (checkHelper(piece.getTeamColor(), temp)) {
+                if (!checkHelper(piece.getTeamColor(), temp)) {
                     //cant use this move
-                    moves.remove(move);
+                    goodMoves.add(move);
                 }
             }
         }
-        return moves;
+        return goodMoves;
     }
 
     /**
@@ -151,7 +152,7 @@ public class ChessGame {
             }
         }
         for(ChessMove move : moves){
-            if(move.getEndPosition() == kingPos){
+            if(move.getEndPosition().getRow() == kingPos.getRow() && move.getEndPosition().getColumn() == kingPos.getColumn()){
                 return true;
             }
         }
