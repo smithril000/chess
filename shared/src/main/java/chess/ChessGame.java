@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * A class that can manage a chess game, making moves on a board
@@ -104,8 +105,32 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        //this only works if the turn is the teamcolor implemented
+        Collection<ChessMove> moves = new ArrayList<>();
+        ChessPosition kingPos = null;
+        for(int i = 0; i < 64; i++){
+            ChessPosition pos = new ChessPosition(i / 8, i % 8);
+            ChessPiece pieceCheck = this.board.getPiece(pos);
+            if(pieceCheck != null) {
+                if (pieceCheck.getTeamColor() != this.teamTurn) {
+                    //add its possible moves to our moves
+                    moves.addAll(pieceCheck.pieceMoves(this.board, pos));
+                }
+            }
+        }
+        for(ChessMove move : moves){
+            //we want to test making the move to see if we are still in check
+
+        }
+        return false;
     }
+
+    private void makeTempMove(){
+        //create a new board
+        ChessBoard temp = new ChessBoard();
+    }
+
+
 
     /**
      * Determines if the given team is in stalemate, which here is defined as having
