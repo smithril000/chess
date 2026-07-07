@@ -73,10 +73,10 @@ public class ChessGame {
         Collection<ChessMove> goodMoves = new ArrayList<>();
         //we need to filter which ones don't put us in check
         //we can start to see if it is even our turn
-        if(piece.getTeamColor() != this.teamTurn)return null;
+        //if(piece.getTeamColor() != this.teamTurn)return null;
         for(ChessMove move : moves){
             //make the move in a temp board
-            ChessBoard temp = new ChessBoard(this.board);
+            ChessBoard temp = this.board.copyBoard();
             //check if we are in check and move puts us out of check
             if(checkHelper(piece.getTeamColor(), temp)){
                 makeTempMove(move, temp);
@@ -112,6 +112,10 @@ public class ChessGame {
         }
         //we want to add and delete the peice from each move
         ChessPiece piece = this.board.getPiece(move.getStartPosition());
+        //check if we are out of turn
+        if(piece.getTeamColor() != this.teamTurn){
+            throw new InvalidMoveException("Cant make that move");
+        }
         //check if we are promoting
         if(piece.getPieceType() == ChessPiece.PieceType.PAWN && move.getPromotionPiece()!=null){
             piece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
@@ -146,17 +150,18 @@ public class ChessGame {
             ChessPosition pos = new ChessPosition((i / 8)+1, (i % 8)+1);
             ChessPiece pieceCheck = board.getPiece(pos);
             if(pieceCheck != null) {
-                if (pieceCheck.getTeamColor() != this.teamTurn) {
+                if (pieceCheck.getTeamColor() != color) {
                     //add its possible moves to our moves
                     moves.addAll(pieceCheck.pieceMoves(board, pos));
                 }
                 //we also want to find our king
-                if (pieceCheck.getTeamColor() == this.teamTurn && pieceCheck.getPieceType() == ChessPiece.PieceType.KING) {
+                if (pieceCheck.getTeamColor() == color && pieceCheck.getPieceType() == ChessPiece.PieceType.KING) {
                     kingPos = pos;
                 }
             }
         }
         for(ChessMove move : moves){
+            assert kingPos != null;
             if(move.getEndPosition().getRow() == kingPos.getRow() && move.getEndPosition().getColumn() == kingPos.getColumn()){
                 return true;
             }
@@ -175,10 +180,10 @@ public class ChessGame {
         Collection<ChessMove> moves = new ArrayList<>();
         ChessPosition kingPos = null;
         for(int i = 0; i < 64; i++){
-            ChessPosition pos = new ChessPosition(i / 8, i % 8);
+            ChessPosition pos = new ChessPosition((i / 8)+1, (i % 8)+1);
             ChessPiece pieceCheck = this.board.getPiece(pos);
             if(pieceCheck != null) {
-                if (pieceCheck.getTeamColor() != this.teamTurn) {
+                if (pieceCheck.getTeamColor() == teamColor) {
                     //add its possible moves to our moves
                     moves.addAll(pieceCheck.pieceMoves(this.board, pos));
                 }
@@ -187,7 +192,7 @@ public class ChessGame {
         for(ChessMove move : moves){
             //we want to test making the move to see if we are still in check
             //create a new board
-            ChessBoard temp = new ChessBoard(this.board);
+            ChessBoard temp = this.board.copyBoard();
             makeTempMove(move, temp);
             //check if we are still in check
             if(!checkHelper(teamColor, temp)){
@@ -203,13 +208,8 @@ public class ChessGame {
         //add
         temp.addPiece(move.getEndPosition(), piece);
         //delete
-        temp.removePiece(move.getEndPosition());
-        //change the move
-        if(this.teamTurn == TeamColor.WHITE){
-            this.teamTurn = TeamColor.BLACK;
-        }else{
-            this.teamTurn = TeamColor.WHITE;
-        }
+        temp.removePiece(move.getStartPosition());
+
     }
 
 

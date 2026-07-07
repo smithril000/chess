@@ -14,8 +14,8 @@ public class ChessBoard {
     public ChessBoard() {
         //resetBoard();
     }
-    public ChessBoard(ChessBoard copyBoard){
-        this.squares = copyBoard.getSquares();
+    public ChessBoard(ChessPiece[][] newSquares){
+        this.squares = newSquares;
     }
 
     /**
@@ -30,7 +30,16 @@ public class ChessBoard {
     }
 
     public ChessPiece[][] getSquares(){
-        return this.squares;
+        return this.squares.clone();
+    }
+    public ChessBoard copyBoard(){
+        ChessBoard copy = new ChessBoard();
+        for(int x = 0; x < 8; x++){
+            for(int y = 0; y < 8; y++){
+                copy.squares[y][x] = this.squares[y][x];
+            }
+        }
+        return copy;
     }
 
     public void removePiece(ChessPosition pos){
