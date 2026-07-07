@@ -70,6 +70,29 @@ public class ChessGame {
         ChessPiece piece = this.board.getPiece(startPosition);
         Collection<ChessMove> moves = piece.pieceMoves(this.board, startPosition);
         //we need to filter which ones don't put us in check
+        //we can start to see if it is even our turn
+        if(piece.getTeamColor() != this.teamTurn)return null;
+        for(ChessMove move : moves){
+            //make the move in a temp board
+            ChessBoard temp = new ChessBoard(this.board);
+            //check if we are in check and move puts us out of check
+            if(checkHelper(piece.getTeamColor(), temp)){
+                makeTempMove(move, temp);
+                if(checkHelper(piece.getTeamColor(), temp)){
+                    //still in check - not valid
+                    moves.remove(move);
+                }
+            }else {
+                makeTempMove(move, temp);
+
+
+                //check if the move puts us in check
+                if (checkHelper(piece.getTeamColor(), temp)) {
+                    //cant use this move
+                    moves.remove(move);
+                }
+            }
+        }
         return moves;
     }
 
@@ -80,12 +103,23 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        //check if move is valid
+        Collection<ChessMove> moves = validMoves(move.getStartPosition());
+        if(!moves.contains(move)){
+            throw new InvalidMoveException("Cant make that move");
+        }
         //we want to add and delete the peice from each move
         ChessPiece piece = this.board.getPiece(move.getStartPosition());
         //add
         this.board.addPiece(move.getEndPosition(), piece);
         //delete
         this.board.removePiece(move.getStartPosition());
+        //change the move
+        if(this.teamTurn == TeamColor.WHITE){
+            this.teamTurn = TeamColor.BLACK;
+        }else{
+            this.teamTurn = TeamColor.WHITE;
+        }
     }
 
     /**
@@ -103,7 +137,7 @@ public class ChessGame {
         Collection<ChessMove> moves = new ArrayList<>();
         ChessPosition kingPos = null;
         for(int i = 0; i < 64; i++){
-            ChessPosition pos = new ChessPosition(i / 8, i % 8);
+            ChessPosition pos = new ChessPosition((i / 8)+1, (i % 8)+1);
             ChessPiece pieceCheck = board.getPiece(pos);
             if(pieceCheck != null) {
                 if (pieceCheck.getTeamColor() != this.teamTurn) {
