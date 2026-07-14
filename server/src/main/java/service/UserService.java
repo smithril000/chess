@@ -2,6 +2,7 @@ package service;
 
 import dataaccess.DataAccessException;
 import dataaccess.MemoryDataAccess;
+import dataaccess.ResponseException;
 import model.AuthData;
 import model.UserData;
 
@@ -12,7 +13,14 @@ public class UserService {
 
     }
 
-    public static AuthData register(UserData user) throws DataAccessException {
+    public static AuthData register(UserData user) throws ResponseException {
+        //first do some checks
+        if(user.username() == null || user.password() == null){
+            throw new ResponseException(400, "Error: bad request");
+        }
+        else if(MemoryDataAccess.getUser(user.username())!= null){
+            throw new ResponseException(403, "Error: already exists");
+        }
         //we need to creat both the userdata and the authdata
         MemoryDataAccess.createUserDate(user);
         //create the auth data

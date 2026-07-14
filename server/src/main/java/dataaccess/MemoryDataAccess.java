@@ -23,4 +23,8 @@ public class MemoryDataAccess {
         userDataList = new HashMap<>();
         authDataList = new HashMap<>();
     }
+
+    public static UserData getUser(String username) {
+        return userDataList.get(username);
+    }
 }

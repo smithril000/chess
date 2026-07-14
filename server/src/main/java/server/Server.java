@@ -2,6 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
+import dataaccess.ResponseException;
 import io.javalin.*;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
@@ -42,8 +43,9 @@ public class Server {
             AuthData auth = UserService.register(user);
             //return
             ctx.result(serialize.toJson(auth));
-        } catch (DataAccessException ex) {
-            ctx.status(HttpStatus.valueOf("400"));
+        } catch (ResponseException ex) {
+            ctx.status(ex.getCode());
+            ctx.result(ex.toJson());
         }
     }
 }
