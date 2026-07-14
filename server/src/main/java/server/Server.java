@@ -28,6 +28,9 @@ public class Server {
     public void stop() {
         javalin.stop();
     }
+    private void clear(Context ctx){
+        UserService.clear();
+    }
 
     private static void register(Context ctx) {
         //create a UserData from the ctx
