@@ -5,6 +5,7 @@ import dataaccess.DataAccessException;
 import io.javalin.*;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
+import model.AuthData;
 import model.UserData;
 import service.UserService;
 
@@ -34,7 +35,9 @@ public class Server {
         String stuff = ctx.body();
         UserData user = serialize.fromJson(stuff, UserData.class);
         try {
-            UserService.register(user);
+            AuthData auth = UserService.register(user);
+            //return
+            ctx.result(serialize.toJson(auth));
         } catch (DataAccessException ex) {
             ctx.status(HttpStatus.valueOf("400"));
         }

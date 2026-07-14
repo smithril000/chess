@@ -12,7 +12,7 @@ public class UserService {
 
     }
 
-    public static void register(UserData user) throws DataAccessException {
+    public static AuthData register(UserData user) throws DataAccessException {
         //we need to creat both the userdata and the authdata
         MemoryDataAccess.createUserDate(user);
         //create the auth data
@@ -20,6 +20,7 @@ public class UserService {
         //we can create the authData here
         AuthData authData = new AuthData(auth, user.username());
         MemoryDataAccess.createAuthData(authData);
+        return authData;
     }
 
     public static String generateToken() {
