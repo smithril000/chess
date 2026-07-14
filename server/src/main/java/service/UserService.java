@@ -18,7 +18,7 @@ public class UserService {
         //create the auth data
         String auth = generateToken();
         //we can create the authData here
-        AuthData authData = new AuthData(auth, user.username());
+        AuthData authData = new AuthData(user.username(), auth);
         MemoryDataAccess.createAuthData(authData);
         return authData;
     }
