@@ -1,11 +1,15 @@
 package service;
 
+import dataaccess.DataAccessException;
+import dataaccess.MemoryDataAccess;
+import model.UserData;
+
 public class UserService {
     public UserService(){
 
     }
 
-    public String register(){
-        return null;
+    public static void register(UserData user) throws DataAccessException {
+        MemoryDataAccess.createUserDate(user);
     }
 }
