@@ -25,7 +25,6 @@ public class Server {
 
     private void register(Context ctx){
         //test
-        int i = 0;
-        ctx.result("test");
+
     }
 }
