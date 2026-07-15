@@ -74,6 +74,9 @@ public class UserService {
 
     public static void createGame(GameName gameNameData) throws ResponseException {
         String name = gameNameData.gameName();
-        System.out.println(name);
+        if(name == null){
+            throw new ResponseException(400, "Error, bad request");
+        }
+        MemoryDataAccess.createGame(name);
     }
 }

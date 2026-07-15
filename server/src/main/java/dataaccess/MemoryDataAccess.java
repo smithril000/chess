@@ -1,6 +1,7 @@
 package dataaccess;
 
 import model.AuthData;
+import model.Game;
 import model.UserData;
 
 import java.util.HashMap;
@@ -11,6 +12,8 @@ import java.util.Objects;
 public class MemoryDataAccess {
     private static HashMap<String, UserData> userDataList = new HashMap<>();
     private static HashMap<String, AuthData> authDataList = new HashMap<>();
+    private static int gameId = 0;
+    private static HashMap<String, Game> gameList = new HashMap<>();
 
     public static void createUserDate(UserData user) {
         userDataList.put(user.username(), user);
@@ -43,5 +46,13 @@ public class MemoryDataAccess {
 
     public static void removeFromAuths(String username) {
         authDataList.remove(username);
+    }
+
+    public static void createGame(String name) {
+        //for now we wil just make this a record
+        gameId++;
+        Game game = new Game(gameId, null, null, name);
+        gameList.put(name, game);
+        System.out.println("wow");
     }
 }
