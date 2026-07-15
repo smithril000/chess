@@ -4,9 +4,7 @@ import dataaccess.MemoryDataAccess;
 import dataaccess.ResponseException;
 import model.*;
 
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 public class UserService {
     public UserService(){
@@ -89,7 +87,13 @@ public class UserService {
         MemoryDataAccess.joinGame(color, id, username);
     }
 
-    public static HashMap<Integer, Game> getGames() {
-        return MemoryDataAccess.getGames();
+    public static GamesReturned getGames() {
+        var games = MemoryDataAccess.getGames();
+        //we need to nly get the values, not the keys
+        List<Game> gamesToReturn = new ArrayList<>();
+        for(HashMap.Entry<Integer, Game> entry : games.entrySet()){
+            gamesToReturn.add(entry.getValue());
+        }
+        return new GamesReturned(gamesToReturn);
     }
 }

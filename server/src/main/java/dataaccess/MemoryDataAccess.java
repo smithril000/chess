@@ -67,9 +67,6 @@ public class MemoryDataAccess {
 
         gameList.remove(id);
         gameList.put(id, newGame);
-        System.out.println(authDataList);
-        System.out.println(newGame);
-        System.out.println(username);
     }
 
     public static HashMap<Integer, Game> getGames() {

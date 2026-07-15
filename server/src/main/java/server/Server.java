@@ -38,6 +38,7 @@ public class Server {
             //confirmed auth
             //now just get games
             var games = UserService.getGames();
+            System.out.println(games);
             ctx.result(serialize.toJson(games));
         }catch(ResponseException ex){
             ctx.status(ex.getCode());
