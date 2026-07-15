@@ -22,7 +22,24 @@ public class Server {
         javalin.post("user", ctx -> register(ctx));
         javalin.delete("/db", ctx -> clear(ctx));
         javalin.post("/session", ctx -> login(ctx));
-        javalin.delete("session", ctx -> logout(ctx));
+        javalin.delete("/session", ctx -> logout(ctx));
+        javalin.post("/game", ctx -> createGame(ctx));
+    }
+
+    private void createGame(@NotNull Context ctx) {
+        var serialize = new Gson();
+        String stuff = ctx.body();
+        //we need to check auth
+        String auth = ctx.header("authorization");
+        try{
+            UserService.checkAuth(auth);
+        }catch(ResponseException ex){
+            ctx.status(ex.getCode());
+            ctx.result(ex.toJson());
+        }
+        //now we have checked the auth
+        //so now we send off the game to be created
+
     }
 
     private void logout(@NotNull Context ctx) {

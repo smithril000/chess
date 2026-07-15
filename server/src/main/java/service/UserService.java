@@ -63,4 +63,11 @@ public class UserService {
         //now that we found the auth we can remove
         MemoryDataAccess.removeFromAuths(username);
     }
+    public static void checkAuth(String auth) throws ResponseException{
+        //make sure we have auth in the db
+        String username =  MemoryDataAccess.getUsernameByAuth(auth);
+        if(username == null){
+            throw new ResponseException(401, "Error, something went wrong");
+        }
+    }
 }
