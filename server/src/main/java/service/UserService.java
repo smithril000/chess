@@ -42,7 +42,7 @@ public class UserService {
         if(userData.username() == null || userData.password() == null){ // no user or pass entered
             throw new ResponseException(400, "Error, bad request");
         }else if(MemoryDataAccess.getUser(userData.username())== null){
-            throw new ResponseException(400, "Error, bad request");
+            throw new ResponseException(401, "Error, bad request");
         }else if(!Objects.equals(MemoryDataAccess.getUser(userData.username()).password(), userData.password())){
             throw new ResponseException(401, "Error, unauthorized");
         }
@@ -82,6 +82,10 @@ public class UserService {
         int id = join.gameID();
         if(id == 0){
             throw new ResponseException(400, "Error, bad request");
+        }else if(!Objects.equals(color, "WHITE")){
+            if(!Objects.equals(color, "BLACK")){
+                throw new ResponseException(400, "Error, bad request");
+            }
         }
         String username = MemoryDataAccess.getUsernameByAuth(auth);
         MemoryDataAccess.joinGame(color, id, username);
