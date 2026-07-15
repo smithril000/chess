@@ -71,4 +71,8 @@ public class MemoryDataAccess {
         System.out.println(newGame);
         System.out.println(username);
     }
+
+    public static HashMap<Integer, Game> getGames() {
+        return gameList;
+    }
 }

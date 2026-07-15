@@ -4,6 +4,7 @@ import dataaccess.MemoryDataAccess;
 import dataaccess.ResponseException;
 import model.*;
 
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -86,5 +87,9 @@ public class UserService {
         }
         String username = MemoryDataAccess.getUsernameByAuth(auth);
         MemoryDataAccess.joinGame(color, id, username);
+    }
+
+    public static HashMap<Integer, Game> getGames() {
+        return MemoryDataAccess.getGames();
     }
 }

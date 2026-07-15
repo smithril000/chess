@@ -27,6 +27,22 @@ public class Server {
         javalin.delete("/session", ctx -> logout(ctx));
         javalin.post("/game", ctx -> createGame(ctx));
         javalin.put("/game", ctx -> joinGame(ctx));
+        javalin.get("/game", ctx -> getGames(ctx));
+    }
+
+    private void getGames(@NotNull Context ctx) {
+        var serialize = new Gson();
+        var auth = ctx.header("authorization");
+        try{
+            UserService.checkAuth(auth);
+            //confirmed auth
+            //now just get games
+            var games = UserService.getGames();
+            ctx.result(serialize.toJson(games));
+        }catch(ResponseException ex){
+            ctx.status(ex.getCode());
+            ctx.result(ex.toJson());
+        }
     }
 
     private void joinGame(@NotNull Context ctx) {
