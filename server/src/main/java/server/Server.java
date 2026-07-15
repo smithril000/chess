@@ -7,6 +7,7 @@ import io.javalin.*;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import model.AuthData;
+import model.GameName;
 import model.UserData;
 import org.jetbrains.annotations.NotNull;
 import service.UserService;
@@ -30,6 +31,7 @@ public class Server {
         var serialize = new Gson();
         String stuff = ctx.body();
         //we need to check auth
+        GameName gameName = serialize.fromJson(stuff, GameName.class);
         String auth = ctx.header("authorization");
         try{
             UserService.checkAuth(auth);
@@ -39,7 +41,12 @@ public class Server {
         }
         //now we have checked the auth
         //so now we send off the game to be created
-
+        try{
+            UserService.createGame(gameName);
+        }catch(ResponseException ex){
+            ctx.status(ex.getCode());
+            ctx.result(ex.toJson());
+        }
     }
 
     private void logout(@NotNull Context ctx) {

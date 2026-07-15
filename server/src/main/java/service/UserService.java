@@ -3,6 +3,7 @@ package service;
 import dataaccess.MemoryDataAccess;
 import dataaccess.ResponseException;
 import model.AuthData;
+import model.GameName;
 import model.UserData;
 
 import java.util.Objects;
@@ -69,5 +70,10 @@ public class UserService {
         if(username == null){
             throw new ResponseException(401, "Error, something went wrong");
         }
+    }
+
+    public static void createGame(GameName gameNameData) throws ResponseException {
+        String name = gameNameData.gameName();
+        System.out.println(name);
     }
 }
