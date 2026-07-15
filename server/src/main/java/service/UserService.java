@@ -1,11 +1,11 @@
 package service;
 
-import dataaccess.DataAccessException;
 import dataaccess.MemoryDataAccess;
 import dataaccess.ResponseException;
 import model.AuthData;
 import model.UserData;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class UserService {
@@ -37,5 +37,30 @@ public class UserService {
 
     public static void clear() {
         MemoryDataAccess.clear();
+    }
+
+    public static AuthData login(UserData userData) throws ResponseException{
+        //do checks
+        if(userData.username() == null || userData.password() == null){ // no user or pass entered
+            throw new ResponseException(400, "Error, bad request");
+        }else if(MemoryDataAccess.getUser(userData.username())== null){
+            throw new ResponseException(400, "Error, bad request");
+        }else if(!Objects.equals(MemoryDataAccess.getUser(userData.username()).password(), userData.password())){
+            throw new ResponseException(401, "Error, unauthorized");
+        }
+        //create new auth
+        var auth = generateToken();
+        var authData = new AuthData(userData.username(), auth);
+        return authData;
+    }
+
+    public static void logout(String auth) throws ResponseException {
+        //make sure we have auth in the db
+        String username =  MemoryDataAccess.getUsernameByAuth(auth);
+        if(username == null){
+            throw new ResponseException(401, "Error, something went wrong");
+        }
+        //now that we found the auth we can remove
+        MemoryDataAccess.removeFromAuths(username);
     }
 }

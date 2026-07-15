@@ -8,6 +8,7 @@ import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import model.AuthData;
 import model.UserData;
+import org.jetbrains.annotations.NotNull;
 import service.UserService;
 
 public class Server {
@@ -20,6 +21,22 @@ public class Server {
         // Register your endpoints and exception handlers here.
         javalin.post("user", ctx -> register(ctx));
         javalin.delete("/db", ctx -> clear(ctx));
+        javalin.post("/session", ctx -> login(ctx));
+        javalin.delete("session", ctx -> logout(ctx));
+    }
+
+    private void logout(@NotNull Context ctx) {
+        var serialize = new Gson();
+        String stuff = ctx.body();
+        //we have to grab the auth from the header
+        var auth = ctx.header("authorization");
+        try{
+            UserService.logout(auth);
+        }catch(ResponseException ex){
+            ctx.status(ex.getCode());
+            ctx.result(ex.toJson());
+
+        }
     }
 
     public int run(int desiredPort) {
@@ -32,6 +49,20 @@ public class Server {
     }
     private void clear(Context ctx){
         UserService.clear();
+    }
+
+    public static void login(Context ctx){
+        //this time we are getting username and pass
+        var serialize = new Gson();
+        String stuff = ctx.body();
+        var userData = serialize.fromJson(stuff, UserData.class);
+        try {
+            var authData = UserService.login(userData);
+            ctx.result(serialize.toJson(authData));
+        } catch (ResponseException ex) {
+            ctx.status(ex.getCode());
+            ctx.result(ex.toJson());
+        }
     }
 
     private static void register(Context ctx) {
