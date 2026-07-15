@@ -95,12 +95,18 @@ public class Server {
         String stuff = ctx.body();
         //we have to grab the auth from the header
         var auth = ctx.header("authorization");
-        try{
-            UserService.logout(auth);
-        }catch(ResponseException ex){
+        try {
+            UserService.checkAuth(auth);
+            try {
+                UserService.logout(auth);
+            } catch (ResponseException ex) {
+                ctx.status(ex.getCode());
+                ctx.result(ex.toJson());
+
+            }
+        }catch(ResponseException ex) {
             ctx.status(ex.getCode());
             ctx.result(ex.toJson());
-
         }
     }
 

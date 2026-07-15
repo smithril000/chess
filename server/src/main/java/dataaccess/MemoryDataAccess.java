@@ -27,6 +27,8 @@ public class MemoryDataAccess {
     public static void clear() {
         userDataList = new HashMap<>();
         authDataList = new HashMap<>();
+        gameId = 0;
+        gameList = new HashMap<>();
     }
 
     public static UserData getUser(String username) {
@@ -46,6 +48,7 @@ public class MemoryDataAccess {
 
     public static void removeFromAuths(String username) {
         authDataList.remove(username);
+        System.out.println(authDataList);
     }
 
     public static GameID createGame(String name) {
