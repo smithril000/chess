@@ -2,10 +2,10 @@ package dataaccess;
 
 import model.AuthData;
 import model.Game;
+import model.GameID;
 import model.UserData;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 //THIS IS TEMP FOR BEFORE DB
@@ -48,11 +48,11 @@ public class MemoryDataAccess {
         authDataList.remove(username);
     }
 
-    public static void createGame(String name) {
+    public static GameID createGame(String name) {
         //for now we wil just make this a record
         gameId++;
         Game game = new Game(gameId, null, null, name);
         gameList.put(name, game);
-        System.out.println("wow");
+        return new GameID(gameId);
     }
 }

@@ -3,6 +3,7 @@ package service;
 import dataaccess.MemoryDataAccess;
 import dataaccess.ResponseException;
 import model.AuthData;
+import model.GameID;
 import model.GameName;
 import model.UserData;
 
@@ -72,11 +73,11 @@ public class UserService {
         }
     }
 
-    public static void createGame(GameName gameNameData) throws ResponseException {
+    public static GameID createGame(GameName gameNameData) throws ResponseException {
         String name = gameNameData.gameName();
         if(name == null){
             throw new ResponseException(400, "Error, bad request");
         }
-        MemoryDataAccess.createGame(name);
+        return MemoryDataAccess.createGame(name);
     }
 }

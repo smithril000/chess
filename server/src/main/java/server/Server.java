@@ -35,18 +35,20 @@ public class Server {
         String auth = ctx.header("authorization");
         try{
             UserService.checkAuth(auth);
+            //now we have checked the auth
+            //so now we send off the game to be created
+            try{
+                var gameIdObject = UserService.createGame(gameName);
+                ctx.result(serialize.toJson(gameIdObject));
+            }catch(ResponseException ex){
+                ctx.status(ex.getCode());
+                ctx.result(ex.toJson());
+            }
         }catch(ResponseException ex){
             ctx.status(ex.getCode());
             ctx.result(ex.toJson());
         }
-        //now we have checked the auth
-        //so now we send off the game to be created
-        try{
-            UserService.createGame(gameName);
-        }catch(ResponseException ex){
-            ctx.status(ex.getCode());
-            ctx.result(ex.toJson());
-        }
+
     }
 
     private void logout(@NotNull Context ctx) {
