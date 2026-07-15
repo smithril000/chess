@@ -2,10 +2,7 @@ package service;
 
 import dataaccess.MemoryDataAccess;
 import dataaccess.ResponseException;
-import model.AuthData;
-import model.GameID;
-import model.GameName;
-import model.UserData;
+import model.*;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -79,5 +76,15 @@ public class UserService {
             throw new ResponseException(400, "Error, bad request");
         }
         return MemoryDataAccess.createGame(name);
+    }
+
+    public static void joinGame(JoinGameRequest join, String auth) throws ResponseException {
+        String color = join.playerColor();
+        int id = join.gameID();
+        if(id == 0){
+            throw new ResponseException(400, "Error, bad request");
+        }
+        String username = MemoryDataAccess.getUsernameByAuth(auth);
+        MemoryDataAccess.joinGame(color, id, username);
     }
 }

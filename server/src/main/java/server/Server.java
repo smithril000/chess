@@ -8,6 +8,7 @@ import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import model.AuthData;
 import model.GameName;
+import model.JoinGameRequest;
 import model.UserData;
 import org.jetbrains.annotations.NotNull;
 import service.UserService;
@@ -25,6 +26,27 @@ public class Server {
         javalin.post("/session", ctx -> login(ctx));
         javalin.delete("/session", ctx -> logout(ctx));
         javalin.post("/game", ctx -> createGame(ctx));
+        javalin.put("/game", ctx -> joinGame(ctx));
+    }
+
+    private void joinGame(@NotNull Context ctx) {
+        var serialize = new Gson();
+        String stuff = ctx.body();
+        JoinGameRequest join = serialize.fromJson(stuff, JoinGameRequest.class);
+        String auth = ctx.header("authorization");
+        try{
+            UserService.checkAuth(auth);
+            try{
+                UserService.joinGame(join, auth);
+            }catch(ResponseException ex){
+                ctx.status(ex.getCode());
+                ctx.result(ex.toJson());
+            }
+        } catch (ResponseException ex) {
+            ctx.status(ex.getCode());
+            ctx.result(ex.toJson());
+        }
+
     }
 
     private void createGame(@NotNull Context ctx) {

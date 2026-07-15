@@ -13,7 +13,7 @@ public class MemoryDataAccess {
     private static HashMap<String, UserData> userDataList = new HashMap<>();
     private static HashMap<String, AuthData> authDataList = new HashMap<>();
     private static int gameId = 0;
-    private static HashMap<String, Game> gameList = new HashMap<>();
+    private static HashMap<Integer, Game> gameList = new HashMap<>();
 
     public static void createUserDate(UserData user) {
         userDataList.put(user.username(), user);
@@ -38,7 +38,7 @@ public class MemoryDataAccess {
             String username = entry.getKey();
             AuthData authData = entry.getValue();
             if(Objects.equals(authData.authToken(), auth)){
-                return username;
+                return authData.username();
             }
         }
         return null;
@@ -52,7 +52,23 @@ public class MemoryDataAccess {
         //for now we wil just make this a record
         gameId++;
         Game game = new Game(gameId, null, null, name);
-        gameList.put(name, game);
+        gameList.put(gameId, game);
         return new GameID(gameId);
+    }
+
+    public static void joinGame(String color, int id, String username) {
+        Game newGame = null;
+        Game game = gameList.get(id);
+        if (Objects.equals(color, "WHITE")) {
+            newGame = game.changeWhite(username);
+        }else if(Objects.equals(color, "BLACK")){
+            newGame = game.changeBlack(username);
+        }
+
+        gameList.remove(id);
+        gameList.put(id, newGame);
+        System.out.println(authDataList);
+        System.out.println(newGame);
+        System.out.println(username);
     }
 }
