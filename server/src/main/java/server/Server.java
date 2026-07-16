@@ -1,11 +1,9 @@
 package server;
 
 import com.google.gson.Gson;
-import dataaccess.DataAccessException;
 import dataaccess.ResponseException;
 import io.javalin.*;
 import io.javalin.http.Context;
-import io.javalin.http.HttpStatus;
 import model.AuthData;
 import model.GameName;
 import model.JoinGameRequest;
@@ -21,13 +19,13 @@ public class Server {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
         // Register your endpoints and exception handlers here.
-        javalin.post("user", ctx -> register(ctx));
-        javalin.delete("/db", ctx -> clear(ctx));
-        javalin.post("/session", ctx -> login(ctx));
-        javalin.delete("/session", ctx -> logout(ctx));
-        javalin.post("/game", ctx -> createGame(ctx));
-        javalin.put("/game", ctx -> joinGame(ctx));
-        javalin.get("/game", ctx -> getGames(ctx));
+        javalin.post("user", Server::register);
+        javalin.delete("/db", this::clear);
+        javalin.post("/session", Server::login);
+        javalin.delete("/session", this::logout);
+        javalin.post("/game", this::createGame);
+        javalin.put("/game", this::joinGame);
+        javalin.get("/game", this::getGames);
     }
 
     private void getGames(@NotNull Context ctx) {
@@ -94,8 +92,6 @@ public class Server {
     }
 
     private void logout(@NotNull Context ctx) {
-        var serialize = new Gson();
-        String stuff = ctx.body();
         //we have to grab the auth from the header
         var auth = ctx.header("authorization");
         try {
