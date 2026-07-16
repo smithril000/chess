@@ -144,24 +144,10 @@ public class ChessPiece {
                 //this is if there is nothing in front of them
                 if(col - 1 == pos.getColumn() && board.getPiece(pos) == null ){
                     //we need to check if we are promoting
-                    if(pos.getRow() == 7 || pos.getRow() == 0){
-                        moves.add(new ChessMove(myPosition, pos, PieceType.QUEEN));
-                        moves.add(new ChessMove(myPosition, pos, PieceType.BISHOP));
-                        moves.add(new ChessMove(myPosition, pos, PieceType.ROOK));
-                        moves.add(new ChessMove(myPosition, pos, PieceType.KNIGHT));
-                    }else {
-                        moves.add(new ChessMove(myPosition, pos, null));
-                    }
+                    moveHelper(myPosition, moves, pos);
                 }else if(board.getPiece(pos)!= null && board.getPiece(pos).getTeamColor() != piece.getTeamColor() && col-1 != pos.getColumn()){
                     //we MUST take and check if we promote
-                    if(pos.getRow() == 7 || pos.getRow() == 0) {
-                        moves.add(new ChessMove(myPosition, pos, PieceType.QUEEN));
-                        moves.add(new ChessMove(myPosition, pos, PieceType.BISHOP));
-                        moves.add(new ChessMove(myPosition, pos, PieceType.ROOK));
-                        moves.add(new ChessMove(myPosition, pos, PieceType.KNIGHT));
-                    }else {
-                        moves.add(new ChessMove(myPosition, pos, null));
-                    }
+                    moveHelper(myPosition, moves, pos);
                 }
 
             }
@@ -171,6 +157,18 @@ public class ChessPiece {
 
         return moves;
     }
+
+    private void moveHelper(ChessPosition myPosition, List<ChessMove> moves, ChessPosition pos) {
+        if(pos.getRow() == 7 || pos.getRow() == 0) {
+            moves.add(new ChessMove(myPosition, pos, PieceType.QUEEN));
+            moves.add(new ChessMove(myPosition, pos, PieceType.BISHOP));
+            moves.add(new ChessMove(myPosition, pos, PieceType.ROOK));
+            moves.add(new ChessMove(myPosition, pos, PieceType.KNIGHT));
+        }else {
+            moves.add(new ChessMove(myPosition, pos, null));
+        }
+    }
+
     private List<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, List<ChessMove> moves){
         //I want to use my move or take function
         //lets start with moving up - shouldn't matter the color
