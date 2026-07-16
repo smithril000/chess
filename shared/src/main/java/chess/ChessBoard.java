@@ -14,9 +14,6 @@ public class ChessBoard {
     public ChessBoard() {
         //resetBoard();
     }
-    public ChessBoard(ChessPiece[][] newSquares){
-        this.squares = newSquares;
-    }
 
     /**
      * Adds a chess piece to the chessboard
@@ -29,9 +26,6 @@ public class ChessBoard {
         this.squares[position.getRow()][position.getColumn()] = piece;
     }
 
-    public ChessPiece[][] getSquares(){
-        return this.squares.clone();
-    }
     public ChessBoard copyBoard(){
         ChessBoard copy = new ChessBoard();
         for(int x = 0; x < 8; x++){
