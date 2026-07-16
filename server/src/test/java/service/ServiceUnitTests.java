@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 public class ServiceUnitTests {
     UserData testUser = new UserData("testUser", "testEmail", "testPass");
-    UserData testUser2 = new UserData("testUser2", "testEmail2", "testPass2");
+    //UserData testUser2 = new UserData("testUser2", "testEmail2", "testPass2");
 
     @BeforeEach
     void clean(){
@@ -24,7 +24,7 @@ public class ServiceUnitTests {
     void registerTwice() throws ResponseException {
         UserService.register(testUser);
         try {
-            var response = UserService.register(testUser);
+            UserService.register(testUser);
         }catch(ResponseException ex){
             Assertions.assertEquals(403, ex.getCode());
         }
