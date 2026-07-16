@@ -36,6 +36,8 @@ public class MemoryDataAccess {
     }
 
     public static String getUsernameByAuth(String auth){
+        System.out.println(authDataList);
+        System.out.println(auth);
         for(HashMap.Entry<String, AuthData> entry : authDataList.entrySet()){
             String username = entry.getKey();
             AuthData authData = entry.getValue();
@@ -69,6 +71,7 @@ public class MemoryDataAccess {
 
         gameList.remove(id);
         gameList.put(id, newGame);
+        System.out.println("Got through db fine");
     }
 
     public static HashMap<Integer, Game> getGames() {

@@ -49,6 +49,8 @@ public class UserService {
         //create new auth
         var auth = generateToken();
         var authData = new AuthData(userData.username(), auth);
+        //we need to add
+        MemoryDataAccess.createAuthData(authData);
         return authData;
     }
 
@@ -91,6 +93,7 @@ public class UserService {
             throw new ResponseException(403, "Error, color taken");
         }
         String username = MemoryDataAccess.getUsernameByAuth(auth);
+        System.out.println("Got through service fine");
         MemoryDataAccess.joinGame(color, id, username);
     }
 

@@ -47,14 +47,17 @@ public class Server {
     }
 
     private void joinGame(@NotNull Context ctx) {
+        System.out.println("Starting");
         var serialize = new Gson();
         String stuff = ctx.body();
         JoinGameRequest join = serialize.fromJson(stuff, JoinGameRequest.class);
         String auth = ctx.header("authorization");
         try{
             UserService.checkAuth(auth);
+            System.out.println("CheckedAuth fine");
             try{
                 UserService.joinGame(join, auth);
+                System.out.println("Got to join correct");
             }catch(ResponseException ex){
                 ctx.status(ex.getCode());
                 ctx.result(ex.toJson());
