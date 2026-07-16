@@ -174,69 +174,69 @@ public class ChessPiece {
     private List<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, List<ChessMove> moves){
         //I want to use my move or take function
         //lets start with moving up - shouldn't matter the color
-        loop_helper(-1, 0, myPosition, board, piece.getTeamColor(), moves, true);
+        loopHelper(-1, 0, myPosition, board, piece.getTeamColor(), moves, true);
         //now down
-        loop_helper(1, 0, myPosition, board, piece.getTeamColor(), moves, true);
+        loopHelper(1, 0, myPosition, board, piece.getTeamColor(), moves, true);
         //left
-        loop_helper(0, -1, myPosition, board, piece.getTeamColor(), moves, true);
+        loopHelper(0, -1, myPosition, board, piece.getTeamColor(), moves, true);
         //right
-        loop_helper(0, 1, myPosition, board, piece.getTeamColor(), moves, true);
+        loopHelper(0, 1, myPosition, board, piece.getTeamColor(), moves, true);
         return moves;
 
 
     }
     private List<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, List<ChessMove> moves){
         //up-left
-        loop_helper(-1,-1, myPosition, board, piece.getTeamColor(), moves, true);
+        loopHelper(-1,-1, myPosition, board, piece.getTeamColor(), moves, true);
         //up-right
-        loop_helper(-1,1,myPosition, board, piece.getTeamColor(), moves, true);
+        loopHelper(-1,1,myPosition, board, piece.getTeamColor(), moves, true);
         //down-right
-        loop_helper(1,1,myPosition, board, piece.getTeamColor(), moves, true);
+        loopHelper(1,1,myPosition, board, piece.getTeamColor(), moves, true);
         //downleft
-        loop_helper(1,-1,myPosition, board, piece.getTeamColor(), moves, true);
+        loopHelper(1,-1,myPosition, board, piece.getTeamColor(), moves, true);
 
         return moves;
     }
     private void knightMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, List<ChessMove> moves){
         //left2 up
-        loop_helper(-1,-2, myPosition, board, piece.getTeamColor(), moves, false);
+        loopHelper(-1,-2, myPosition, board, piece.getTeamColor(), moves, false);
         //left2 down
-        loop_helper(1,-2, myPosition, board, piece.getTeamColor(), moves, false);
+        loopHelper(1,-2, myPosition, board, piece.getTeamColor(), moves, false);
         //left1up2
-        loop_helper(-2,-1, myPosition, board, piece.getTeamColor(), moves, false);
+        loopHelper(-2,-1, myPosition, board, piece.getTeamColor(), moves, false);
         //left1down2
-        loop_helper(2,-1, myPosition, board, piece.getTeamColor(), moves, false);
+        loopHelper(2,-1, myPosition, board, piece.getTeamColor(), moves, false);
         //right2 up
-        loop_helper(-1,2, myPosition, board, piece.getTeamColor(), moves, false);
+        loopHelper(-1,2, myPosition, board, piece.getTeamColor(), moves, false);
         //right2 down1
-        loop_helper(1,2, myPosition, board, piece.getTeamColor(), moves, false);
+        loopHelper(1,2, myPosition, board, piece.getTeamColor(), moves, false);
         //right1 up2
-        loop_helper(-2,1, myPosition, board, piece.getTeamColor(), moves, false);
+        loopHelper(-2,1, myPosition, board, piece.getTeamColor(), moves, false);
         //right1 down2
-        loop_helper(2,1, myPosition, board, piece.getTeamColor(), moves, false);
+        loopHelper(2,1, myPosition, board, piece.getTeamColor(), moves, false);
     }
     private void kingMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, List<ChessMove> moves){
         //up-left2
-        loop_helper(-1,-1, myPosition, board, piece.getTeamColor(), moves, false);
+        loopHelper(-1,-1, myPosition, board, piece.getTeamColor(), moves, false);
         //up-right
-        loop_helper(-1,1,myPosition, board, piece.getTeamColor(), moves, false);
+        loopHelper(-1,1,myPosition, board, piece.getTeamColor(), moves, false);
         //down-right
-        loop_helper(1,1,myPosition, board, piece.getTeamColor(), moves, false);
+        loopHelper(1,1,myPosition, board, piece.getTeamColor(), moves, false);
         //downleft
-        loop_helper(1,-1,myPosition, board, piece.getTeamColor(), moves, false);
+        loopHelper(1,-1,myPosition, board, piece.getTeamColor(), moves, false);
 
         //sides
-        loop_helper(-1, 0, myPosition, board, piece.getTeamColor(), moves, false);
+        loopHelper(-1, 0, myPosition, board, piece.getTeamColor(), moves, false);
         //now down
-        loop_helper(1, 0, myPosition, board, piece.getTeamColor(), moves, false);
+        loopHelper(1, 0, myPosition, board, piece.getTeamColor(), moves, false);
         //left
-        loop_helper(0, -1, myPosition, board, piece.getTeamColor(), moves, false);
+        loopHelper(0, -1, myPosition, board, piece.getTeamColor(), moves, false);
         //right
-        loop_helper(0, 1, myPosition, board, piece.getTeamColor(), moves, false);
+        loopHelper(0, 1, myPosition, board, piece.getTeamColor(), moves, false);
     }
 
 
-    private void loop_helper(int row_dir, int col_dir, ChessPosition pos, ChessBoard board, ChessGame.TeamColor color, List<ChessMove> moves, boolean repeat){
+    private void loopHelper(int row_dir, int col_dir, ChessPosition pos, ChessBoard board, ChessGame.TeamColor color, List<ChessMove> moves, boolean repeat){
         int row = pos.getRow()+1;
         int col = pos.getColumn()+1;
         while(row >= 1 && row <= 8 && col >= 1 && col <= 8){
