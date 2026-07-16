@@ -68,7 +68,7 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = this.board.getPiece(startPosition);
-        if(piece == null)return null;
+        if(piece == null){return null;}
         Collection<ChessMove> moves = piece.pieceMoves(this.board, startPosition);
         Collection<ChessMove> goodMoves = new ArrayList<>();
         //we need to filter which ones don't put us in check
