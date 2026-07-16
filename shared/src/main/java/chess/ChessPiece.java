@@ -236,27 +236,27 @@ public class ChessPiece {
     }
 
 
-    private void loopHelper(int row_dir, int col_dir, ChessPosition pos, ChessBoard board, ChessGame.TeamColor color, List<ChessMove> moves, boolean repeat){
+    private void loopHelper(int rowDir, int colDir, ChessPosition pos, ChessBoard board, ChessGame.TeamColor color, List<ChessMove> moves, boolean repeat){
         int row = pos.getRow()+1;
         int col = pos.getColumn()+1;
         while(row >= 1 && row <= 8 && col >= 1 && col <= 8){
-            if(row + row_dir <= 0){
+            if(row + rowDir <= 0){
                 return;
-            }else if(row + row_dir > 8){
-                return;
-            }
-            if(col +col_dir <= 0){
-                return;
-            }else if(col + col_dir > 8){
+            }else if(row + rowDir > 8){
                 return;
             }
-            ChessPosition newPos = new ChessPosition(row + row_dir, col + col_dir);
+            if(col +colDir <= 0){
+                return;
+            }else if(col + colDir > 8){
+                return;
+            }
+            ChessPosition newPos = new ChessPosition(row + rowDir, col + colDir);
             String check = moveOrTake(newPos, board, color);
             if(check.equals("true")){
                 //add move
                 moves.add(new ChessMove(pos, newPos, null));
-                row = row + row_dir;
-                col = col + col_dir;
+                row = row + rowDir;
+                col = col + colDir;
             }else if(check.equals("take")){
                 //row = row + row_dir;
                 //col = col + col_dir;
