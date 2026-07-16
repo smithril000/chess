@@ -82,11 +82,11 @@ public class ChessPiece {
         //create our collection
         List<ChessMove> moves = new ArrayList<>();
         if(piece.getPieceType() == PieceType.PAWN){
-            moves = pawnMoves(board, myPosition, piece, moves);
+            pawnMoves(board, myPosition, piece, moves);
         }else if (piece.getPieceType() == PieceType.ROOK){
-            moves = rookMoves(board, myPosition, piece, moves);
+            rookMoves(board, myPosition, piece, moves);
         }else if(piece.getPieceType() == PieceType.BISHOP){
-            moves = bishopMoves(board, myPosition, piece, moves);
+            bishopMoves(board, myPosition, piece, moves);
         }else if(piece.getPieceType() == PieceType.QUEEN){
             rookMoves(board, myPosition, piece, moves);
             bishopMoves(board, myPosition, piece, moves);
@@ -97,7 +97,7 @@ public class ChessPiece {
         }
         return moves;
     }
-    private List<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, List<ChessMove> moves){
+    private void pawnMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, List<ChessMove> moves){
         //for pawns they can move 2 foward at the start, one if nothing in front, and diagonal if taking
 
         int row = myPosition.getRow()+1;
@@ -155,7 +155,6 @@ public class ChessPiece {
         }
 
 
-        return moves;
     }
 
     private void moveHelper(ChessPosition myPosition, List<ChessMove> moves, ChessPosition pos) {
@@ -169,7 +168,7 @@ public class ChessPiece {
         }
     }
 
-    private List<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, List<ChessMove> moves){
+    private void rookMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, List<ChessMove> moves){
         //I want to use my move or take function
         //lets start with moving up - shouldn't matter the color
         lo(-1, 0, myPosition, board, piece.getTeamColor(), moves, true);
@@ -179,11 +178,10 @@ public class ChessPiece {
         lo(0, -1, myPosition, board, piece.getTeamColor(), moves, true);
         //right
         lo(0, 1, myPosition, board, piece.getTeamColor(), moves, true);
-        return moves;
 
 
     }
-    private List<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, List<ChessMove> moves){
+    private void bishopMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, List<ChessMove> moves){
         //up-left
         lo(-1,-1, myPosition, board, piece.getTeamColor(), moves, true);
         //up-right
@@ -193,7 +191,6 @@ public class ChessPiece {
         //downleft
         lo(1,-1,myPosition, board, piece.getTeamColor(), moves, true);
 
-        return moves;
     }
     private void knightMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, List<ChessMove> moves){
         //left2 up
@@ -266,7 +263,7 @@ public class ChessPiece {
                 row = -1;
             }
         }
-        return;
+
     }
     private String moveOrTake(ChessPosition pos, ChessBoard board, ChessGame.TeamColor color){
         if(board.getPiece(pos) == null){
