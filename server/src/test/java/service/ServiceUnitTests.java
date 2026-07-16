@@ -49,4 +49,12 @@ public class ServiceUnitTests {
             Assertions.assertEquals(401, ex.getCode());
         }
     }
+
+    @Test
+    void logoutSuccess() throws ResponseException {
+        var auth = UserService.register(testUser).authToken();
+        UserService.logout(auth);
+    }
+
+
 }
