@@ -64,7 +64,6 @@ public class UserService {
     public static void checkAuth(String auth) throws ResponseException{
         //make sure we have auth in the db
         String username =  MemoryDataAccess.getUsernameByAuth(auth);
-        System.out.println(username);
         if(username == null){
             throw new ResponseException(401, "Error, something went wrong");
         }
@@ -87,6 +86,9 @@ public class UserService {
             if(!Objects.equals(color, "BLACK")){
                 throw new ResponseException(400, "Error, bad request");
             }
+        }
+        if(!MemoryDataAccess.checkColor(color, id)){
+            throw new ResponseException(403, "Error, color taken");
         }
         String username = MemoryDataAccess.getUsernameByAuth(auth);
         MemoryDataAccess.joinGame(color, id, username);

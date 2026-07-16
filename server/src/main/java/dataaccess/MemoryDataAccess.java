@@ -46,9 +46,8 @@ public class MemoryDataAccess {
         return null;
     }
 
-    public static void removeFromAuths(String username) {
-        authDataList.remove(username);
-        System.out.println(authDataList);
+    public static void removeFromAuths(String auth) {
+        authDataList.remove(auth);
     }
 
     public static GameID createGame(String name) {
@@ -74,5 +73,15 @@ public class MemoryDataAccess {
 
     public static HashMap<Integer, Game> getGames() {
         return gameList;
+    }
+
+    public static boolean checkColor(String color, int id) {
+        if(Objects.equals(color, "BLACK")){
+            //check if the black username is taken
+            return gameList.get(id).blackUsername() == null;
+        }else if(Objects.equals(color, "WHITE")){
+            return gameList.get(id).whiteUsername() == null;
+        }
+        return false;
     }
 }
