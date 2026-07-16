@@ -256,8 +256,6 @@ public class ChessPiece {
                 row = row + rowDir;
                 col = col + colDir;
             }else if(check.equals("take")){
-                //row = row + row_dir;
-                //col = col + col_dir;
                 //add move
                 moves.add(new ChessMove(pos, newPos, null));
                 row = -1;
