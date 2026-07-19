@@ -1,5 +1,7 @@
 package service;
 
+import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
 import dataaccess.MemoryDataAccess;
 import dataaccess.ResponseException;
 import model.*;
@@ -20,7 +22,7 @@ public class UserService {
             throw new ResponseException(403, "Error: already exists");
         }
         //we need to creat both the userdata and the authdata
-        MemoryDataAccess.createUserDate(user);
+        DatabaseManager.createUserDate(user);
         //create the auth data
         String auth = generateToken();
         //we can create the authData here

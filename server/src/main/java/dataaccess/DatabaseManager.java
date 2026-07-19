@@ -1,5 +1,7 @@
 package dataaccess;
 
+import model.UserData;
+
 import java.sql.*;
 import java.util.Properties;
 
@@ -19,15 +21,35 @@ public class DatabaseManager {
     /**
      * Creates the database if it does not already exist.
      */
-    static public void createDatabase() throws DataAccessException {
+    static public void createDatabase() throws ResponseException {
         var statement = "CREATE DATABASE IF NOT EXISTS " + databaseName;
         try (var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
              var preparedStatement = conn.prepareStatement(statement)) {
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            throw new DataAccessException("failed to create database", ex);
+            throw new ResponseException(400, "failed to create database");
         }
     }
+
+    static public void createDatabaseHelper() throws ResponseException {
+        String[] dbNames = {"userData", "authData", "games"};
+        for(String name : dbNames){
+            databaseName = name;
+            createDatabase();
+        }
+    }
+
+    public static void createUserDate(UserData user) throws ResponseException {
+
+        try{
+            createDatabaseHelper();
+        }catch(ResponseException ex){
+            throw new ResponseException(400, "error with database");
+        }
+    }
+
+
+
 
     /**
      * Create a connection to the database and sets the catalog based upon the
