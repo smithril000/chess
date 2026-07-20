@@ -1,6 +1,7 @@
 package dataaccess;
 
 import model.AuthData;
+import model.GameID;
 import model.UserData;
 
 import java.sql.*;
@@ -226,5 +227,45 @@ public class DatabaseManager {
         } catch (SQLException ex) {
             throw new ResponseException(400, "failed to execute statement" + ex.getMessage());
         }
+    }
+
+    public static GameID createGame(String name, String newGame) throws ResponseException {
+        //this will return the id record class structure
+        //so first we add to db
+        String sql = "INSERT INTO games (name, game) VALUES (?, ?)";
+        //System.out.println(sql);
+
+        try (var conn = getConnection();
+             var preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, newGame);
+
+            int rowsInserted = preparedStatement.executeUpdate();
+            //System.out.println("Rows inserted: " + rowsInserted);
+
+        } catch (SQLException ex) {
+            throw new ResponseException(400, "failed to execute statement" + ex.getMessage());
+        }
+
+        //now we need to get its id back
+        sql = "SELECT id FROM games WHERE name =?";
+        String idAsString = "";
+
+        try (var conn = getConnection();
+             var preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setString(1, name);
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (rs.next()) {
+                    idAsString =  rs.getString("id");
+                }
+            }
+            return new GameID(Integer.parseInt(idAsString));
+
+        } catch (SQLException | ResponseException ex) {
+            throw new ResponseException(400, "failed to execute statement " + ex.getMessage());
+        }
+
+
     }
 }

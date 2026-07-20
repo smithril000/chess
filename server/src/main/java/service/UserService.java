@@ -1,5 +1,7 @@
 package service;
 
+import chess.ChessGame;
+import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import dataaccess.MemoryDataAccess;
@@ -66,7 +68,7 @@ public class UserService {
         //make sure we have auth in the db
         String username =  DatabaseManager.getUsernameByAuth(auth);
         if(username == null){
-            throw new ResponseException(401, "Error, something went wrong(auth cehck gone bad)");
+            throw new ResponseException(401, "Error, something went wrong(auth check gone bad)");
         }
     }
 
@@ -75,7 +77,10 @@ public class UserService {
         if(name == null){
             throw new ResponseException(400, "Error, bad request");
         }
-        return MemoryDataAccess.createGame(name);
+        //lets create the actual chess game
+        ChessGame newGame = new ChessGame();
+        String jsonString = new Gson().toJson(newGame);
+        return DatabaseManager.createGame(name, jsonString);
     }
 
     public static void joinGame(JoinGameRequest join, String auth) throws ResponseException {

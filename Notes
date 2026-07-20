@@ -10,3 +10,9 @@ CREATE TABLE authData (
     username VARCHAR(255) NOT NULL,
     PRIMARY KEY (authToken)
 );
+CREATE TABLE games (
+    id INT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    game VARCHAR(5000) NOT NULL,
+    PRIMARY KEY (id)
+);
