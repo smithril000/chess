@@ -52,7 +52,7 @@ public class UserService {
         var auth = generateToken();
         var authData = new AuthData(userData.username(), auth);
         //we need to add
-        MemoryDataAccess.createAuthData(authData);
+        DatabaseManager.pushAuthData(authData);
         return authData;
     }
 

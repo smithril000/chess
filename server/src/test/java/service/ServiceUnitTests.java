@@ -11,7 +11,7 @@ public class ServiceUnitTests {
     //UserData testUser2 = new UserData("testUser2", "testEmail2", "testPass2");
 
     @BeforeEach
-    void clean(){
+    void clean() throws ResponseException {
         UserService.clear();
     }
     @Test

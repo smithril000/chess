@@ -118,6 +118,7 @@ public class Server {
         javalin.stop();
     }
     private void clear(Context ctx) throws ResponseException{
+        System.out.println("running clear");
         UserService.clear();
     }
 

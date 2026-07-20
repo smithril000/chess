@@ -106,9 +106,9 @@ public class DatabaseManager {
 
     public static void clear() throws ResponseException{
         try (var conn = getConnection()){
-            var statement1 = "TRUNCATE TABLE users";
+            var statement1 = "TRUNCATE TABLE userData";
             var statement2 = "TRUNCATE TABLE authData";
-            var statement3 = "TRUNCATE TABLE games";
+            var statement3 = "TRUNCATE TABLE userData";
             try (var ps = conn.prepareStatement(statement1)) {
 
                 ps.executeUpdate();
