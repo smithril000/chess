@@ -55,7 +55,7 @@ public class DatabaseManager {
     public static void createUserDate(UserData user) throws ResponseException {
         //now add to my db
         String sql = "INSERT INTO userData (username, email, password) VALUES (?, ?, ?)";
-        System.out.println(sql);
+        //System.out.println(sql);
 
         try (var conn = getConnection();
              var preparedStatement = conn.prepareStatement(sql)) {
@@ -64,7 +64,7 @@ public class DatabaseManager {
             preparedStatement.setString(3, user.password());
 
             int rowsInserted = preparedStatement.executeUpdate();
-            System.out.println("Rows inserted: " + rowsInserted);
+            //System.out.println("Rows inserted: " + rowsInserted);
 
         } catch (SQLException ex) {
             throw new ResponseException(400, "failed to execute statement" + ex.getMessage());
@@ -89,7 +89,7 @@ public class DatabaseManager {
     public static void pushAuthData(AuthData auth) throws ResponseException{
         //now add to my db
         String sql = "INSERT INTO authData (authToken, username) VALUES (?, ?)";
-        System.out.println(sql);
+        //System.out.println(sql);
 
         try (var conn = getConnection();
              var preparedStatement = conn.prepareStatement(sql)) {
@@ -97,7 +97,7 @@ public class DatabaseManager {
             preparedStatement.setString(2, auth.username());
 
             int rowsInserted = preparedStatement.executeUpdate();
-            System.out.println("Rows inserted: " + rowsInserted);
+            //System.out.println("Rows inserted: " + rowsInserted);
 
         } catch (SQLException ex) {
             throw new ResponseException(400, "failed to execute statement" + ex.getMessage());
@@ -126,6 +126,34 @@ public class DatabaseManager {
         }
     }
 
+    //we need a way to get a user(name, email, password) by its username
+    public static UserData getUser(String username)throws ResponseException{
+        String sql = "SELECT username, email, password FROM userData WHERE username =?";
+        //System.out.println(sql);
+
+        try (var conn = getConnection();
+             var preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setString(1, username);
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (rs.next()) {
+                    return readUser(rs);
+                }
+            }
+
+        } catch (SQLException ex) {
+            throw new ResponseException(400, "failed to execute statement " + ex.getMessage());
+        }
+        return null;
+    }
+
+    private static UserData readUser(ResultSet rs) throws SQLException {
+
+        var username = rs.getString("username");
+        var email = rs.getString("email");
+        var password = rs.getString("password");
+        return new UserData(username, email, password);
+    }
 
 
 
