@@ -32,20 +32,23 @@ public class DatabaseManager {
     }
 
     static public void createDatabaseHelper() throws ResponseException {
-        String[] dbNames = {"userData", "authData", "games"};
-        for(String name : dbNames){
-            databaseName = name;
-            createDatabase();
-        }
-    }
-
-    public static void createUserDate(UserData user) throws ResponseException {
-
+        databaseName = "chess";
         try{
-            createDatabaseHelper();
+            createDatabase();
         }catch(ResponseException ex){
             throw new ResponseException(400, "error with database");
         }
+        //now we want to describe our tables / create them
+
+    }
+
+    public static void createUserDate(UserData user) throws ResponseException {
+        try{
+            createDatabaseHelper();
+        }catch(ResponseException ex){
+            throw new ResponseException(400, "test");
+        }
+
     }
 
 

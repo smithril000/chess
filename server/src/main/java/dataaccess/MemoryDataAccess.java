@@ -36,8 +36,6 @@ public class MemoryDataAccess {
     }
 
     public static String getUsernameByAuth(String auth){
-        System.out.println(authDataList);
-        System.out.println(auth);
         for(HashMap.Entry<String, AuthData> entry : authDataList.entrySet()){
             String username = entry.getKey();
             AuthData authData = entry.getValue();
