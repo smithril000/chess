@@ -60,13 +60,13 @@ public class UserService {
         //make sure we have auth in the db
         checkAuth(auth);
         //now that we found the auth we can remove
-        MemoryDataAccess.removeFromAuths(auth);
+        DatabaseManager.removeFromAuths(auth);
     }
     public static void checkAuth(String auth) throws ResponseException{
         //make sure we have auth in the db
-        String username =  MemoryDataAccess.getUsernameByAuth(auth);
+        String username =  DatabaseManager.getUsernameByAuth(auth);
         if(username == null){
-            throw new ResponseException(401, "Error, something went wrong");
+            throw new ResponseException(401, "Error, something went wrong(auth cehck gone bad)");
         }
     }
 

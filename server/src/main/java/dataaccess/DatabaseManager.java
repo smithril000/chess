@@ -190,4 +190,41 @@ public class DatabaseManager {
         var port = Integer.parseInt(props.getProperty("db.port"));
         connectionUrl = String.format("jdbc:mysql://%s:%d", host, port);
     }
+
+    public static String getUsernameByAuth(String auth) throws ResponseException{ // this one we just want to return the username
+        String sql = "SELECT username FROM authData WHERE authToken =?";
+        //System.out.println(sql);
+
+        try (var conn = getConnection();
+             var preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setString(1, auth);
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("username");
+                }
+            }
+
+        } catch (SQLException | ResponseException ex) {
+            throw new ResponseException(400, "failed to execute statement " + ex.getMessage());
+        }
+        return null;
+    }
+
+    public static void removeFromAuths(String auth) throws ResponseException{
+        //this gets rid of a row in our authData
+        String sql = "DELETE FROM authData WHERE authToken=?";
+        //System.out.println(sql);
+
+        try (var conn = getConnection();
+             var preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setString(1, auth);
+
+            int rowsInserted = preparedStatement.executeUpdate();
+            //System.out.println("Rows inserted: " + rowsInserted);
+
+        } catch (SQLException ex) {
+            throw new ResponseException(400, "failed to execute statement" + ex.getMessage());
+        }
+    }
 }
