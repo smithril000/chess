@@ -4,3 +4,9 @@ CREATE TABLE userData (
     password VARCHAR(255) NOT NULL,
     PRIMARY KEY (username)
 );
+
+CREATE TABLE authData (
+    authToken VARCHAR(255) NOT NULL,
+    username VARCHAR(255) NOT NULL,
+    PRIMARY KEY (authToken)
+);

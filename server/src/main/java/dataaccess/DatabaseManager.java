@@ -1,5 +1,6 @@
 package dataaccess;
 
+import model.AuthData;
 import model.UserData;
 
 import java.sql.*;
@@ -52,11 +53,6 @@ public class DatabaseManager {
     }
 
     public static void createUserDate(UserData user) throws ResponseException {
-//        try{
-//            createDatabaseHelper();
-//        }catch(ResponseException ex){
-//            throw new ResponseException(400, "test");
-//        }
         //now add to my db
         String sql = "INSERT INTO userData (username, email, password) VALUES (?, ?, ?)";
         System.out.println(sql);
@@ -90,6 +86,27 @@ public class DatabaseManager {
      * }
      * </code>
      */
+    public static void pushAuthData(AuthData auth) throws ResponseException{
+        //now add to my db
+        String sql = "INSERT INTO authData (authToken, username) VALUES (?, ?)";
+        System.out.println(sql);
+
+        try (var conn = getConnection();
+             var preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setString(1, auth.authToken());
+            preparedStatement.setString(2, auth.username());
+
+            int rowsInserted = preparedStatement.executeUpdate();
+            System.out.println("Rows inserted: " + rowsInserted);
+
+        } catch (SQLException ex) {
+            throw new ResponseException(400, "failed to execute statement" + ex.getMessage());
+        }
+    }
+
+
+
+
     static Connection getConnection() throws ResponseException {
         try {
             //do not wrap the following line with a try-with-resources
