@@ -35,8 +35,8 @@ public class UserService {
         return UUID.randomUUID().toString();
     }
 
-    public static void clear() {
-        MemoryDataAccess.clear();
+    public static void clear() throws ResponseException{
+        DatabaseManager.clear();
     }
 
     public static AuthData login(UserData userData) throws ResponseException{

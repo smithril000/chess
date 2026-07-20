@@ -117,7 +117,7 @@ public class Server {
     public void stop() {
         javalin.stop();
     }
-    private void clear(Context ctx){
+    private void clear(Context ctx) throws ResponseException{
         UserService.clear();
     }
 

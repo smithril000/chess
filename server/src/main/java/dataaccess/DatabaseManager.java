@@ -104,6 +104,28 @@ public class DatabaseManager {
         }
     }
 
+    public static void clear() throws ResponseException{
+        try (var conn = getConnection()){
+            var statement1 = "TRUNCATE TABLE users";
+            var statement2 = "TRUNCATE TABLE authData";
+            var statement3 = "TRUNCATE TABLE games";
+            try (var ps = conn.prepareStatement(statement1)) {
+
+                ps.executeUpdate();
+            }
+            try (var ps = conn.prepareStatement(statement2)) {
+
+                ps.executeUpdate();
+            }
+            try (var ps = conn.prepareStatement(statement3)) {
+
+                ps.executeUpdate();
+            }
+        } catch (SQLException ex) {
+            throw new ResponseException(500, "Error in database" + ex.getMessage());
+        }
+    }
+
 
 
 
