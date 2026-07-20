@@ -31,6 +31,15 @@ public class DatabaseManager {
         }
     }
 
+    static public void dbHelper(String statement) throws ResponseException {
+        try (var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
+             var preparedStatement = conn.prepareStatement(statement)) {
+            preparedStatement.executeUpdate();
+        } catch (SQLException ex) {
+            throw new ResponseException(400, "failed to execute statement");
+        }
+    }
+
     static public void createDatabaseHelper() throws ResponseException {
         databaseName = "chess";
         try{
@@ -43,12 +52,27 @@ public class DatabaseManager {
     }
 
     public static void createUserDate(UserData user) throws ResponseException {
-        try{
-            createDatabaseHelper();
-        }catch(ResponseException ex){
-            throw new ResponseException(400, "test");
-        }
+//        try{
+//            createDatabaseHelper();
+//        }catch(ResponseException ex){
+//            throw new ResponseException(400, "test");
+//        }
+        //now add to my db
+        String sql = "INSERT INTO userData (username, email, password) VALUES (?, ?, ?)";
+        System.out.println(sql);
 
+        try (var conn = getConnection();
+             var preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setString(1, user.username());
+            preparedStatement.setString(2, user.email());
+            preparedStatement.setString(3, user.password());
+
+            int rowsInserted = preparedStatement.executeUpdate();
+            System.out.println("Rows inserted: " + rowsInserted);
+
+        } catch (SQLException ex) {
+            throw new ResponseException(400, "failed to execute statement" + ex.getMessage());
+        }
     }
 
 
@@ -66,14 +90,14 @@ public class DatabaseManager {
      * }
      * </code>
      */
-    static Connection getConnection() throws DataAccessException {
+    static Connection getConnection() throws ResponseException {
         try {
             //do not wrap the following line with a try-with-resources
             var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
             conn.setCatalog(databaseName);
             return conn;
         } catch (SQLException ex) {
-            throw new DataAccessException("failed to get connection", ex);
+            throw new ResponseException(400, "failed to get connection"+ ex.getMessage());
         }
     }
 
