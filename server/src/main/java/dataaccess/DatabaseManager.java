@@ -1,7 +1,5 @@
 package dataaccess;
 
-import chess.ChessGame;
-import com.google.gson.Gson;
 import model.AuthData;
 import model.Game;
 import model.GameID;
@@ -26,38 +24,7 @@ public class DatabaseManager {
         loadPropertiesFromResources();
     }
 
-    /**
-     * Creates the database if it does not already exist.
-     */
-    static public void createDatabase() throws ResponseException {
-        var statement = "CREATE DATABASE IF NOT EXISTS " + databaseName;
-        try (var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
-             var preparedStatement = conn.prepareStatement(statement)) {
-            preparedStatement.executeUpdate();
-        } catch (SQLException ex) {
-            throw new ResponseException(500, "Error, failed to create database");
-        }
-    }
 
-    static public void dbHelper(String statement) throws ResponseException {
-        try (var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
-             var preparedStatement = conn.prepareStatement(statement)) {
-            preparedStatement.executeUpdate();
-        } catch (SQLException ex) {
-            throw new ResponseException(500, "Error, failed to execute statement");
-        }
-    }
-
-    static public void createDatabaseHelper() throws ResponseException {
-        databaseName = "chess";
-        try{
-            createDatabase();
-        }catch(ResponseException ex){
-            throw new ResponseException(500, "error with database");
-        }
-        //now we want to describe our tables / create them
-
-    }
 
     public static void createUserDate(UserData user) throws ResponseException {
         //now add to my db
@@ -71,8 +38,7 @@ public class DatabaseManager {
             preparedStatement.setString(2, user.email());
             preparedStatement.setString(3, hashedPassword);
 
-            int rowsInserted = preparedStatement.executeUpdate();
-            //System.out.println("Rows inserted: " + rowsInserted);
+            preparedStatement.executeUpdate();
 
         } catch (SQLException ex) {
             throw new ResponseException(500, "Error, failed to execute statement" + ex.getMessage());
@@ -104,8 +70,7 @@ public class DatabaseManager {
             preparedStatement.setString(1, auth.authToken());
             preparedStatement.setString(2, auth.username());
 
-            int rowsInserted = preparedStatement.executeUpdate();
-            //System.out.println("Rows inserted: " + rowsInserted);
+            preparedStatement.executeUpdate();
 
         } catch (SQLException ex) {
             throw new ResponseException(500, "Error, failed to execute statement" + ex.getMessage());
@@ -227,8 +192,7 @@ public class DatabaseManager {
              var preparedStatement = conn.prepareStatement(sql)) {
             preparedStatement.setString(1, auth);
 
-            int rowsInserted = preparedStatement.executeUpdate();
-            //System.out.println("Rows inserted: " + rowsInserted);
+            preparedStatement.executeUpdate();
 
         } catch (SQLException ex) {
             throw new ResponseException(500, "Error, failed to execute statement" + ex.getMessage());
@@ -248,8 +212,7 @@ public class DatabaseManager {
             preparedStatement.setString(3, "null");
             preparedStatement.setString(4, newGame);
 
-            int rowsInserted = preparedStatement.executeUpdate();
-            //System.out.println("Rows inserted: " + rowsInserted);
+            preparedStatement.executeUpdate();
 
         } catch (SQLException ex) {
             throw new ResponseException(500, "Error, failed to execute statement" + ex.getMessage());
@@ -297,13 +260,9 @@ public class DatabaseManager {
             //now we can check
             if(Objects.equals(color, "WHITE")){
                 System.out.println("checking if " + whiteName + "is null");
-                if(!Objects.equals(whiteName, "null")){
-                    return false;
-                }
+                return Objects.equals(whiteName, "null");
             }else if(Objects.equals(color, "BLACK")){
-                if(!Objects.equals(blackName, "null")){
-                    return false;
-                }
+                return Objects.equals(blackName, "null");
             }
             return true;
 
@@ -322,14 +281,12 @@ public class DatabaseManager {
             sql = "UPDATE games SET blackName=?";
         }
 
-        String idAsString = "";
 
         try (var conn = getConnection();
              var preparedStatement = conn.prepareStatement(sql)) {
             preparedStatement.setString(1, username);
 
-            int rowsInserted = preparedStatement.executeUpdate();
-            //System.out.println("Rows inserted: " + rowsInserted);
+            preparedStatement.executeUpdate();
 
         } catch (SQLException ex) {
             throw new ResponseException(500, "Error, failed to execute statement" + ex.getMessage());
@@ -350,7 +307,7 @@ public class DatabaseManager {
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 while (rs.next()) {
-                    Integer id = rs.getInt("id");
+                    int id = rs.getInt("id");
                     String name = rs.getString("name");
                     String whiteName = rs.getString("whiteName");
                     String blackName = rs.getString("blackName");
