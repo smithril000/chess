@@ -2,7 +2,6 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.DataBaseAccess;
-import dataaccess.DatabaseManager;
 import dataaccess.ResponseException;
 import io.javalin.*;
 import io.javalin.http.Context;
@@ -25,13 +24,13 @@ public class Server {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
         // Register your endpoints and exception handlers here.
-        javalin.post("user", ctx -> register(ctx));
+        javalin.post("user", this::register);
         javalin.delete("/db", this::clear);
-        javalin.post("/session", ctx -> login(ctx));
+        javalin.post("/session", this::login);
         javalin.delete("/session", this::logout);
         javalin.post("/game", this::createGame);
         javalin.put("/game", this::joinGame);
-        javalin.get("/game", ctx -> getGames(ctx));
+        javalin.get("/game", this::getGames);
     }
 
     private void getGames(Context ctx) {
@@ -123,7 +122,7 @@ public class Server {
     public void stop() {
         javalin.stop();
     }
-    private void clear(Context ctx) throws ResponseException{
+    private void clear(Context ctx){
         System.out.println("running clear");
         try {
             userService.clear();

@@ -1,14 +1,7 @@
 package dataaccess;
 
-import model.AuthData;
-import model.Game;
-import model.GameID;
-import model.UserData;
-import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Objects;
 import java.util.Properties;
 
 public class DatabaseManager {
