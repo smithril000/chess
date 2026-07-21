@@ -6,6 +6,7 @@ import model.AuthData;
 import model.Game;
 import model.GameID;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
 import java.util.HashMap;
@@ -61,13 +62,14 @@ public class DatabaseManager {
     public static void createUserDate(UserData user) throws ResponseException {
         //now add to my db
         String sql = "INSERT INTO userData (username, email, password) VALUES (?, ?, ?)";
-        //System.out.println(sql);
+        //we need to hash the password
+        String hashedPassword = BCrypt.hashpw(user.password(), BCrypt.gensalt());
 
         try (var conn = getConnection();
              var preparedStatement = conn.prepareStatement(sql)) {
             preparedStatement.setString(1, user.username());
             preparedStatement.setString(2, user.email());
-            preparedStatement.setString(3, user.password());
+            preparedStatement.setString(3, hashedPassword);
 
             int rowsInserted = preparedStatement.executeUpdate();
             //System.out.println("Rows inserted: " + rowsInserted);
@@ -160,7 +162,6 @@ public class DatabaseManager {
         var password = rs.getString("password");
         return new UserData(username, email, password);
     }
-
 
 
     static Connection getConnection() throws ResponseException {

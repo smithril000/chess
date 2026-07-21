@@ -7,6 +7,7 @@ import dataaccess.DatabaseManager;
 import dataaccess.MemoryDataAccess;
 import dataaccess.ResponseException;
 import model.*;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.*;
 
@@ -41,14 +42,24 @@ public class UserService {
         DatabaseManager.clear();
     }
 
+    private static Boolean checkPass(String clear, String hash){
+        return BCrypt.checkpw(clear, hash);
+    }
+
     public static AuthData login(UserData userData) throws ResponseException{
         //do checks
         if(userData.username() == null || userData.password() == null){ // no user or pass entered
             throw new ResponseException(400, "Error, bad request(no login data)");
-        }else if(DatabaseManager.getUser(userData.username())== null){
+        }
+        //get the user for code clarity
+        UserData user = DatabaseManager.getUser(userData.username());
+        if(DatabaseManager.getUser(userData.username())== null){
             throw new ResponseException(401, "Error, bad request(doesn't exist)");
-        }else if(!Objects.equals(DatabaseManager.getUser(userData.username()).password(), userData.password())){
-            throw new ResponseException(401, "Error, unauthorized");
+        }else {
+            assert user != null;
+            if(!checkPass(userData.password(), user.password())){
+                throw new ResponseException(401, "Error, unauthorized");
+            }
         }
         //create new auth
         var auth = generateToken();
