@@ -119,7 +119,12 @@ public class Server {
     }
     private void clear(Context ctx) throws ResponseException{
         System.out.println("running clear");
-        UserService.clear();
+        try {
+            UserService.clear();
+        }catch(ResponseException ex){
+            ctx.status(ex.getCode());
+            ctx.result(ex.toJson());
+        }
     }
 
     public static void login(Context ctx){

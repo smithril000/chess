@@ -35,7 +35,7 @@ public class DatabaseManager {
              var preparedStatement = conn.prepareStatement(statement)) {
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            throw new ResponseException(400, "failed to create database");
+            throw new ResponseException(500, "Error, failed to create database");
         }
     }
 
@@ -44,7 +44,7 @@ public class DatabaseManager {
              var preparedStatement = conn.prepareStatement(statement)) {
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            throw new ResponseException(400, "failed to execute statement");
+            throw new ResponseException(500, "Error, failed to execute statement");
         }
     }
 
@@ -53,7 +53,7 @@ public class DatabaseManager {
         try{
             createDatabase();
         }catch(ResponseException ex){
-            throw new ResponseException(400, "error with database");
+            throw new ResponseException(500, "error with database");
         }
         //now we want to describe our tables / create them
 
@@ -75,7 +75,7 @@ public class DatabaseManager {
             //System.out.println("Rows inserted: " + rowsInserted);
 
         } catch (SQLException ex) {
-            throw new ResponseException(400, "failed to execute statement" + ex.getMessage());
+            throw new ResponseException(500, "Error, failed to execute statement" + ex.getMessage());
         }
     }
 
@@ -108,7 +108,7 @@ public class DatabaseManager {
             //System.out.println("Rows inserted: " + rowsInserted);
 
         } catch (SQLException ex) {
-            throw new ResponseException(400, "failed to execute statement" + ex.getMessage());
+            throw new ResponseException(500, "Error, failed to execute statement" + ex.getMessage());
         }
     }
 
@@ -116,7 +116,7 @@ public class DatabaseManager {
         try (var conn = getConnection()){
             var statement1 = "TRUNCATE TABLE userData";
             var statement2 = "TRUNCATE TABLE authData";
-            var statement3 = "TRUNCATE TABLE userData";
+            var statement3 = "TRUNCATE TABLE games";
             try (var ps = conn.prepareStatement(statement1)) {
 
                 ps.executeUpdate();
@@ -150,7 +150,7 @@ public class DatabaseManager {
             }
 
         } catch (SQLException ex) {
-            throw new ResponseException(400, "failed to execute statement " + ex.getMessage());
+            throw new ResponseException(500, "Error, failed to execute statement " + ex.getMessage());
         }
         return null;
     }
@@ -171,7 +171,7 @@ public class DatabaseManager {
             conn.setCatalog(databaseName);
             return conn;
         } catch (SQLException ex) {
-            throw new ResponseException(400, "failed to get connection"+ ex.getMessage());
+            throw new ResponseException(500, "Error, failed to get connection"+ ex.getMessage());
         }
     }
 
@@ -213,7 +213,7 @@ public class DatabaseManager {
             }
 
         } catch (SQLException | ResponseException ex) {
-            throw new ResponseException(400, "failed to execute statement " + ex.getMessage());
+            throw new ResponseException(500, "Error, failed to execute statement " + ex.getMessage());
         }
         return null;
     }
@@ -231,7 +231,7 @@ public class DatabaseManager {
             //System.out.println("Rows inserted: " + rowsInserted);
 
         } catch (SQLException ex) {
-            throw new ResponseException(400, "failed to execute statement" + ex.getMessage());
+            throw new ResponseException(500, "Error, failed to execute statement" + ex.getMessage());
         }
     }
 
@@ -252,7 +252,7 @@ public class DatabaseManager {
             //System.out.println("Rows inserted: " + rowsInserted);
 
         } catch (SQLException ex) {
-            throw new ResponseException(400, "failed to execute statement" + ex.getMessage());
+            throw new ResponseException(500, "Error, failed to execute statement" + ex.getMessage());
         }
 
         //now we need to get its id back
@@ -271,7 +271,7 @@ public class DatabaseManager {
             return new GameID(Integer.parseInt(idAsString));
 
         } catch (SQLException | ResponseException ex) {
-            throw new ResponseException(400, "failed to execute statement " + ex.getMessage());
+            throw new ResponseException(500, "Error, failed to execute statement " + ex.getMessage());
         }
 
 
@@ -309,7 +309,7 @@ public class DatabaseManager {
 
 
         } catch (SQLException | ResponseException ex) {
-            throw new ResponseException(400, "failed to execute statement " + ex.getMessage());
+            throw new ResponseException(500, "Error, failed to execute statement " + ex.getMessage());
         }
     }
 
@@ -332,7 +332,7 @@ public class DatabaseManager {
             //System.out.println("Rows inserted: " + rowsInserted);
 
         } catch (SQLException ex) {
-            throw new ResponseException(400, "failed to execute statement" + ex.getMessage());
+            throw new ResponseException(500, "Error, failed to execute statement" + ex.getMessage());
         }
 
 
@@ -362,7 +362,7 @@ public class DatabaseManager {
                 return myGames;
             }
         } catch (SQLException | ResponseException ex) {
-            throw new ResponseException(400, "failed to execute statement " + ex.getMessage());
+            throw new ResponseException(500, "Error, failed to execute statement " + ex.getMessage());
         }
     }
 }
