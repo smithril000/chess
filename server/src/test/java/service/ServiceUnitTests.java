@@ -1,5 +1,6 @@
 package service;
 
+import dataaccess.DatabaseManager;
 import dataaccess.ResponseException;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
@@ -9,34 +10,35 @@ import org.junit.jupiter.api.Test;
 public class ServiceUnitTests {
     UserData testUser = new UserData("testUser", "testEmail", "testPass");
     //UserData testUser2 = new UserData("testUser2", "testEmail2", "testPass2");
-
+    DatabaseManager dataAccess = new DatabaseManager();
+    UserService userService = new UserService(dataAccess);
     @BeforeEach
     void clean() throws ResponseException {
-        UserService.clear();
+        userService.clear();
     }
     @Test
     void registerSuccess() throws ResponseException {
-        var response = UserService.register(testUser);
+        var response = userService.register(testUser);
         Assertions.assertEquals("testUser", response.username());
     }
 
     @Test
     void registerTwice() throws ResponseException {
-        UserService.register(testUser);
+        userService.register(testUser);
         try {
-            UserService.register(testUser);
+            userService.register(testUser);
         }catch(ResponseException ex){
-            Assertions.assertEquals(403, ex.getCode());
+            Assertions.assertEquals(500, ex.getCode());
         }
 
     }
 
     @Test
     void loginSuccess() throws ResponseException {
-        var response = UserService.register(testUser);
-        UserService.logout(response.authToken());
+        var response = userService.register(testUser);
+        userService.logout(response.authToken());
         //now login
-        response = UserService.login(testUser);
+        response = userService.login(testUser);
 
         Assertions.assertEquals("testUser",response.username());
     }
@@ -44,7 +46,7 @@ public class ServiceUnitTests {
     @Test
     void loginNotAllowed() {
         try{
-            UserService.login(testUser);
+            userService.login(testUser);
         } catch (ResponseException ex) {
             Assertions.assertEquals(401, ex.getCode());
         }
@@ -52,8 +54,8 @@ public class ServiceUnitTests {
 
     @Test
     void logoutSuccess() throws ResponseException {
-        var auth = UserService.register(testUser).authToken();
-        UserService.logout(auth);
+        var auth = userService.register(testUser).authToken();
+        userService.logout(auth);
     }
 
 

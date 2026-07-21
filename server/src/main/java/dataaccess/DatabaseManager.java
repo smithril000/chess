@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.Properties;
 
-public class DatabaseManager {
+public class DatabaseManager implements DataAccess{
     private static String databaseName;
     private static String dbUsername;
     private static String dbPassword;
@@ -25,8 +25,8 @@ public class DatabaseManager {
     }
 
 
-
-    public static void createUserDate(UserData user) throws ResponseException {
+    @Override
+    public void createUserDate(UserData user) throws ResponseException {
         //now add to my db
         String sql = "INSERT INTO userData (username, email, password) VALUES (?, ?, ?)";
         //we need to hash the password
@@ -60,7 +60,7 @@ public class DatabaseManager {
      * }
      * </code>
      */
-    public static void pushAuthData(AuthData auth) throws ResponseException{
+    public void pushAuthData(AuthData auth) throws ResponseException{
         //now add to my db
         String sql = "INSERT INTO authData (authToken, username) VALUES (?, ?)";
         //System.out.println(sql);
@@ -77,7 +77,7 @@ public class DatabaseManager {
         }
     }
 
-    public static void clear() throws ResponseException{
+    public void clear() throws ResponseException{
         try (var conn = getConnection()){
             var statement1 = "TRUNCATE TABLE userData";
             var statement2 = "TRUNCATE TABLE authData";
@@ -100,7 +100,7 @@ public class DatabaseManager {
     }
 
     //we need a way to get a user(name, email, password) by its username
-    public static UserData getUser(String username)throws ResponseException{
+    public UserData getUser(String username)throws ResponseException{
         String sql = "SELECT username, email, password FROM userData WHERE username =?";
         //System.out.println(sql);
 
@@ -120,7 +120,7 @@ public class DatabaseManager {
         return null;
     }
 
-    private static UserData readUser(ResultSet rs) throws SQLException {
+    private UserData readUser(ResultSet rs) throws SQLException {
 
         var username = rs.getString("username");
         var email = rs.getString("email");
@@ -163,7 +163,7 @@ public class DatabaseManager {
         connectionUrl = String.format("jdbc:mysql://%s:%d", host, port);
     }
 
-    public static String getUsernameByAuth(String auth) throws ResponseException{ // this one we just want to return the username
+    public String getUsernameByAuth(String auth) throws ResponseException{ // this one we just want to return the username
         String sql = "SELECT username FROM authData WHERE authToken =?";
         //System.out.println(sql);
 
@@ -183,7 +183,7 @@ public class DatabaseManager {
         return null;
     }
 
-    public static void removeFromAuths(String auth) throws ResponseException{
+    public void removeFromAuths(String auth) throws ResponseException{
         //this gets rid of a row in our authData
         String sql = "DELETE FROM authData WHERE authToken=?";
         //System.out.println(sql);
@@ -199,7 +199,7 @@ public class DatabaseManager {
         }
     }
 
-    public static GameID createGame(String name, String newGame) throws ResponseException {
+    public GameID createGame(String name, String newGame) throws ResponseException {
         //this will return the id record class structure
         //so first we add to db
         String sql = "INSERT INTO games (name, whiteName, blackName, game) VALUES (?, ?, ?, ?)";
@@ -208,8 +208,8 @@ public class DatabaseManager {
         try (var conn = getConnection();
              var preparedStatement = conn.prepareStatement(sql)) {
             preparedStatement.setString(1, name);
-            preparedStatement.setString(2, "null");
-            preparedStatement.setString(3, "null");
+            preparedStatement.setString(2, null);
+            preparedStatement.setString(3, null);
             preparedStatement.setString(4, newGame);
 
             preparedStatement.executeUpdate();
@@ -240,7 +240,7 @@ public class DatabaseManager {
 
     }
 
-    public static boolean checkColor(String color, int id) throws ResponseException{
+    public boolean checkColor(String color, int id) throws ResponseException{
         //get the games two names for its color
         String sql = "SELECT whiteName, blackName FROM games WHERE id =?";
         String whiteName = "";
@@ -260,9 +260,9 @@ public class DatabaseManager {
             //now we can check
             if(Objects.equals(color, "WHITE")){
                 System.out.println("checking if " + whiteName + "is null");
-                return Objects.equals(whiteName, "null");
+                return Objects.equals(whiteName, null);
             }else if(Objects.equals(color, "BLACK")){
-                return Objects.equals(blackName, "null");
+                return Objects.equals(blackName, null);
             }
             return true;
 
@@ -272,19 +272,20 @@ public class DatabaseManager {
         }
     }
 
-    public static void joinGame(String color, String username) throws ResponseException {
+    public void joinGame(String color, String username, int gameID) throws ResponseException {
         //this updates the db to have which color - if we got to this point we can assume we aren't overriding names
         String sql = "";
         if(Objects.equals(color, "WHITE")){
-            sql = "UPDATE games SET whiteName=?";
+            sql = "UPDATE games SET whiteName=? WHERE id=?";
         }else if(Objects.equals(color, "BLACK")){
-            sql = "UPDATE games SET blackName=?";
+            sql = "UPDATE games SET blackName=? WHERE id=?";
         }
 
 
         try (var conn = getConnection();
              var preparedStatement = conn.prepareStatement(sql)) {
             preparedStatement.setString(1, username);
+            preparedStatement.setString(2, Integer.toString(gameID));
 
             preparedStatement.executeUpdate();
 
@@ -295,7 +296,7 @@ public class DatabaseManager {
 
     }
 
-    public static HashMap<Integer, Game> getGames() throws ResponseException {
+    public HashMap<Integer, Game> getGames() throws ResponseException {
 
         //we need to get all games
         //this likely will need to be in a hashmap of game id and Game dataType
