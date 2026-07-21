@@ -272,7 +272,7 @@ public class DatabaseManager {
         }
     }
 
-    public static void joinGame(String color, int id, String username) throws ResponseException {
+    public static void joinGame(String color, String username) throws ResponseException {
         //this updates the db to have which color - if we got to this point we can assume we aren't overriding names
         String sql = "";
         if(Objects.equals(color, "WHITE")){

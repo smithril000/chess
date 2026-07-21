@@ -2,7 +2,6 @@ package service;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import dataaccess.MemoryDataAccess;
 import dataaccess.ResponseException;
@@ -109,7 +108,7 @@ public class UserService {
         }
         String username = DatabaseManager.getUsernameByAuth(auth);
         System.out.println("Got through service fine");
-        DatabaseManager.joinGame(color, id, username);
+        DatabaseManager.joinGame(color, username);
     }
 
     public static GamesReturned getGames() throws ResponseException {
