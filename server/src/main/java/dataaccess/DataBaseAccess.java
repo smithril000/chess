@@ -12,6 +12,15 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class DataBaseAccess implements DataAccess{
+
+    public DataBaseAccess(){
+        try {
+            DatabaseManager.createDatabase();
+        }catch(DataAccessException ex){
+            System.out.println("bad");
+        }
+    }
+
     @Override
     public void createUserDate(UserData user) throws ResponseException {
         //now add to my db
@@ -257,6 +266,49 @@ public class DataBaseAccess implements DataAccess{
             }
         } catch (SQLException | ResponseException ex) {
             throw new ResponseException(500, "Error, failed to execute statement " + ex.getMessage());
+        }
+    }
+
+    private final String[] createUserStatements = {
+            """
+            CREATE TABLE IF NOT EXISTS userData (
+              username VARCHAR(255) NOT NULL,
+              email VARCHAR(255) NOT NULL,
+              password VARCHAR(255) NOT NULL,
+              PRIMARY KEY (username)
+              );
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS authData (
+                  authToken VARCHAR(255) NOT NULL,
+                  username VARCHAR(255) NOT NULL,
+                  PRIMARY KEY (authToken)
+              );
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS games (
+                  id INT NOT NULL AUTO_INCREMENT,
+                  name VARCHAR(255) NOT NULL,
+                  whiteName VARCHAR(255),
+                  blackName VARCHAR(255),
+                  game VARCHAR(5000) NOT NULL,
+                  PRIMARY KEY (id)
+              );
+            """
+    };
+
+    private void configureDatabase() throws DataAccessException, ResponseException {
+        //temp remove the database for testing
+        //clear();
+        DatabaseManager.createDatabase();
+        try(var conn = DatabaseManager.getConnection()){
+            for(var statement : createUserStatements){
+                try(var preparedStatment = conn.prepareStatement(statement)){
+                    preparedStatment.executeUpdate();
+                }
+            }
+        }catch(ResponseException | SQLException ex){
+            throw new ResponseException(500, "Bad Database");
         }
     }
 }
