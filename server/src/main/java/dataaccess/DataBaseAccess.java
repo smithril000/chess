@@ -15,9 +15,11 @@ public class DataBaseAccess implements DataAccess{
 
     public DataBaseAccess(){
         try {
-            DatabaseManager.createDatabase();
-        }catch(DataAccessException ex){
+            configureDatabase();
+        }catch(ResponseException ex){
             System.out.println("bad");
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 
