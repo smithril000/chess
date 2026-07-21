@@ -3,10 +3,12 @@ package dataaccess;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import model.AuthData;
+import model.Game;
 import model.GameID;
 import model.UserData;
 
 import java.sql.*;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -333,5 +335,33 @@ public class DatabaseManager {
         }
 
 
+    }
+
+    public static HashMap<Integer, Game> getGames() throws ResponseException {
+
+        //we need to get all games
+        //this likely will need to be in a hashmap of game id and Game dataType
+        String sql = "SELECT name, whiteName, blackName, id FROM games";
+        HashMap<Integer, Game> myGames = new HashMap<>();
+        try (var conn = getConnection();
+             var preparedStatement = conn.prepareStatement(sql)) {
+
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                while (rs.next()) {
+                    Integer id = rs.getInt("id");
+                    String name = rs.getString("name");
+                    String whiteName = rs.getString("whiteName");
+                    String blackName = rs.getString("blackName");
+                    //String game = rs.getString("game");
+                    //turn the value from json back
+                    Game game = new Game(id, whiteName, blackName, name);
+                    myGames.put(id,game);
+                }
+                return myGames;
+            }
+        } catch (SQLException | ResponseException ex) {
+            throw new ResponseException(400, "failed to execute statement " + ex.getMessage());
+        }
     }
 }

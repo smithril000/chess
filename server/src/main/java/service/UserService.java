@@ -101,8 +101,8 @@ public class UserService {
         DatabaseManager.joinGame(color, id, username);
     }
 
-    public static GamesReturned getGames() {
-        var games = MemoryDataAccess.getGames();
+    public static GamesReturned getGames() throws ResponseException {
+        HashMap<Integer, Game> games = DatabaseManager.getGames();
         //we need to nly get the values, not the keys
         List<Game> gamesToReturn = new ArrayList<>();
         for(HashMap.Entry<Integer, Game> entry : games.entrySet()){
