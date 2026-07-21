@@ -5,14 +5,15 @@ import com.google.gson.Gson;
 import dataaccess.DatabaseManager;
 import dataaccess.MemoryDataAccess;
 import dataaccess.ResponseException;
+import dataaccess.DataBaseAccess;
 import model.*;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.*;
 
 public class UserService {
-    private final DatabaseManager dataAccess;
-    public UserService(DatabaseManager dataAccess){
+    private final DataBaseAccess dataAccess;
+    public UserService(DataBaseAccess dataAccess){
         this.dataAccess = dataAccess;
     }
 

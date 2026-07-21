@@ -1,5 +1,6 @@
 package service;
 
+import dataaccess.DataBaseAccess;
 import dataaccess.DatabaseManager;
 import dataaccess.ResponseException;
 import model.UserData;
@@ -10,7 +11,7 @@ import org.junit.jupiter.api.Test;
 public class ServiceUnitTests {
     UserData testUser = new UserData("testUser", "testEmail", "testPass");
     //UserData testUser2 = new UserData("testUser2", "testEmail2", "testPass2");
-    DatabaseManager dataAccess = new DatabaseManager();
+    DataBaseAccess dataAccess = new DataBaseAccess();
     UserService userService = new UserService(dataAccess);
     @BeforeEach
     void clean() throws ResponseException {

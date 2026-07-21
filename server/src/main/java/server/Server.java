@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
+import dataaccess.DataBaseAccess;
 import dataaccess.DatabaseManager;
 import dataaccess.ResponseException;
 import io.javalin.*;
@@ -18,7 +19,7 @@ public class Server {
     private final UserService userService;
 
     public Server() {
-        var dataAccess = new DatabaseManager();
+        var dataAccess = new DataBaseAccess();
         userService = new UserService(dataAccess);
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
