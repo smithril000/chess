@@ -13,6 +13,8 @@ CREATE TABLE authData (
 CREATE TABLE games (
     id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
+    whiteName VARCHAR(255) NOT NULL,
+    blackName VARCHAR(255) NOT NULL,
     game VARCHAR(5000) NOT NULL,
     PRIMARY KEY (id)
 );

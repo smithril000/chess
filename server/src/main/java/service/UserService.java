@@ -93,12 +93,12 @@ public class UserService {
                 throw new ResponseException(400, "Error, bad request");
             }
         }
-        if(!MemoryDataAccess.checkColor(color, id)){
+        if(!DatabaseManager.checkColor(color, id)){
             throw new ResponseException(403, "Error, color taken");
         }
-        String username = MemoryDataAccess.getUsernameByAuth(auth);
+        String username = DatabaseManager.getUsernameByAuth(auth);
         System.out.println("Got through service fine");
-        MemoryDataAccess.joinGame(color, id, username);
+        DatabaseManager.joinGame(color, id, username);
     }
 
     public static GamesReturned getGames() {

@@ -1,10 +1,13 @@
 package dataaccess;
 
+import chess.ChessGame;
+import com.google.gson.Gson;
 import model.AuthData;
 import model.GameID;
 import model.UserData;
 
 import java.sql.*;
+import java.util.Objects;
 import java.util.Properties;
 
 public class DatabaseManager {
@@ -232,13 +235,15 @@ public class DatabaseManager {
     public static GameID createGame(String name, String newGame) throws ResponseException {
         //this will return the id record class structure
         //so first we add to db
-        String sql = "INSERT INTO games (name, game) VALUES (?, ?)";
+        String sql = "INSERT INTO games (name, whiteName, blackName, game) VALUES (?, ?, ?, ?)";
         //System.out.println(sql);
 
         try (var conn = getConnection();
              var preparedStatement = conn.prepareStatement(sql)) {
             preparedStatement.setString(1, name);
-            preparedStatement.setString(2, newGame);
+            preparedStatement.setString(2, "null");
+            preparedStatement.setString(3, "null");
+            preparedStatement.setString(4, newGame);
 
             int rowsInserted = preparedStatement.executeUpdate();
             //System.out.println("Rows inserted: " + rowsInserted);
@@ -264,6 +269,67 @@ public class DatabaseManager {
 
         } catch (SQLException | ResponseException ex) {
             throw new ResponseException(400, "failed to execute statement " + ex.getMessage());
+        }
+
+
+    }
+
+    public static boolean checkColor(String color, int id) throws ResponseException{
+        //get the games two names for its color
+        String sql = "SELECT whiteName, blackName FROM games WHERE id =?";
+        String whiteName = "";
+        String blackName = "";
+
+        try (var conn = getConnection();
+             var preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setString(1, Integer.toString(id));
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (rs.next()) {
+                    whiteName =  rs.getString("whiteName");
+                    blackName =  rs.getString("blackName");
+                }
+            }
+            System.out.println(whiteName+ " "  + blackName);
+            //now we can check
+            if(Objects.equals(color, "WHITE")){
+                System.out.println("checking if " + whiteName + "is null");
+                if(!Objects.equals(whiteName, "null")){
+                    return false;
+                }
+            }else if(Objects.equals(color, "BLACK")){
+                if(!Objects.equals(blackName, "null")){
+                    return false;
+                }
+            }
+            return true;
+
+
+        } catch (SQLException | ResponseException ex) {
+            throw new ResponseException(400, "failed to execute statement " + ex.getMessage());
+        }
+    }
+
+    public static void joinGame(String color, int id, String username) throws ResponseException {
+        //this updates the db to have which color - if we got to this point we can assume we aren't overriding names
+        String sql = "";
+        if(Objects.equals(color, "WHITE")){
+            sql = "UPDATE games SET whiteName=?";
+        }else if(Objects.equals(color, "BLACK")){
+            sql = "UPDATE games SET blackName=?";
+        }
+
+        String idAsString = "";
+
+        try (var conn = getConnection();
+             var preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setString(1, username);
+
+            int rowsInserted = preparedStatement.executeUpdate();
+            //System.out.println("Rows inserted: " + rowsInserted);
+
+        } catch (SQLException ex) {
+            throw new ResponseException(400, "failed to execute statement" + ex.getMessage());
         }
 
 
