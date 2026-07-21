@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.UserService;
 
-public class DatabaseTests {
+public class DatabaseUnitTests {
     UserData testUser = new UserData("testUser", "testEmail", "testPass");
     //UserData testUser2 = new UserData("testUser2", "testEmail2", "testPass2");
     DatabaseManager dataAccess = new DatabaseManager();
@@ -27,7 +27,7 @@ public class DatabaseTests {
         try {
             userService.register(testUser);
         }catch(ResponseException ex){
-            Assertions.assertEquals(500, ex.getCode());
+            Assertions.assertEquals(403, ex.getCode());
         }
 
     }

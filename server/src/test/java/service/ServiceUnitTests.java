@@ -28,7 +28,7 @@ public class ServiceUnitTests {
         try {
             userService.register(testUser);
         }catch(ResponseException ex){
-            Assertions.assertEquals(500, ex.getCode());
+            Assertions.assertEquals(403, ex.getCode());
         }
 
     }
