@@ -1,14 +1,17 @@
 package client;
 
+import chess.ChessGame;
+import com.google.gson.Gson;
 import model.Game;
 import model.GamesReturned;
+import model.JoinGameRequest;
 
 import java.util.*;
 
 public class PostLogin {
     private final String authToken;
     private final ServerFacade server;
-    private Map<Integer, Integer> gamesById = new HashMap<>();
+    private Map<Integer, ChessGame> gamesById = new HashMap<>();
 
     public PostLogin(String authToken, ServerFacade server){
         this.authToken = authToken;
@@ -40,11 +43,22 @@ public class PostLogin {
                 case "logout" -> logout();
                 case "create" -> createGame(params);
                 case "list" -> list();
+                case "join" -> joinGame(params);
                 default -> help();
             };
         } catch (Throwable ex) {
             return ex.getMessage();
         }
+    }
+
+    private String joinGame(String[] params){
+        try {
+            JoinGameRequest join = new JoinGameRequest(params[1].toUpperCase(), Integer.parseInt(params[0]));
+            server.joinGame(join, authToken);
+        }catch(Exception ex){
+            System.out.println("Error - fix");
+        }
+        return "";
     }
 
     private String list(){
@@ -71,6 +85,8 @@ public class PostLogin {
                 out.append("\n\tWhite User - ").append(white);
                 out.append("\n\tBlack User - ").append(black);
                 out.append("\n");
+                //now add to us keeping track of them by id
+                gamesById.put(i, game.game());
                 i++;
             }
             return out.toString();

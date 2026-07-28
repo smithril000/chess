@@ -5,6 +5,7 @@ import dataaccess.ResponseException;
 import model.AuthData;
 import model.GameID;
 import model.GamesReturned;
+import model.JoinGameRequest;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -116,5 +117,15 @@ public class ServerFacade {
             System.out.println(ex.getMessage());
         }
         return null;
+    }
+
+    public void joinGame(JoinGameRequest join, String auth) {
+        var req = buildRequest("PUT", "/game", join, auth);
+        try{
+            var response = sendRequest(req);
+                responseHandler(response, String.class);
+        }catch(Exception ex){
+            System.out.println(ex.getMessage());
+        }
     }
 }
