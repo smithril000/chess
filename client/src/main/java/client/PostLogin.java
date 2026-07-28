@@ -1,6 +1,5 @@
 package client;
 
-import com.google.gson.Gson;
 import model.Game;
 import model.GamesReturned;
 

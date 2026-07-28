@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.AuthData;
 import model.Game;
 import model.GameID;
@@ -53,7 +54,7 @@ public class MemoryDataAccess {
     public static GameID createGame(String name) {
         //for now we wil just make this a record
         gameId++;
-        Game game = new Game(gameId, null, null, name);
+        Game game = new Game(gameId, null, null, name, new ChessGame());
         gameList.put(gameId, game);
         return new GameID(gameId);
     }

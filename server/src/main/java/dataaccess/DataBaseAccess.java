@@ -1,5 +1,7 @@
 package dataaccess;
 
+import chess.ChessGame;
+import com.google.gson.Gson;
 import model.AuthData;
 import model.Game;
 import model.GameID;
@@ -247,7 +249,7 @@ public class DataBaseAccess implements DataAccess{
 
         //we need to get all games
         //this likely will need to be in a hashmap of game id and Game dataType
-        String sql = "SELECT gameName, whiteUsername, blackUsername, id FROM games";
+        String sql = "SELECT gameName, whiteUsername, blackUsername, id, game FROM games";
         HashMap<Integer, Game> myGames = new HashMap<>();
         try (var conn = DatabaseManager.getConnection();
              var preparedStatement = conn.prepareStatement(sql)) {
@@ -259,9 +261,10 @@ public class DataBaseAccess implements DataAccess{
                     String name = rs.getString("gameName");
                     String whiteName = rs.getString("whiteUsername");
                     String blackName = rs.getString("blackUsername");
-                    //String game = rs.getString("game");
+                    var gotGame = rs.getString("game");
                     //turn the value from json back
-                    Game game = new Game(id, whiteName, blackName, name);
+                    ChessGame chessGame = new Gson().fromJson(gotGame, ChessGame.class);
+                    Game game = new Game(id, whiteName, blackName, name, chessGame);
                     myGames.put(id,game);
                 }
                 return myGames;
