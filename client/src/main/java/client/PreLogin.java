@@ -25,7 +25,7 @@ public class PreLogin {
             String line = scanner.nextLine();
             try{
                 result = eval(line);
-                System.out.println(result);
+                //System.out.println(result);
                 if(loggedIn){
                     loggedIn = false;
                 }
@@ -59,11 +59,11 @@ public class PreLogin {
 
     private String register(String[] params){
         //create a map to mimick what our serveris expecting
-        Map<String, String> data = new HashMap<>();
+        Map<String, String> data = new HashMap<>(Map.of());
         data.put("username", params[0]);
         data.put("email", params[1]);
         data.put("password", params[2]);
         server.register(data);
-        return null;
+        return "help";
     }
 }

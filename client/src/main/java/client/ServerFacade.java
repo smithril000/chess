@@ -17,11 +17,18 @@ public class ServerFacade {
         serverUrl = "http://localhost:" + port;
     }
 
-    public void register(Map<String, String> data){
+    public void register(Map<String, String> data) {
         //we need to make what we pu tin look like the web ui
         //map should work
         var request = buildRequest("POST", "/user", data, null);
-        var response = sendRequest(request);
+        System.out.println(data);
+        try {
+            var response = sendRequest(request);
+            System.out.println(response);
+        }catch(ResponseException ex){
+            //here we can handle all of the errors
+            System.out.println(ex.getMessage());
+        }
     }
     private HttpRequest buildRequest(String method, String path, Object body, String authToken){
         var request = HttpRequest.newBuilder()
