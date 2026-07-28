@@ -49,7 +49,7 @@ public class ServerFacade {
             returnData.put("message", message);
             return returnData;
         }
-        if(responseAsData!=null){
+        if(responseAsData!=null && responseAsData.get("authToken")!=null){
             returnData.put("authToken", responseAsData.get("authToken").toString());
 
         }
@@ -106,7 +106,6 @@ public class ServerFacade {
     }
 
     public Map<String, String> createGame(Map<String, String> data, String authToken) {
-        System.out.println(data);
         var req = buildRequest("POST", "/game", data, authToken);
         try{
             var response = sendRequest(req);
