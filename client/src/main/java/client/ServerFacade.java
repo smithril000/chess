@@ -3,12 +3,10 @@ package client;
 import com.google.gson.Gson;
 import dataaccess.ResponseException;
 
-import java.io.Reader;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.HashMap;
 import java.util.Map;
 
 public class ServerFacade {
@@ -25,45 +23,36 @@ public class ServerFacade {
         var request = buildRequest("POST", "/user", data, null);
         try {
             var response = sendRequest(request);
-            return responseHandler(response);
-        }catch(ResponseException ex){
+            return responseHandler(response, Map.class);
+        }catch(Exception ex){
             //here we can handle all the errors
             System.out.println(ex.getMessage());
         }
         return null;
     }
 
-    private Map<String, String> responseHandler(HttpResponse<String> response) {
-        int code = response.statusCode();
-        System.out.println(code);
-        Map<String, String> returnData = new HashMap<>();
-        var responseAsData = new Gson().fromJson(response.body(), Map.class);
-        String message = "";
-        if(code!=200){
-            message = switch (code){
-                case 403 -> "Sorry, username already taken";
-                case 401 -> "Sorry, we can't authorize you. Maybe check your username and password";
-                default -> "Something went wrong";
-            };
+    private <T> T responseHandler(HttpResponse<String> response, Class<T> responseClass) throws Exception {
+        var status = response.statusCode();
+        if (status == 200) {
+            var body = response.body();
+            if (body == null) {
+                //throw ResponseException.fromJson(body);
+                throw new ResponseException(status, "something went wrong");
+            }
 
-            returnData.put("message", message);
-            return returnData;
+            //throw new ResponseException(ResponseException.fromHttpStatusCode(status), "other failure: " + status);
+            return new Gson().fromJson(response.body(), responseClass);
         }
-        if(responseAsData!=null && responseAsData.get("authToken")!=null){
-            returnData.put("authToken", responseAsData.get("authToken").toString());
 
-        }
-        returnData.put("message", null);
-
-        return returnData;
+        return null;
     }
 
     public Map<String, String> login(Map<String, String> data){
         var req = buildRequest("POST", "/session", data, null);
         try{
             var response = sendRequest(req);
-            return responseHandler(response);
-        }catch(ResponseException ex){
+            return responseHandler(response, Map.class);
+        }catch(Exception ex){
             System.out.println(ex.getMessage());
         }
         return null;
@@ -98,8 +87,8 @@ public class ServerFacade {
         var req = buildRequest("DELETE", "/session", auth, auth);
         try{
             var response = sendRequest(req);
-            return responseHandler(response);
-        }catch(ResponseException ex){
+            return responseHandler(response, Map.class);
+        }catch(Exception ex){
             System.out.println(ex.getMessage());
         }
         return null;
@@ -109,19 +98,19 @@ public class ServerFacade {
         var req = buildRequest("POST", "/game", data, authToken);
         try{
             var response = sendRequest(req);
-            return responseHandler(response);
-        }catch(ResponseException ex){
+            return responseHandler(response, Map.class);
+        }catch(Exception ex){
             System.out.println(ex.getMessage());
         }
         return null;
     }
 
-    public Object listGames(String authToken) {
+    public Map<String, Map> listGames(String authToken) {
         var req = buildRequest("GET", "/game", authToken, authToken);
         try{
             var response = sendRequest(req);
-            return responseHandler(response);
-        }catch(ResponseException ex){
+            return responseHandler(response, Map.class);
+        }catch(Exception ex){
             System.out.println(ex.getMessage());
         }
         return null;

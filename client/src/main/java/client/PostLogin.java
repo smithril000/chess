@@ -1,13 +1,14 @@
 package client;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import com.google.gson.Gson;
+
+import java.util.*;
 
 public class PostLogin {
     private final String authToken;
     private final ServerFacade server;
+    private Map<Integer, Integer> gamesById = new HashMap<>();
+
     public PostLogin(String authToken, ServerFacade server){
         this.authToken = authToken;
         this.server = server;
@@ -46,10 +47,47 @@ public class PostLogin {
     }
 
     private String list(){
-        //get games from db from server
-        var response = server.listGames(authToken);
-        System.out.println(response);
-        return "";
+        try{
+            Map<String, Map> games = server.listGames(authToken);
+            return listGamesHelper(games);
+
+
+        }catch(Exception ex){
+            return ex.getMessage();
+        }
+    }
+
+    private String listGamesHelper(Map<String, Map> games){
+        String out = "";
+        //now we actually list the games
+        //we need to run it into a string
+        ArrayList<Map> gameList = (ArrayList) games.get("games");
+        int i = 1; //my counter for the id's
+        for(var game : gameList){
+            String whiteName;
+            String blackName;
+            String gameName = game.get("gameName").toString();
+            if(game.get("whiteUsername") == null){
+                whiteName = "No Player";
+            }else{
+                whiteName = game.get("whiteUsername").toString();
+            }
+
+            if(game.get("blackUsername") == null){
+                blackName = "No Player";
+            }else{
+                blackName = game.get("blackUsername").toString();
+            }
+            //now i need to keep track of the ids, by the ones i created
+            int gameID = (int) (Double.parseDouble(game.get("gameID").toString()));
+//            ChessGame chessGame = new Gson().fromJson(game.get("game").toString(), ChessGame.class);
+            gamesById.put(i,gameID);
+//            chessGames.put(i, chessGame);
+            out = out + String.format("%d -- %s\n \twhite player: %s\n \tblack player: %s\n\n",gameID, gameName, whiteName, blackName);
+
+            i++;
+        }
+        return out;
     }
 
     private String createGame(String[] params){
