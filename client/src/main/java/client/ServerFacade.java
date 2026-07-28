@@ -17,26 +17,41 @@ public class ServerFacade {
         serverUrl = "http://localhost:" + port;
     }
 
-    public void register(Map<String, String> data) {
+    public String register(Map<String, String> data) {
         //we need to make what we pu tin look like the web ui
         //map should work
         var request = buildRequest("POST", "/user", data, null);
         try {
             var response = sendRequest(request);
-
+            return responseHandler(response);
         }catch(ResponseException ex){
             //here we can handle all of the errors
             System.out.println(ex.getMessage());
         }
+        return null;
     }
 
-    public void login(Map<String, String> data){
+    private String responseHandler(HttpResponse<String> response) {
+        int code = response.statusCode();
+        if(code!=200){
+            return switch (code){
+                case 403 -> "Sorry, username already taken";
+                case 401 -> "Sorry, we can't authorize you. Maybe check your username and password";
+                default -> "Something went wrong";
+            };
+        }
+        return null;
+    }
+
+    public String login(Map<String, String> data){
         var req = buildRequest("POST", "/session", data, null);
         try{
             var response = sendRequest(req);
+            return responseHandler(response);
         }catch(ResponseException ex){
             System.out.println(ex.getMessage());
         }
+        return null;
     }
     private HttpRequest buildRequest(String method, String path, Object body, String authToken){
         var request = HttpRequest.newBuilder()
