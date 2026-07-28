@@ -21,12 +21,20 @@ public class ServerFacade {
         //we need to make what we pu tin look like the web ui
         //map should work
         var request = buildRequest("POST", "/user", data, null);
-        System.out.println(data);
         try {
             var response = sendRequest(request);
-            System.out.println(response);
+
         }catch(ResponseException ex){
             //here we can handle all of the errors
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    public void login(Map<String, String> data){
+        var req = buildRequest("POST", "/session", data, null);
+        try{
+            var response = sendRequest(req);
+        }catch(ResponseException ex){
             System.out.println(ex.getMessage());
         }
     }

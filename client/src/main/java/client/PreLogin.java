@@ -43,7 +43,7 @@ public class PreLogin {
             String cmd = (tokens.length > 0) ? tokens[0] : "help";
             String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-                case "login" -> null;
+                case "login" -> login(params);
                 case "quit" -> "quit";
                 case "register" -> register(params);
                 default -> help(params);
@@ -64,6 +64,13 @@ public class PreLogin {
         data.put("email", params[1]);
         data.put("password", params[2]);
         server.register(data);
+        return "help";
+    }
+    private String login(String[] params){
+        Map<String, String> data = new HashMap<>(Map.of());
+        data.put("username", params[0]);
+        data.put("password", params[1]);
+        server.login(data);
         return "help";
     }
 }
