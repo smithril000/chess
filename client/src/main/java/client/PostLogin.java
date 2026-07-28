@@ -1,6 +1,8 @@
 package client;
 
 import com.google.gson.Gson;
+import model.Game;
+import model.GamesReturned;
 
 import java.util.*;
 
@@ -48,8 +50,31 @@ public class PostLogin {
 
     private String list(){
         try{
-            Map<String, Map> games = server.listGames(authToken);
-            return listGamesHelper(games);
+            GamesReturned gamesModel = server.listGames(authToken);
+            List<Game> games = gamesModel.games();
+            StringBuilder out = new StringBuilder();
+            int i = 1;
+            for(Game game : games){
+                //we want to add the data to a string stream to out
+                //start with the number
+                out.append("game ID: ").append(i);
+                //now gamename
+                out.append(" - GameName: ").append(game.gameName());
+                //now usernames
+                String white = "No Player";
+                String black = "No Player";
+                if(game.blackUsername() != null){
+                    black = game.blackUsername();
+                }
+                if(game.whiteUsername()!=null){
+                    white = game.whiteUsername();
+                }
+                out.append("\n\tWhite User - ").append(white);
+                out.append("\n\tBlack User - ").append(black);
+                out.append("\n");
+                i++;
+            }
+            return out.toString();
 
 
         }catch(Exception ex){
@@ -57,38 +82,6 @@ public class PostLogin {
         }
     }
 
-    private String listGamesHelper(Map<String, Map> games){
-        String out = "";
-        //now we actually list the games
-        //we need to run it into a string
-        ArrayList<Map> gameList = (ArrayList) games.get("games");
-        int i = 1; //my counter for the id's
-        for(var game : gameList){
-            String whiteName;
-            String blackName;
-            String gameName = game.get("gameName").toString();
-            if(game.get("whiteUsername") == null){
-                whiteName = "No Player";
-            }else{
-                whiteName = game.get("whiteUsername").toString();
-            }
-
-            if(game.get("blackUsername") == null){
-                blackName = "No Player";
-            }else{
-                blackName = game.get("blackUsername").toString();
-            }
-            //now i need to keep track of the ids, by the ones i created
-            int gameID = (int) (Double.parseDouble(game.get("gameID").toString()));
-//            ChessGame chessGame = new Gson().fromJson(game.get("game").toString(), ChessGame.class);
-            gamesById.put(i,gameID);
-//            chessGames.put(i, chessGame);
-            out = out + String.format("%d -- %s\n \twhite player: %s\n \tblack player: %s\n\n",gameID, gameName, whiteName, blackName);
-
-            i++;
-        }
-        return out;
-    }
 
     private String createGame(String[] params){
         if(params.length!=1){

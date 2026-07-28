@@ -2,6 +2,7 @@ package client;
 
 import com.google.gson.Gson;
 import dataaccess.ResponseException;
+import model.GamesReturned;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -105,11 +106,11 @@ public class ServerFacade {
         return null;
     }
 
-    public Map<String, Map> listGames(String authToken) {
+    public GamesReturned listGames(String authToken) {
         var req = buildRequest("GET", "/game", authToken, authToken);
         try{
             var response = sendRequest(req);
-            return responseHandler(response, Map.class);
+            return responseHandler(response, GamesReturned.class);
         }catch(Exception ex){
             System.out.println(ex.getMessage());
         }
