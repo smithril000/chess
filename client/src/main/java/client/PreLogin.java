@@ -1,6 +1,8 @@
 package client;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class PreLogin {
@@ -37,9 +39,9 @@ public class PreLogin {
             String cmd = (tokens.length > 0) ? tokens[0] : "help";
             String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-                case "help" -> help(params);
                 case "login" -> null;
                 case "quit" -> "quit";
+                case "register" -> register(params);
                 default -> help(params);
             };
         } catch (Throwable ex) {
@@ -49,5 +51,14 @@ public class PreLogin {
 
     private String help(String[] params){
         return String.format("%s\n%s\nhelp - shows helpful instructions :)\nquit - quits operation", regString, loginString);
+    }
+
+    private String register(String[] params){
+        //create a map to mimick what our serveris expecting
+        Map<String, String> data = new HashMap<>();
+        data.put("username", params[0]);
+        data.put("email", params[1]);
+        data.put("password", params[2]);
+        return null;
     }
 }
