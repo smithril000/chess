@@ -3,10 +3,12 @@ package client;
 import com.google.gson.Gson;
 import dataaccess.ResponseException;
 
+import java.io.Reader;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.HashMap;
 import java.util.Map;
 
 public class ServerFacade {
@@ -17,7 +19,7 @@ public class ServerFacade {
         serverUrl = "http://localhost:" + port;
     }
 
-    public String register(Map<String, String> data) {
+    public Map<String, String> register(Map<String, String> data) {
         //we need to make what we pu tin look like the web ui
         //map should work
         var request = buildRequest("POST", "/user", data, null);
@@ -25,25 +27,31 @@ public class ServerFacade {
             var response = sendRequest(request);
             return responseHandler(response);
         }catch(ResponseException ex){
-            //here we can handle all of the errors
+            //here we can handle all the errors
             System.out.println(ex.getMessage());
         }
         return null;
     }
 
-    private String responseHandler(HttpResponse<String> response) {
+    private Map<String, String> responseHandler(HttpResponse<String> response) {
         int code = response.statusCode();
+        Map<String, String> returnData = new HashMap<>();
+        var responseAsData = new Gson().fromJson(response.body(), Map.class);
+        String message = "";
         if(code!=200){
-            return switch (code){
+            message = switch (code){
                 case 403 -> "Sorry, username already taken";
                 case 401 -> "Sorry, we can't authorize you. Maybe check your username and password";
                 default -> "Something went wrong";
             };
+            returnData.put("message", message);
+            return returnData;
         }
-        return null;
+        returnData.put("authToken", responseAsData.get("authToken").toString());
+        return returnData;
     }
 
-    public String login(Map<String, String> data){
+    public Map<String, String> login(Map<String, String> data){
         var req = buildRequest("POST", "/session", data, null);
         try{
             var response = sendRequest(req);

@@ -9,7 +9,8 @@ public class PreLogin {
     private final ServerFacade server;
     private boolean loggedIn = false;
     private final String regString = "register <USERNAME> <PASSWORD> <EMAIL> - creates a new user";
-    private final String loginString = "login <USERNAME> <PASSWORD> - logges into an existing user";
+    private final String loginString = "login <USERNAME> <PASSWORD> - logs into an existing user";
+    private String authToken;
 
     public PreLogin(int port){
         server = new ServerFacade(port);
@@ -64,21 +65,29 @@ public class PreLogin {
         //fist check if number of params is what we expect
         if(params.length != 3){
             System.out.println("Wrong number of arguments");
-            System.out.println("Expected some thing like - " + regString);
+            return "Expected some thing like - " + regString;
         }
-        //create a map to mimick what our serveris expecting
+        //create a map to mimic what our servers expecting
         Map<String, String> data = new HashMap<>(Map.of());
         data.put("username", params[0]);
         data.put("email", params[1]);
         data.put("password", params[2]);
         var res = server.register(data);
-        if(res==null){
+        authToken = res.get("authToken");
+        if(res.get("message")==null){
             loggedIn = true;
+            return "";
         }
-        return res;
+        //we couldn't register
+        System.out.println(res.get("message"));
+        return "";
 
     }
     private String login(String[] params){
+        if(params.length !=2){
+            System.out.println("Wrong number of arguments");
+            return "Expected something like " + loginString;
+        }
         Map<String, String> data = new HashMap<>(Map.of());
         data.put("username", params[0]);
         data.put("password", params[1]);
@@ -87,7 +96,7 @@ public class PreLogin {
             loggedIn = true;
             return "";
         }
-        return res;
+        return "";
 
     }
 }

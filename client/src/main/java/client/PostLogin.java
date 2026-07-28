@@ -27,10 +27,17 @@ public class PostLogin {
             String cmd = (tokens.length > 0) ? tokens[0] : "help";
             String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
+                case "logout" -> logout();
                 default -> "help()";
             };
         } catch (Throwable ex) {
             return ex.getMessage();
         }
+    }
+
+    private String logout() {
+        //first parse what my server expects
+        //we need my auth token
+        return "";
     }
 }
