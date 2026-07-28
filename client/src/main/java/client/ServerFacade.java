@@ -115,4 +115,15 @@ public class ServerFacade {
         }
         return null;
     }
+
+    public Object listGames(String authToken) {
+        var req = buildRequest("GET", "/game", authToken, authToken);
+        try{
+            var response = sendRequest(req);
+            return responseHandler(response);
+        }catch(ResponseException ex){
+            System.out.println(ex.getMessage());
+        }
+        return null;
+    }
 }

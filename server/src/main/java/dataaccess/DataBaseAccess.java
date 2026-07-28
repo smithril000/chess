@@ -256,7 +256,7 @@ public class DataBaseAccess implements DataAccess{
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 while (rs.next()) {
                     int id = rs.getInt("id");
-                    String name = rs.getString("name");
+                    String name = rs.getString("gameName");
                     String whiteName = rs.getString("whiteUsername");
                     String blackName = rs.getString("blackUsername");
                     //String game = rs.getString("game");

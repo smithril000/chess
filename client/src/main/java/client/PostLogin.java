@@ -37,11 +37,19 @@ public class PostLogin {
             return switch (cmd) {
                 case "logout" -> logout();
                 case "create" -> createGame(params);
+                case "list" -> list();
                 default -> help();
             };
         } catch (Throwable ex) {
             return ex.getMessage();
         }
+    }
+
+    private String list(){
+        //get games from db from server
+        var response = server.listGames(authToken);
+        System.out.println(response);
+        return "";
     }
 
     private String createGame(String[] params){
