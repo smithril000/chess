@@ -6,10 +6,14 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class PreLogin {
-
+    private final ServerFacade server;
     private boolean loggedIn = false;
     private final String regString = "register <USERNAME> <PASSWORD> <EMAIL> - creates a new user";
     private final String loginString = "login <USERNAME> <PASSWORD> - logges into an existing user";
+
+    public PreLogin(int port){
+        server = new ServerFacade(port);
+    }
 
 
     public void run(){
@@ -59,6 +63,7 @@ public class PreLogin {
         data.put("username", params[0]);
         data.put("email", params[1]);
         data.put("password", params[2]);
+        server.register(data);
         return null;
     }
 }
