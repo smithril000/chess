@@ -1,0 +1,36 @@
+package client;
+
+import java.util.Arrays;
+import java.util.Scanner;
+
+public class PostLogin {
+    public void run(){
+        System.out.println("Welcome");
+        Scanner scanner = new Scanner(System.in);
+        var result = "";
+        while(!result.equals("goodbye")){
+            System.out.print("[Logged in] >> ");
+            String line = scanner.nextLine();
+            try{
+                result = eval(line);
+                System.out.println(result);
+            }catch (Throwable ex){
+                var errorMessage = ex.toString();
+                System.out.println(errorMessage);
+            }
+
+        }
+    }
+    public String eval(String input) {
+        try {
+            String[] tokens = input.toLowerCase().split(" ");
+            String cmd = (tokens.length > 0) ? tokens[0] : "help";
+            String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
+            return switch (cmd) {
+                default -> "help()";
+            };
+        } catch (Throwable ex) {
+            return ex.getMessage();
+        }
+    }
+}

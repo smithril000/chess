@@ -27,6 +27,9 @@ public class PreLogin {
                 result = eval(line);
                 System.out.println(result);
                 if(loggedIn){
+                    //now that we are logged in we can pause here and run our other ui
+                    PostLogin post = new PostLogin();
+                    post.run();
                     loggedIn = false;
                 }
             }catch (Throwable ex){
@@ -68,14 +71,23 @@ public class PreLogin {
         data.put("username", params[0]);
         data.put("email", params[1]);
         data.put("password", params[2]);
-        return server.register(data);
+        var res = server.register(data);
+        if(res==null){
+            loggedIn = true;
+        }
+        return res;
 
     }
     private String login(String[] params){
         Map<String, String> data = new HashMap<>(Map.of());
         data.put("username", params[0]);
         data.put("password", params[1]);
-        return server.login(data);
+        var res = server.login(data);
+        if(res==null){
+            loggedIn = true;
+            return "";
+        }
+        return res;
 
     }
 }
