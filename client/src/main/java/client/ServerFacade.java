@@ -2,6 +2,8 @@ package client;
 
 import com.google.gson.Gson;
 import dataaccess.ResponseException;
+import model.AuthData;
+import model.GameID;
 import model.GamesReturned;
 
 import java.net.URI;
@@ -18,13 +20,13 @@ public class ServerFacade {
         serverUrl = "http://localhost:" + port;
     }
 
-    public Map<String, String> register(Map<String, String> data) {
+    public AuthData register(Map<String, String> data) {
         //we need to make what we pu tin look like the web ui
         //map should work
         var request = buildRequest("POST", "/user", data, null);
         try {
             var response = sendRequest(request);
-            return responseHandler(response, Map.class);
+            return responseHandler(response, AuthData.class);
         }catch(Exception ex){
             //here we can handle all the errors
             System.out.println(ex.getMessage());
@@ -48,11 +50,11 @@ public class ServerFacade {
         return null;
     }
 
-    public Map<String, String> login(Map<String, String> data){
+    public AuthData login(Map<String, String> data){
         var req = buildRequest("POST", "/session", data, null);
         try{
             var response = sendRequest(req);
-            return responseHandler(response, Map.class);
+            return responseHandler(response, AuthData.class);
         }catch(Exception ex){
             System.out.println(ex.getMessage());
         }
@@ -84,22 +86,21 @@ public class ServerFacade {
 
     }
 
-    public Map<String, String> logout(Map<String, String> data, String auth) {
+    public void logout(Map<String, String> data, String auth) {
         var req = buildRequest("DELETE", "/session", auth, auth);
         try{
             var response = sendRequest(req);
-            return responseHandler(response, Map.class);
+
         }catch(Exception ex){
             System.out.println(ex.getMessage());
         }
-        return null;
     }
 
-    public Map<String, String> createGame(Map<String, String> data, String authToken) {
+    public GameID createGame(Map<String, String> data, String authToken) {
         var req = buildRequest("POST", "/game", data, authToken);
         try{
             var response = sendRequest(req);
-            return responseHandler(response, Map.class);
+            return responseHandler(response, GameID.class);
         }catch(Exception ex){
             System.out.println(ex.getMessage());
         }

@@ -91,11 +91,11 @@ public class PostLogin {
         Map<String, String> data = new HashMap<>(Map.of());
         data.put("gameName", params[0]);
         var res = server.createGame(data, this.authToken);
-        if(res.get("message")==null){
+        if(res.gameID()!=0){
             //we log out correctly if here
             return "Game created successfully!";
         }
-        return res.get("message");
+        return "error - fix";
     }
 
     private String logout() {
@@ -103,12 +103,8 @@ public class PostLogin {
         //we need my auth token
         Map<String, String> data = new HashMap<>();
         data.put("authToken", this.authToken);
-        var res = server.logout(data, this.authToken);
-        if(res.get("message")==null){
-            //we log out correctly if here
-            return "goodbye";
-        }
-        return res.get("message");
+        server.logout(data, this.authToken);
+        return "";
     }
 
     private String help(){

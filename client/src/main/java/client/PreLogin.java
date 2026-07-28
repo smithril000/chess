@@ -73,13 +73,13 @@ public class PreLogin {
         data.put("email", params[1]);
         data.put("password", params[2]);
         var res = server.register(data);
-        authToken = res.get("authToken");
-        if(res.get("message")==null){
+        authToken = res.authToken();
+        if(res.authToken()==null){
             loggedIn = true;
             return "";
         }
         //we couldn't register
-        System.out.println(res.get("message"));
+        System.out.println("couldn't log in");
         return "";
 
     }
@@ -92,12 +92,12 @@ public class PreLogin {
         data.put("username", params[0]);
         data.put("password", params[1]);
         var res = server.login(data);
-        authToken = res.get("authToken");
-        if(res.get("message")==null){
+        authToken = res.authToken();
+        if(authToken!=null){
             loggedIn = true;
             return "";
         }
-        return res.get("message");
+        return "error - fix";
 
     }
 }
