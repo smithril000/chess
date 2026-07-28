@@ -36,7 +36,7 @@ public class PostLogin {
             String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "logout" -> logout();
-                default -> "help()";
+                default -> help();
             };
         } catch (Throwable ex) {
             return ex.getMessage();
@@ -54,5 +54,15 @@ public class PostLogin {
             return "goodbye";
         }
         return res.get("message");
+    }
+
+    private String help(){
+        String help = "help - Some helpful commands";
+        String create = "create <NAME> - creates a new Chess Game";
+        String list = "list - lists all games";
+        String join = "join <PlayerColor> <ID> - joins a game by its id";
+        String observe = "observe <ID> - joins a game as an observer by its id";
+        String logout = "logout - logs a user out";
+        return String.format("Help Menu\n----------------\n%s\n%s\n%s\n%s\n%s\n%s\n",help,create,list,join,observe,logout);
     }
 }
