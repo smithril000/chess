@@ -6,6 +6,10 @@ import java.util.Scanner;
 public class PreLogin {
 
     private boolean loggedIn = false;
+    private final String regString = "register <USERNAME> <PASSWORD> <EMAIL> - creates a new user";
+    private final String loginString = "login <USERNAME> <PASSWORD> - logges into an existing user";
+
+
     public void run(){
         System.out.println("Welcome to chess. Type Help to get started");
         Scanner scanner = new Scanner(System.in);
@@ -35,7 +39,8 @@ public class PreLogin {
             return switch (cmd) {
                 case "help" -> help(params);
                 case "login" -> null;
-                default -> throw new IllegalStateException("Unexpected value: " + cmd);
+                case "quit" -> "quit";
+                default -> help(params);
             };
         } catch (Throwable ex) {
             return ex.getMessage();
@@ -43,7 +48,6 @@ public class PreLogin {
     }
 
     private String help(String[] params){
-        System.out.println("help works");
-        return null;
+        return String.format("%s\n%s\nhelp - shows helpful instructions :)\nquit - quits operation", regString, loginString);
     }
 }
