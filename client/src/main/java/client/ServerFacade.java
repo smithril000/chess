@@ -35,6 +35,7 @@ public class ServerFacade {
 
     private Map<String, String> responseHandler(HttpResponse<String> response) {
         int code = response.statusCode();
+        System.out.println(code);
         Map<String, String> returnData = new HashMap<>();
         var responseAsData = new Gson().fromJson(response.body(), Map.class);
         String message = "";
@@ -95,6 +96,18 @@ public class ServerFacade {
 
     public Map<String, String> logout(Map<String, String> data, String auth) {
         var req = buildRequest("DELETE", "/session", auth, auth);
+        try{
+            var response = sendRequest(req);
+            return responseHandler(response);
+        }catch(ResponseException ex){
+            System.out.println(ex.getMessage());
+        }
+        return null;
+    }
+
+    public Map<String, String> createGame(Map<String, String> data, String authToken) {
+        System.out.println(data);
+        var req = buildRequest("POST", "/game", data, authToken);
         try{
             var response = sendRequest(req);
             return responseHandler(response);

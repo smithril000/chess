@@ -149,7 +149,7 @@ public class DataBaseAccess implements DataAccess{
     public GameID createGame(String name, String newGame) throws ResponseException {
         //this will return the id record class structure
         //so first we add to db
-        String sql = "INSERT INTO games (name, whiteName, blackName, game) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO games (gameName, whiteUsername, blackUsername, game) VALUES (?, ?, ?, ?)";
         //System.out.println(sql);
 
         try (var conn = DatabaseManager.getConnection();
@@ -166,7 +166,7 @@ public class DataBaseAccess implements DataAccess{
         }
 
         //now we need to get its id back
-        sql = "SELECT id FROM games WHERE name =?";
+        sql = "SELECT id FROM games WHERE gameName =?";
         String idAsString = "";
 
         try (var conn = DatabaseManager.getConnection();
@@ -189,7 +189,7 @@ public class DataBaseAccess implements DataAccess{
 
     public boolean checkColor(String color, int id) throws ResponseException{
         //get the games two names for its color
-        String sql = "SELECT whiteName, blackName FROM games WHERE id =?";
+        String sql = "SELECT whiteUsername, blackUsername FROM games WHERE id =?";
         String whiteName = "";
         String blackName = "";
 
@@ -199,8 +199,8 @@ public class DataBaseAccess implements DataAccess{
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 if (rs.next()) {
-                    whiteName =  rs.getString("whiteName");
-                    blackName =  rs.getString("blackName");
+                    whiteName =  rs.getString("whiteUsername");
+                    blackName =  rs.getString("blackUsername");
                 }
             }
             System.out.println(whiteName+ " "  + blackName);
@@ -223,9 +223,9 @@ public class DataBaseAccess implements DataAccess{
         //this updates the db to have which color - if we got to this point we can assume we aren't overriding names
         String sql = "";
         if(Objects.equals(color, "WHITE")){
-            sql = "UPDATE games SET whiteName=? WHERE id=?";
+            sql = "UPDATE games SET whiteUsername=? WHERE id=?";
         }else if(Objects.equals(color, "BLACK")){
-            sql = "UPDATE games SET blackName=? WHERE id=?";
+            sql = "UPDATE games SET blackUsername=? WHERE id=?";
         }
 
 
@@ -247,7 +247,7 @@ public class DataBaseAccess implements DataAccess{
 
         //we need to get all games
         //this likely will need to be in a hashmap of game id and Game dataType
-        String sql = "SELECT name, whiteName, blackName, id FROM games";
+        String sql = "SELECT gameName, whiteUsername, blackUsername, id FROM games";
         HashMap<Integer, Game> myGames = new HashMap<>();
         try (var conn = DatabaseManager.getConnection();
              var preparedStatement = conn.prepareStatement(sql)) {
@@ -257,8 +257,8 @@ public class DataBaseAccess implements DataAccess{
                 while (rs.next()) {
                     int id = rs.getInt("id");
                     String name = rs.getString("name");
-                    String whiteName = rs.getString("whiteName");
-                    String blackName = rs.getString("blackName");
+                    String whiteName = rs.getString("whiteUsername");
+                    String blackName = rs.getString("blackUsername");
                     //String game = rs.getString("game");
                     //turn the value from json back
                     Game game = new Game(id, whiteName, blackName, name);
@@ -290,9 +290,9 @@ public class DataBaseAccess implements DataAccess{
             """
             CREATE TABLE IF NOT EXISTS games (
                   id INT NOT NULL AUTO_INCREMENT,
-                  name VARCHAR(255) NOT NULL,
-                  whiteName VARCHAR(255),
-                  blackName VARCHAR(255),
+                  gameName VARCHAR(255) NOT NULL,
+                  whiteUsername VARCHAR(255),
+                  blackUsername VARCHAR(255),
                   game VARCHAR(5000) NOT NULL,
                   PRIMARY KEY (id)
               );

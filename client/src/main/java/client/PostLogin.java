@@ -36,11 +36,27 @@ public class PostLogin {
             String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "logout" -> logout();
+                case "create" -> createGame(params);
                 default -> help();
             };
         } catch (Throwable ex) {
             return ex.getMessage();
         }
+    }
+
+    private String createGame(String[] params){
+        if(params.length!=1){
+            System.out.println("Wrong number of params");
+            return "help";
+        }
+        Map<String, String> data = new HashMap<>(Map.of());
+        data.put("gameName", params[0]);
+        var res = server.createGame(data, this.authToken);
+        if(res.get("message")==null){
+            //we log out correctly if here
+            return "Game created successfully!";
+        }
+        return res.get("message");
     }
 
     private String logout() {
@@ -50,7 +66,7 @@ public class PostLogin {
         data.put("authToken", this.authToken);
         var res = server.logout(data, this.authToken);
         if(res.get("message")==null){
-            //we logout out correctly if here
+            //we log out correctly if here
             return "goodbye";
         }
         return res.get("message");
