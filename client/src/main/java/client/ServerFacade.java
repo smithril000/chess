@@ -44,10 +44,16 @@ public class ServerFacade {
                 case 401 -> "Sorry, we can't authorize you. Maybe check your username and password";
                 default -> "Something went wrong";
             };
+
             returnData.put("message", message);
             return returnData;
         }
-        returnData.put("authToken", responseAsData.get("authToken").toString());
+        if(responseAsData!=null){
+            returnData.put("authToken", responseAsData.get("authToken").toString());
+
+        }
+        returnData.put("message", null);
+
         return returnData;
     }
 
@@ -85,5 +91,16 @@ public class ServerFacade {
         }
 
 
+    }
+
+    public Map<String, String> logout(Map<String, String> data, String auth) {
+        var req = buildRequest("DELETE", "/session", auth, auth);
+        try{
+            var response = sendRequest(req);
+            return responseHandler(response);
+        }catch(ResponseException ex){
+            System.out.println(ex.getMessage());
+        }
+        return null;
     }
 }

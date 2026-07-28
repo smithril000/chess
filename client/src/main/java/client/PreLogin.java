@@ -29,7 +29,7 @@ public class PreLogin {
                 System.out.println(result);
                 if(loggedIn){
                     //now that we are logged in we can pause here and run our other ui
-                    PostLogin post = new PostLogin();
+                    PostLogin post = new PostLogin(authToken, server);
                     post.run();
                     loggedIn = false;
                 }
@@ -92,11 +92,12 @@ public class PreLogin {
         data.put("username", params[0]);
         data.put("password", params[1]);
         var res = server.login(data);
-        if(res==null){
+        authToken = res.get("authToken");
+        if(res.get("message")==null){
             loggedIn = true;
             return "";
         }
-        return "";
+        return res.get("message");
 
     }
 }

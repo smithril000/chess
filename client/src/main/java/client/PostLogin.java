@@ -1,9 +1,17 @@
 package client;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class PostLogin {
+    private final String authToken;
+    private final ServerFacade server;
+    public PostLogin(String authToken, ServerFacade server){
+        this.authToken = authToken;
+        this.server = server;
+    }
     public void run(){
         System.out.println("Welcome");
         Scanner scanner = new Scanner(System.in);
@@ -38,6 +46,13 @@ public class PostLogin {
     private String logout() {
         //first parse what my server expects
         //we need my auth token
-        return "";
+        Map<String, String> data = new HashMap<>();
+        data.put("authToken", this.authToken);
+        var res = server.logout(data, this.authToken);
+        if(res.get("message")==null){
+            //we logout out correctly if here
+            return "goodbye";
+        }
+        return res.get("message");
     }
 }
