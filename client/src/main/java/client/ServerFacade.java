@@ -123,7 +123,8 @@ public class ServerFacade {
         var req = buildRequest("PUT", "/game", join, auth);
         try{
             var response = sendRequest(req);
-                responseHandler(response, String.class);
+            responseHandler(response, String.class);
+            //now we need to display the game
         }catch(Exception ex){
             System.out.println(ex.getMessage());
         }

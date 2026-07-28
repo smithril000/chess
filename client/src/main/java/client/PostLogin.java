@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import model.Game;
 import model.GamesReturned;
 import model.JoinGameRequest;
+import ui.DrawBoard;
 
 import java.util.*;
 
@@ -55,6 +56,9 @@ public class PostLogin {
         try {
             JoinGameRequest join = new JoinGameRequest(params[1].toUpperCase(), Integer.parseInt(params[0]));
             server.joinGame(join, authToken);
+            //now we need to display the game
+            DrawBoard printBoard = new DrawBoard();
+            return printBoard.draw(new ChessGame(), params[1].toUpperCase());
         }catch(Exception ex){
             System.out.println("Error - fix");
         }
