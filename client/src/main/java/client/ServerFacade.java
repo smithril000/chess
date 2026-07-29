@@ -127,4 +127,9 @@ public class ServerFacade {
         responseHandler(response, String.class);
         //now we need to display the game
     }
+    public void clear() throws ResponseException {
+        var req = buildRequest("DELETE", "/db", null, null);
+        var response = sendRequest(req);
+        responseHandler(response, String.class);
+    }
 }
