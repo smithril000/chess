@@ -146,7 +146,28 @@ public class ServerFacadeTests {
     void joinGame() throws ResponseException {
         var auth = facade.register(createRegUser("player1", "password", "p1@email.com"));
         facade.createGame(createGameReq("myGameName"),auth.authToken());
-        facade.joinGame(new JoinGameRequest("WHITE", 1),auth.authToken());
-    }
+        facade.listGames(auth.authToken());
 
+        boolean foundError = false;
+        try {
+            facade.joinGame(new JoinGameRequest("WHITE", 1),auth.authToken());
+        }catch(ResponseException ex){
+            foundError = true;
+        }
+        assertFalse(foundError);
+    }
+    @Test
+    void joinGameNoAuth() throws ResponseException {
+        var auth = facade.register(createRegUser("player1", "password", "p1@email.com"));
+        facade.createGame(createGameReq("myGameName"),auth.authToken());
+        facade.listGames(auth.authToken());
+        facade.clear();
+        boolean foundError = false;
+        try {
+            facade.joinGame(new JoinGameRequest("WHITE", 1),auth.authToken());
+        }catch(ResponseException ex){
+            foundError = true;
+        }
+        assertTrue(foundError);
+    }
 }
