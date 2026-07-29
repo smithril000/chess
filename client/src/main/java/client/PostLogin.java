@@ -55,6 +55,11 @@ public class PostLogin {
     }
 
     private String observerGame(String[] params) {
+        //check the params
+        if(params.length != 1){
+            System.out.print("Wrong amount of arguments, expected something like - ");
+            System.out.println("observe <ID>");
+        }
         //we just want to draw the game for now
         //find the game to draw
         ChessGame game = gamesById.get(Integer.parseInt(params[0]));
@@ -64,6 +69,11 @@ public class PostLogin {
     }
 
     private String joinGame(String[] params){
+        //check games
+        if(params.length != 2){
+            System.out.print("Wrong amount of arguments, expected something like - ");
+            System.out.println("join <PlayerColor> <ID>");
+        }
         //first we need to find out actual game
         ChessGame game = gamesById.get(Integer.parseInt(params[0]));
         int id = idLog.get(Integer.parseInt(params[0]));
@@ -125,8 +135,8 @@ public class PostLogin {
 
     private String createGame(String[] params){
         if(params.length!=1){
-            System.out.println("Wrong number of params");
-            return "help";
+            System.out.println("Wrong number of params, expecting something like - create <NAME>");
+            return "";
         }
         Map<String, String> data = new HashMap<>(Map.of());
         data.put("gameName", params[0]);
@@ -135,7 +145,7 @@ public class PostLogin {
             //we log out correctly if here
             return "Game created successfully!";
         }
-        return "error - fix";
+        return "error - Something went wrong";
     }
 
     private String logout() {
