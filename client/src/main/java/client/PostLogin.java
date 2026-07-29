@@ -46,11 +46,21 @@ public class PostLogin {
                 case "create" -> createGame(params);
                 case "list" -> list();
                 case "join" -> joinGame(params);
+                case "observe" -> observerGame(params);
                 default -> help();
             };
         } catch (Throwable ex) {
             return ex.getMessage();
         }
+    }
+
+    private String observerGame(String[] params) {
+        //we just want to draw the game for now
+        //find the game to draw
+        ChessGame game = gamesById.get(Integer.parseInt(params[0]));
+        //drawing
+        DrawBoard printBoard = new DrawBoard();
+        return printBoard.draw(game, "WHITE");
     }
 
     private String joinGame(String[] params){
@@ -132,7 +142,7 @@ public class PostLogin {
         //first parse what my server expects
         //we need my auth token
         server.logout(this.authToken);
-        return "";
+        return "goodbye";
     }
 
     private String help(){
