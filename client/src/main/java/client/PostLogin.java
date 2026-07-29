@@ -148,7 +148,7 @@ public class PostLogin {
         return "error - Something went wrong";
     }
 
-    private String logout() {
+    private String logout() throws ResponseException {
         //first parse what my server expects
         //we need my auth token
         server.logout(this.authToken);

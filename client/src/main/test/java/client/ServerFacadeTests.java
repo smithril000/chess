@@ -7,8 +7,7 @@ import server.Server;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class ServerFacadeTests {
@@ -48,12 +47,12 @@ public class ServerFacadeTests {
 
 
     @Test
-    void register() throws Exception {
-        var authData = facade.register(createRegUser("player1", "password", "p1@email.com"));
+    void register() {
+        var authData = facade.register(createRegUser("player", "passwor", "p@email.com"));
         assertTrue(authData.authToken().length() > 10);
     }
     @Test
-    void doubleReg() throws Exception{
+    void doubleReg() {
         facade.register(createRegUser("player1", "password", "p1@email.com"));
         //register agian with same info
         var authData = facade.register(createRegUser("player1", "password", "p1@email.com"));
@@ -61,7 +60,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void login() throws Exception{
+    void login() {
         //first red
         facade.register(createRegUser("player1", "password", "p1@email.com"));
         var auth = facade.login(createLoginUser("player1", "password"));
@@ -69,11 +68,30 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void badLogin() throws Exception{
+    void badLogin() {
         facade.register(createRegUser("player1", "password", "p1@email.com"));
-        var auth = facade.login(createLoginUser("player1", "BADpassword"));
+        var auth = facade.login(createLoginUser("player", "BADpassword"));
         assertNull(auth);
     }
 
+    @Test
+    void logout() throws ResponseException {
+        var auth = facade.register(createRegUser("player1", "password", "p1@email.com"));
+        var res = facade.logout(auth.authToken());
+        assertNull(res);
+    }
+
+    @Test
+    void badLogout() throws ResponseException {
+        var auth = facade.register(createRegUser("player1", "password", "p1@email.com"));
+        facade.clear();
+        boolean foundError = false;
+        try {
+            var res = facade.logout(auth.authToken());
+        }catch(ResponseException ex){
+            foundError = true;
+        }
+        assertTrue(foundError);
+    }
 
 }

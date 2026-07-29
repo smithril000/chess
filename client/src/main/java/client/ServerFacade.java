@@ -48,6 +48,12 @@ public class ServerFacade {
             return new Gson().fromJson(response.body(), responseClass);
         }else if(status == 403){
             throw new ResponseException(status, "Sorry! Already taken");
+        }else if(status == 500){
+            throw new ResponseException(status, "Sorry, something went wrong");
+        }else if(status == 400){
+            throw new ResponseException(status, "Sorry, something went wrong");
+        }else if(status == 401){
+            throw new ResponseException(status, "Sorry, we had an issue with your account");
         }
 
         return null;
@@ -89,14 +95,11 @@ public class ServerFacade {
 
     }
 
-    public void logout( String auth) {
+    public String logout( String auth) throws ResponseException {
         var req = buildRequest("DELETE", "/session", auth, auth);
-        try{
-            sendRequest(req);
+        var res = sendRequest(req);
+        return responseHandler(res, String.class);
 
-        }catch(Exception ex){
-            System.out.println(ex.getMessage());
-        }
     }
 
     public GameID createGame(Map<String, String> data, String authToken) {
