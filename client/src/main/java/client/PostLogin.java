@@ -160,7 +160,7 @@ public class PostLogin {
         Map<String, String> data = new HashMap<>(Map.of());
         data.put("gameName", params[0]);
         try {
-            var res = server.createGame(data, this.authToken);
+            server.createGame(data, this.authToken);
         }catch(ResponseException ex){
             System.out.println(ex.getMessage());
             return "";
