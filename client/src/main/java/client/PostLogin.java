@@ -60,6 +60,13 @@ public class PostLogin {
             System.out.print("Wrong amount of arguments, expected something like - ");
             System.out.println("observe <ID>");
         }
+        //check mage sure we got an int
+        try{
+            Integer.parseInt(params[0]);
+        }catch(NumberFormatException ex){
+            System.out.println("Hmm, couldn't recognize that game id");
+            return "";
+        }
         //we just want to draw the game for now
         //find the game to draw
         ChessGame game = gamesById.get(Integer.parseInt(params[0]));
@@ -74,15 +81,28 @@ public class PostLogin {
             System.out.print("Wrong amount of arguments, expected something like - ");
             System.out.println("join <PlayerColor> <ID>");
         }
+        //we need to check that we have the right arguments here as well
+        try{
+            Integer.parseInt(params[1]);
+        }catch(NumberFormatException ex){
+            System.out.println("Hmm, something seems to be wrong with you game ID");
+            return "";
+        }
+        if(!params[0].equalsIgnoreCase("BLACK")){
+            if(!params[0].equalsIgnoreCase("WHITE")){
+                System.out.println("Something seems to be wrong with the entered player color");
+                return "";
+            }
+        }
         //first we need to find out actual game
-        ChessGame game = gamesById.get(Integer.parseInt(params[0]));
-        int id = idLog.get(Integer.parseInt(params[0]));
+        ChessGame game = gamesById.get(Integer.parseInt(params[1]));
+        int id = idLog.get(Integer.parseInt(params[1]));
         try {
-            JoinGameRequest join = new JoinGameRequest(params[1].toUpperCase(), id);
+            JoinGameRequest join = new JoinGameRequest(params[0].toUpperCase(), id);
             server.joinGame(join, authToken);
             //now we need to display the game
             DrawBoard printBoard = new DrawBoard();
-            return printBoard.draw(game, params[1].toUpperCase());
+            return printBoard.draw(game, params[0].toUpperCase());
         }catch(ResponseException ex){
             System.out.println(ex.getMessage());
         }
@@ -123,7 +143,6 @@ public class PostLogin {
                 idLog.put(i, game.gameID());
                 i++;
             }
-            System.out.println(idLog);
             return out.toString();
 
 

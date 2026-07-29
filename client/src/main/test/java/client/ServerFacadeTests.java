@@ -93,7 +93,7 @@ public class ServerFacadeTests {
         facade.clear();
         boolean foundError = false;
         try {
-            var res = facade.logout(auth.authToken());
+            facade.logout(auth.authToken());
         }catch(ResponseException ex){
             foundError = true;
         }
@@ -112,7 +112,7 @@ public class ServerFacadeTests {
         facade.clear();
         boolean foundError = false;
         try {
-            var res = facade.createGame(createGameReq("myGameName"),auth.authToken());
+            facade.createGame(createGameReq("myGameName2"),auth.authToken());
         }catch(ResponseException ex){
             foundError = true;
         }
