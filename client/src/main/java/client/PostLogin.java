@@ -2,6 +2,7 @@ package client;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import dataaccess.ResponseException;
 import model.Game;
 import model.GamesReturned;
 import model.JoinGameRequest;
@@ -63,8 +64,8 @@ public class PostLogin {
             //now we need to display the game
             DrawBoard printBoard = new DrawBoard();
             return printBoard.draw(game, params[1].toUpperCase());
-        }catch(Exception ex){
-            System.out.println("Error - fix");
+        }catch(ResponseException ex){
+            System.out.println(ex.getMessage());
         }
         return "";
     }

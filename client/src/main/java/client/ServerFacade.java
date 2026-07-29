@@ -35,7 +35,7 @@ public class ServerFacade {
         return null;
     }
 
-    private <T> T responseHandler(HttpResponse<String> response, Class<T> responseClass) throws Exception {
+    private <T> T responseHandler(HttpResponse<String> response, Class<T> responseClass) throws ResponseException {
         var status = response.statusCode();
         if (status == 200) {
             var body = response.body();
@@ -47,7 +47,7 @@ public class ServerFacade {
             //throw new ResponseException(ResponseException.fromHttpStatusCode(status), "other failure: " + status);
             return new Gson().fromJson(response.body(), responseClass);
         }else if(status == 403){
-            throw new ResponseException(status, "Sorry! Username already taken");
+            throw new ResponseException(status, "Sorry! Already taken");
         }
 
         return null;
@@ -121,14 +121,10 @@ public class ServerFacade {
         return null;
     }
 
-    public void joinGame(JoinGameRequest join, String auth) {
+    public void joinGame(JoinGameRequest join, String auth) throws ResponseException {
         var req = buildRequest("PUT", "/game", join, auth);
-        try{
-            var response = sendRequest(req);
-            responseHandler(response, String.class);
-            //now we need to display the game
-        }catch(Exception ex){
-            System.out.println(ex.getMessage());
-        }
+        var response = sendRequest(req);
+        responseHandler(response, String.class);
+        //now we need to display the game
     }
 }
