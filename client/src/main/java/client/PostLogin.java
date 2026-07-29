@@ -131,8 +131,6 @@ public class PostLogin {
     private String logout() {
         //first parse what my server expects
         //we need my auth token
-        Map<String, String> data = new HashMap<>();
-        data.put("authToken", this.authToken);
         server.logout(this.authToken);
         return "";
     }
