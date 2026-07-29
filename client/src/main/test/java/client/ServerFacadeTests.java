@@ -30,6 +30,12 @@ public class ServerFacadeTests {
         return testUserReg;
     }
 
+    private Map<String, String> createGameReq(String name) {
+        Map<String, String> test = new HashMap<>();
+        test.put("gameName", name);
+        return test;
+    }
+
     @BeforeAll
     public static void init() {
         server = new Server();
@@ -93,5 +99,25 @@ public class ServerFacadeTests {
         }
         assertTrue(foundError);
     }
+    @Test
+    void createGame() throws ResponseException {
+        var auth = facade.register(createRegUser("player1", "password", "p1@email.com"));
+        var res = facade.createGame(createGameReq("myGameName"),auth.authToken());
+        assertNotNull(res);
+    }
+
+    @Test
+    void createGameNoAuth() throws ResponseException {
+        var auth = facade.register(createRegUser("player1", "password", "p1@email.com"));
+        facade.clear();
+        boolean foundError = false;
+        try {
+            var res = facade.createGame(createGameReq("myGameName"),auth.authToken());
+        }catch(ResponseException ex){
+            foundError = true;
+        }
+        assertTrue(foundError);
+    }
+
 
 }

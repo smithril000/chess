@@ -140,18 +140,25 @@ public class PostLogin {
         }
         Map<String, String> data = new HashMap<>(Map.of());
         data.put("gameName", params[0]);
-        var res = server.createGame(data, this.authToken);
-        if(res.gameID()!=0){
-            //we log out correctly if here
-            return "Game created successfully!";
+        try {
+            var res = server.createGame(data, this.authToken);
+        }catch(ResponseException ex){
+            System.out.println(ex.getMessage());
+            return "";
         }
-        return "error - Something went wrong";
+        return "Game created successfully!";
+
     }
 
-    private String logout() throws ResponseException {
+    private String logout() {
         //first parse what my server expects
         //we need my auth token
-        server.logout(this.authToken);
+        try {
+            server.logout(this.authToken);
+        }catch(ResponseException ex){
+            System.out.println(ex.getMessage());
+            return "";
+        }
         return "goodbye";
     }
 

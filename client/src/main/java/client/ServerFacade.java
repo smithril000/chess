@@ -102,15 +102,10 @@ public class ServerFacade {
 
     }
 
-    public GameID createGame(Map<String, String> data, String authToken) {
+    public GameID createGame(Map<String, String> data, String authToken) throws ResponseException {
         var req = buildRequest("POST", "/game", data, authToken);
-        try{
-            var response = sendRequest(req);
-            return responseHandler(response, GameID.class);
-        }catch(Exception ex){
-            System.out.println(ex.getMessage());
-        }
-        return null;
+        var response = sendRequest(req);
+        return responseHandler(response, GameID.class);
     }
 
     public GamesReturned listGames(String authToken) {
