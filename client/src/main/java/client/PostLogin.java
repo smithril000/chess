@@ -1,7 +1,6 @@
 package client;
 
 import chess.ChessGame;
-import com.google.gson.Gson;
 import dataaccess.ResponseException;
 import model.Game;
 import model.GamesReturned;
@@ -13,8 +12,8 @@ import java.util.*;
 public class PostLogin {
     private final String authToken;
     private final ServerFacade server;
-    private Map<Integer, ChessGame> gamesById = new HashMap<>();
-    private Map<Integer, Integer> idLog = new HashMap<>();
+    private final Map<Integer, ChessGame> gamesById = new HashMap<>();
+    private final Map<Integer, Integer> idLog = new HashMap<>();
 
     public PostLogin(String authToken, ServerFacade server){
         this.authToken = authToken;
@@ -84,7 +83,7 @@ public class PostLogin {
                 //we want to add the data to a string stream to out
                 //start with the number
                 out.append("ID: ").append(i);
-                //now gamename
+                //now name
                 out.append(" - GameName: ").append(game.gameName());
                 //now usernames
                 String white = "No Player";
@@ -134,7 +133,7 @@ public class PostLogin {
         //we need my auth token
         Map<String, String> data = new HashMap<>();
         data.put("authToken", this.authToken);
-        server.logout(data, this.authToken);
+        server.logout(this.authToken);
         return "";
     }
 

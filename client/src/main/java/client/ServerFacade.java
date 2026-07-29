@@ -89,10 +89,10 @@ public class ServerFacade {
 
     }
 
-    public void logout(Map<String, String> data, String auth) {
+    public void logout( String auth) {
         var req = buildRequest("DELETE", "/session", auth, auth);
         try{
-            var response = sendRequest(req);
+            sendRequest(req);
 
         }catch(Exception ex){
             System.out.println(ex.getMessage());

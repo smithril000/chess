@@ -50,14 +50,14 @@ public class PreLogin {
                 case "login" -> login(params);
                 case "quit" -> "quit";
                 case "register" -> register(params);
-                default -> help(params);
+                default -> help();
             };
         } catch (Throwable ex) {
             return ex.getMessage();
         }
     }
 
-    private String help(String[] params){
+    private String help(){
         return String.format("%s\n%s\nhelp - shows helpful instructions :)\nquit - quits operation", regString, loginString);
     }
 
