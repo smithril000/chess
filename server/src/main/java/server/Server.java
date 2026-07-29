@@ -2,7 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.DataBaseAccess;
-import dataaccess.ResponseException;
+import model.ResponseException;
 import io.javalin.*;
 import io.javalin.http.Context;
 import model.AuthData;

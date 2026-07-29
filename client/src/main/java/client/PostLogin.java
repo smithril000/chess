@@ -1,7 +1,7 @@
 package client;
 
 import chess.ChessGame;
-import dataaccess.ResponseException;
+import model.ResponseException;
 import model.Game;
 import model.GamesReturned;
 import model.JoinGameRequest;

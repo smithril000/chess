@@ -2,9 +2,7 @@ package service;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import dataaccess.DatabaseManager;
-import dataaccess.MemoryDataAccess;
-import dataaccess.ResponseException;
+import model.ResponseException;
 import dataaccess.DataBaseAccess;
 import model.*;
 import org.mindrot.jbcrypt.BCrypt;

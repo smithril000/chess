@@ -1,8 +1,7 @@
 package service;
 
 import dataaccess.DataBaseAccess;
-import dataaccess.DatabaseManager;
-import dataaccess.ResponseException;
+import model.ResponseException;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
