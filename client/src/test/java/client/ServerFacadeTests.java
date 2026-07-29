@@ -1,5 +1,6 @@
 package client;
 
+import model.JoinGameRequest;
 import model.ResponseException;
 import org.junit.jupiter.api.*;
 import server.Server;
@@ -119,5 +120,33 @@ public class ServerFacadeTests {
         assertTrue(foundError);
     }
 
+    @Test
+    void listGames() throws ResponseException {
+        var auth = facade.register(createRegUser("player1", "password", "p1@email.com"));
+        facade.createGame(createGameReq("myGameName"),auth.authToken());
+        var res = facade.listGames(auth.authToken());
+        assertNotNull(res);
+    }
+
+    @Test
+    void listGamesBad() throws ResponseException {
+        var auth = facade.register(createRegUser("player1", "password", "p1@email.com"));
+        facade.createGame(createGameReq("myGameName"),auth.authToken());
+        facade.clear();
+        boolean foundError = false;
+        try {
+            facade.listGames(auth.authToken());
+        }catch(ResponseException ex){
+            foundError = true;
+        }
+        assertTrue(foundError);
+    }
+
+    @Test
+    void joinGame() throws ResponseException {
+        var auth = facade.register(createRegUser("player1", "password", "p1@email.com"));
+        facade.createGame(createGameReq("myGameName"),auth.authToken());
+        facade.joinGame(new JoinGameRequest("WHITE", 1),auth.authToken());
+    }
 
 }

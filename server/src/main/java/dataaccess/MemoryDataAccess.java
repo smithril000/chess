@@ -21,9 +21,6 @@ public class MemoryDataAccess {
     }
 
 
-    public static void createAuthData(AuthData authData) {
-        authDataList.put(authData.authToken(), authData);
-    }
 
     public static void clear() {
         userDataList = new HashMap<>();

@@ -108,15 +108,10 @@ public class ServerFacade {
         return responseHandler(response, GameID.class);
     }
 
-    public GamesReturned listGames(String authToken) {
+    public GamesReturned listGames(String authToken) throws ResponseException {
         var req = buildRequest("GET", "/game", authToken, authToken);
-        try{
-            var response = sendRequest(req);
-            return responseHandler(response, GamesReturned.class);
-        }catch(Exception ex){
-            System.out.println(ex.getMessage());
-        }
-        return null;
+        var response = sendRequest(req);
+        return responseHandler(response, GamesReturned.class);
     }
 
     public void joinGame(JoinGameRequest join, String auth) throws ResponseException {
