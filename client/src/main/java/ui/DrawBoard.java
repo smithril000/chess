@@ -9,10 +9,10 @@ import static ui.EscapeSequences.*;
 import static ui.EscapeSequences.SET_TEXT_COLOR_BLACK;
 
 public class DrawBoard {
-    static ChessGame game;
-    static String color = "NONE";
+    private ChessGame game;
+    private String color = "";
 
-    public static String draw(ChessGame chessGame, String playerColor){
+    public  String draw(ChessGame chessGame, String playerColor){
         color = playerColor;
         game = chessGame;
         StringBuilder out = new StringBuilder();
@@ -31,7 +31,7 @@ public class DrawBoard {
         out.append(RESET_TEXT_COLOR);
         return out.toString();
     }
-    private static String headerRow(){
+    private String headerRow(){
         StringBuilder out = new StringBuilder();
         out.append(SET_BG_COLOR_LIGHT_GREY);
         out.append(SET_TEXT_COLOR_BLACK);
@@ -44,7 +44,7 @@ public class DrawBoard {
         out.append("\n");
         return out.toString();
     }
-    private static String row(int row){
+    private String row(int row){
         StringBuilder out = new StringBuilder();
         out.append(SET_BG_COLOR_LIGHT_GREY);
         out.append(SET_TEXT_COLOR_BLACK);

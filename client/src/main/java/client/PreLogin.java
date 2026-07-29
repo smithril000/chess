@@ -72,14 +72,15 @@ public class PreLogin {
         data.put("username", params[0]);
         data.put("email", params[1]);
         data.put("password", params[2]);
+
         var res = server.register(data);
-        authToken = res.authToken();
-        if(res.authToken()==null){
+        if(res!=null){
+            authToken = res.authToken();
             loggedIn = true;
             return "";
         }
+
         //we couldn't register
-        System.out.println("couldn't log in");
         return "";
 
     }

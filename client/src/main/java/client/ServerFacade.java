@@ -46,6 +46,8 @@ public class ServerFacade {
 
             //throw new ResponseException(ResponseException.fromHttpStatusCode(status), "other failure: " + status);
             return new Gson().fromJson(response.body(), responseClass);
+        }else if(status == 403){
+            throw new ResponseException(status, "Sorry! Username already taken");
         }
 
         return null;

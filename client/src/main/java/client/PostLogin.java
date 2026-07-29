@@ -13,6 +13,7 @@ public class PostLogin {
     private final String authToken;
     private final ServerFacade server;
     private Map<Integer, ChessGame> gamesById = new HashMap<>();
+    private Map<Integer, Integer> idLog = new HashMap<>();
 
     public PostLogin(String authToken, ServerFacade server){
         this.authToken = authToken;
@@ -53,12 +54,15 @@ public class PostLogin {
     }
 
     private String joinGame(String[] params){
+        //first we need to find out actual game
+        ChessGame game = gamesById.get(Integer.parseInt(params[0]));
+        int id = idLog.get(Integer.parseInt(params[0]));
         try {
-            JoinGameRequest join = new JoinGameRequest(params[1].toUpperCase(), Integer.parseInt(params[0]));
+            JoinGameRequest join = new JoinGameRequest(params[1].toUpperCase(), id);
             server.joinGame(join, authToken);
             //now we need to display the game
             DrawBoard printBoard = new DrawBoard();
-            return printBoard.draw(new ChessGame(), params[1].toUpperCase());
+            return printBoard.draw(game, params[1].toUpperCase());
         }catch(Exception ex){
             System.out.println("Error - fix");
         }
@@ -67,14 +71,18 @@ public class PostLogin {
 
     private String list(){
         try{
+
             GamesReturned gamesModel = server.listGames(authToken);
             List<Game> games = gamesModel.games();
             StringBuilder out = new StringBuilder();
             int i = 1;
+            //everytime we call this we want to reset our logs
+            gamesById.clear();
+            idLog.clear();
             for(Game game : games){
                 //we want to add the data to a string stream to out
                 //start with the number
-                out.append("game ID: ").append(i);
+                out.append("ID: ").append(i);
                 //now gamename
                 out.append(" - GameName: ").append(game.gameName());
                 //now usernames
@@ -89,10 +97,13 @@ public class PostLogin {
                 out.append("\n\tWhite User - ").append(white);
                 out.append("\n\tBlack User - ").append(black);
                 out.append("\n");
+
                 //now add to us keeping track of them by id
                 gamesById.put(i, game.game());
+                idLog.put(i, game.gameID());
                 i++;
             }
+            System.out.println(idLog);
             return out.toString();
 
 
