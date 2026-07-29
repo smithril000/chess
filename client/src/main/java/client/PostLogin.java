@@ -33,7 +33,11 @@ public class PostLogin {
                 var errorMessage = ex.toString();
                 System.out.println(errorMessage);
             }
-
+            //check if we still have an auth
+            if(authToken==null){
+                System.out.println("Sorry, there has been an issue with your account");
+                result = "goodbye";
+            }
         }
     }
     public String eval(String input) {
@@ -67,6 +71,11 @@ public class PostLogin {
             System.out.println("Hmm, couldn't recognize that game id");
             return "";
         }
+        //check if that id exists
+        if(!gamesById.containsKey(Integer.parseInt(params[0]))){
+            System.out.println("Sorry, can't find a game by that id");
+            return "";
+        }
         //we just want to draw the game for now
         //find the game to draw
         ChessGame game = gamesById.get(Integer.parseInt(params[0]));
@@ -80,6 +89,7 @@ public class PostLogin {
         if(params.length != 2){
             System.out.print("Wrong amount of arguments, expected something like - ");
             System.out.println("join <PlayerColor> <ID>");
+            return "";
         }
         //we need to check that we have the right arguments here as well
         try{

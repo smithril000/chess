@@ -38,11 +38,12 @@ public class ServerFacadeTests {
     }
 
     @BeforeAll
-    public static void init() {
+    public static void init() throws ResponseException {
         server = new Server();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
         facade = new ServerFacade(port);
+        facade.clear();
     }
 
     @AfterAll
@@ -54,12 +55,12 @@ public class ServerFacadeTests {
 
 
     @Test
-    void register() {
+    void register() throws ResponseException {
         var authData = facade.register(createRegUser("player", "passwor", "p@email.com"));
         assertTrue(authData.authToken().length() > 10);
     }
     @Test
-    void doubleReg() {
+    void doubleReg() throws ResponseException {
         facade.register(createRegUser("player1", "password", "p1@email.com"));
         //register agian with same info
         var authData = facade.register(createRegUser("player1", "password", "p1@email.com"));
@@ -67,7 +68,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void login() {
+    void login() throws ResponseException {
         //first red
         facade.register(createRegUser("player1", "password", "p1@email.com"));
         var auth = facade.login(createLoginUser("player1", "password"));
@@ -75,7 +76,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void badLogin() {
+    void badLogin() throws ResponseException {
         facade.register(createRegUser("player1", "password", "p1@email.com"));
         var auth = facade.login(createLoginUser("player", "BADpassword"));
         assertNull(auth);

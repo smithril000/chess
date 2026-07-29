@@ -48,8 +48,8 @@ public class DrawBoard {
         StringBuilder out = new StringBuilder();
         out.append(SET_BG_COLOR_LIGHT_GREY);
         out.append(SET_TEXT_COLOR_BLACK);
-        out.append(" " + row + " ");
-        if(color == "BLACK"){
+        out.append(" ").append(row).append(" ");
+        if(Objects.equals(color, "BLACK")){
             for(int i = 0; i < 8; i++){
 
                 if(i % 2  + (row % 2) == 1){
@@ -68,9 +68,9 @@ public class DrawBoard {
             for(int i = 8; i >= 1; i--){
 
                 if(i % 2  + (row % 2) == 1){
-                    out.append(SET_BG_COLOR_LIGHT_GREY);
-                }else{
                     out.append(SET_BG_COLOR_DARK_GREY);
+                }else{
+                    out.append(SET_BG_COLOR_LIGHT_GREY);
                 }
                 if(game.getBoard().getPiece(new ChessPosition(row,i)) != null){
                     out.append(getPieceType(game.getBoard().getPiece(new ChessPosition(row,i))));
@@ -83,7 +83,7 @@ public class DrawBoard {
 
         out.append(SET_BG_COLOR_LIGHT_GREY);
         out.append(SET_TEXT_COLOR_BLACK);
-        out.append(" " + row + " ");
+        out.append(" ").append(row).append(" ");
         out.append(RESET_BG_COLOR);
         out.append("\n");
         return out.toString();
@@ -92,28 +92,22 @@ public class DrawBoard {
     private static String getPieceType(ChessPiece piece){
         StringBuilder out = new StringBuilder();
         if(piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-            out.append(SET_TEXT_COLOR_WHITE);
-            switch (piece.getPieceType()) {
-                case KING -> out.append(WHITE_KING);
-                case QUEEN -> out.append(WHITE_QUEEN);
-                case BISHOP -> out.append(WHITE_BISHOP);
-                case KNIGHT -> out.append(WHITE_KNIGHT);
-                case ROOK -> out.append(WHITE_ROOK);
-                case PAWN -> out.append(WHITE_PAWN);
-            }
+            setUp(piece, out, SET_TEXT_COLOR_WHITE, WHITE_KING, WHITE_QUEEN, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK, WHITE_PAWN);
         }else{
-            out.append(SET_TEXT_COLOR_BLACK);
-            switch (piece.getPieceType()) {
-                case KING -> out.append(BLACK_KING);
-                case QUEEN -> out.append(BLACK_QUEEN);
-                case BISHOP -> out.append(BLACK_BISHOP);
-                case KNIGHT -> out.append(BLACK_KNIGHT);
-                case ROOK -> out.append(BLACK_ROOK);
-                case PAWN -> out.append(BLACK_PAWN);
-            }
+            setUp(piece, out, EscapeSequences.SET_TEXT_COLOR_BLACK, EscapeSequences.BLACK_KING, EscapeSequences.BLACK_QUEEN, EscapeSequences.BLACK_BISHOP, EscapeSequences.BLACK_KNIGHT, EscapeSequences.BLACK_ROOK, EscapeSequences.BLACK_PAWN);
         }
-        //out.append(RESET_TEXT_COLOR);
-        //out.append(RESET_TEXT_BOLD_FAINT);
         return out.toString();
+    }
+
+    private static void setUp(ChessPiece piece, StringBuilder out, String setTextColorWhite, String whiteKing, String whiteQueen, String whiteBishop, String whiteKnight, String whiteRook, String whitePawn) {
+        out.append(setTextColorWhite);
+        switch (piece.getPieceType()) {
+            case KING -> out.append(whiteKing);
+            case QUEEN -> out.append(whiteQueen);
+            case BISHOP -> out.append(whiteBishop);
+            case KNIGHT -> out.append(whiteKnight);
+            case ROOK -> out.append(whiteRook);
+            case PAWN -> out.append(whitePawn);
+        }
     }
 }

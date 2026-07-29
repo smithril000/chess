@@ -21,18 +21,12 @@ public class ServerFacade {
         serverUrl = "http://localhost:" + port;
     }
 
-    public AuthData register(Map<String, String> data) {
+    public AuthData register(Map<String, String> data) throws ResponseException {
         //we need to make what we pu tin look like the web ui
         //map should work
         var request = buildRequest("POST", "/user", data, null);
-        try {
-            var response = sendRequest(request);
-            return responseHandler(response, AuthData.class);
-        }catch(Exception ex){
-            //here we can handle all the errors
-            System.out.println(ex.getMessage());
-        }
-        return null;
+        var response = sendRequest(request);
+        return responseHandler(response, AuthData.class);
     }
 
     private <T> T responseHandler(HttpResponse<String> response, Class<T> responseClass) throws ResponseException {
@@ -53,21 +47,16 @@ public class ServerFacade {
         }else if(status == 400){
             throw new ResponseException(status, "Sorry, something went wrong");
         }else if(status == 401){
-            throw new ResponseException(status, "Sorry, we had an issue with your account");
+            throw new ResponseException(status, "Sorry, we had an issue with your account\nCheck your username and password");
         }
 
         return null;
     }
 
-    public AuthData login(Map<String, String> data){
+    public AuthData login(Map<String, String> data) throws ResponseException {
         var req = buildRequest("POST", "/session", data, null);
-        try{
-            var response = sendRequest(req);
-            return responseHandler(response, AuthData.class);
-        }catch(Exception ex){
-            System.out.println(ex.getMessage());
-        }
-        return null;
+        var response = sendRequest(req);
+        return responseHandler(response, AuthData.class);
     }
     private HttpRequest buildRequest(String method, String path, Object body, String authToken){
         var request = HttpRequest.newBuilder()

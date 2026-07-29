@@ -1,5 +1,7 @@
 package client;
 
+import model.ResponseException;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,19 +72,17 @@ public class PreLogin {
         //create a map to mimic what our servers expecting
         Map<String, String> data = new HashMap<>(Map.of());
         data.put("username", params[0]);
-        data.put("email", params[1]);
-        data.put("password", params[2]);
-
-        var res = server.register(data);
-        if(res!=null){
+        data.put("email", params[2]);
+        data.put("password", params[1]);
+        try {
+            var res = server.register(data);
             authToken = res.authToken();
             loggedIn = true;
             return "";
+        }catch(ResponseException ex){
+            System.out.println(ex.getMessage());
+            return "";
         }
-
-        //we couldn't register
-        return "";
-
     }
     private String login(String[] params){
         if(params.length !=2){
@@ -92,13 +92,15 @@ public class PreLogin {
         Map<String, String> data = new HashMap<>(Map.of());
         data.put("username", params[0]);
         data.put("password", params[1]);
-        var res = server.login(data);
-        authToken = res.authToken();
-        if(authToken!=null){
+        try {
+            var res = server.login(data);
+            authToken = res.authToken();
             loggedIn = true;
             return "";
+        }catch(ResponseException ex){
+            System.out.println(ex.getMessage());
+            return"";
         }
-        return "error - fix";
 
     }
 }

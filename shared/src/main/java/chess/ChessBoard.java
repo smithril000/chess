@@ -83,8 +83,8 @@ public class ChessBoard {
         arr[8] = ChessPiece.PieceType.ROOK;
         arr[9] = ChessPiece.PieceType.KNIGHT;
         arr[10] = ChessPiece.PieceType.BISHOP;
-        arr[11] = ChessPiece.PieceType.QUEEN;
-        arr[12] = ChessPiece.PieceType.KING;
+        arr[11] = ChessPiece.PieceType.KING;
+        arr[12] = ChessPiece.PieceType.QUEEN;
         arr[13] = ChessPiece.PieceType.BISHOP;
         arr[14] = ChessPiece.PieceType.KNIGHT;
         arr[15] = ChessPiece.PieceType.ROOK;
