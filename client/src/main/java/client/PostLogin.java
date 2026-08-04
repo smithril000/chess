@@ -14,6 +14,9 @@ public class PostLogin {
     private final ServerFacade server;
     private final Map<Integer, ChessGame> gamesById = new HashMap<>();
     private final Map<Integer, Integer> idLog = new HashMap<>();
+    private Boolean join = false;
+    private ChessGame gameToJoin;
+    private String joinColor;
 
     public PostLogin(String authToken, ServerFacade server){
         this.authToken = authToken;
@@ -29,6 +32,10 @@ public class PostLogin {
             try{
                 result = eval(line);
                 System.out.println(result);
+                if(join){
+                    GamePlay play = new GamePlay(authToken, server, gameToJoin, joinColor);
+                    play.run();
+                }
             }catch (Throwable ex){
                 var errorMessage = ex.toString();
                 System.out.println(errorMessage);
@@ -81,6 +88,9 @@ public class PostLogin {
         ChessGame game = gamesById.get(Integer.parseInt(params[0]));
         //drawing
         DrawBoard printBoard = new DrawBoard();
+        this.join = true;
+        this.gameToJoin = game;
+        this.joinColor = "WHITE";
         return printBoard.draw(game, "WHITE");
     }
 
@@ -112,6 +122,7 @@ public class PostLogin {
             server.joinGame(join, authToken);
             //now we need to display the game
             DrawBoard printBoard = new DrawBoard();
+            this.join = true;
             return printBoard.draw(game, params[0].toUpperCase());
         }catch(ResponseException ex){
             System.out.println(ex.getMessage());

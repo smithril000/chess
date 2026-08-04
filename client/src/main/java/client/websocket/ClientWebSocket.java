@@ -36,6 +36,9 @@ public class ClientWebSocket extends Endpoint{
             throw new ResponseException(400, ex.getMessage());
         }
     }
+    public void sendCommand(String command){
+        this.session.getAsyncRemote().sendText(command);
+    }
 
     //Endpoint requires this method, but you don't have to do anything
     @Override
