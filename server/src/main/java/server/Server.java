@@ -10,17 +10,19 @@ import model.GameName;
 import model.JoinGameRequest;
 import model.UserData;
 import org.jetbrains.annotations.NotNull;
+import server.WebSocket.WebSocketHandler;
 import service.UserService;
 
 public class Server {
 
     private final Javalin javalin;
     private final UserService userService;
+    private final WebSocketHandler webSocketHandler;
 
     public Server() {
         var dataAccess = new DataBaseAccess();
         userService = new UserService(dataAccess);
-
+        webSocketHandler = new WebSocketHandler();
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
         // Register your endpoints and exception handlers here.
@@ -31,6 +33,11 @@ public class Server {
         javalin.post("/game", this::createGame);
         javalin.put("/game", this::joinGame);
         javalin.get("/game", this::getGames);
+        javalin.ws("/ws", ws -> {
+            ws.onConnect(webSocketHandler);
+            ws.onMessage(webSocketHandler);
+            ws.onClose(webSocketHandler);
+        });
     }
 
     private void getGames(Context ctx) {

@@ -1,12 +1,16 @@
 package client;
 
 import chess.ChessGame;
+import client.websocket.ClientWebSocket;
+import com.google.gson.Gson;
 import model.ResponseException;
 import model.Game;
 import model.GamesReturned;
 import model.JoinGameRequest;
 import ui.DrawBoard;
+import websocket.commands.UserGameCommand;
 
+import java.net.http.WebSocket;
 import java.util.*;
 
 public class PostLogin {
@@ -14,13 +18,16 @@ public class PostLogin {
     private final ServerFacade server;
     private final Map<Integer, ChessGame> gamesById = new HashMap<>();
     private final Map<Integer, Integer> idLog = new HashMap<>();
+    //these are for post login
     private Boolean join = false;
     private ChessGame gameToJoin;
     private String joinColor;
+    private ClientWebSocket ws;
 
-    public PostLogin(String authToken, ServerFacade server){
+    public PostLogin(String authToken, ServerFacade server) throws ResponseException {
         this.authToken = authToken;
         this.server = server;
+        ws = new ClientWebSocket("http://localhost:8080");
     }
     public void run(){
         System.out.println("Welcome");
@@ -123,6 +130,8 @@ public class PostLogin {
             //now we need to display the game
             DrawBoard printBoard = new DrawBoard();
             this.join = true;
+            UserGameCommand com = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, id);
+            ws.sendCommand(new Gson().toJson(com));
             return printBoard.draw(game, params[0].toUpperCase());
         }catch(ResponseException ex){
             System.out.println(ex.getMessage());

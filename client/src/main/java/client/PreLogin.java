@@ -2,6 +2,7 @@ package client;
 
 import model.ResponseException;
 
+import java.net.http.WebSocket;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +14,7 @@ public class PreLogin {
     private final String regString = "register <USERNAME> <PASSWORD> <EMAIL> - creates a new user";
     private final String loginString = "login <USERNAME> <PASSWORD> - logs into an existing user";
     private String authToken;
+
 
     public PreLogin(int port){
         server = new ServerFacade(port);
