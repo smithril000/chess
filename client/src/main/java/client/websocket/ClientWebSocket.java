@@ -45,12 +45,16 @@ public class ClientWebSocket extends Endpoint{
 
     private void messageHandle(String message) {
         ServerMessage stuff = new Gson().fromJson(message, ServerMessage.class);
-        System.out.println("Got to the message handler");
         //now we have a json object of our info
         if(Objects.equals(stuff.getServerMessageType(), ServerMessage.ServerMessageType.NOTIFICATION)){
             NotiMessages gameMessage = new Gson().fromJson(message, NotiMessages.class);
             //for this one we just need to output the Notification
-            System.out.println(gameMessage.getMessage());
+            System.out.println("\n" + gameMessage.getMessage() + "\n" + ">> ");
+        }else if(Objects.equals(stuff.getServerMessageType(), ServerMessage.ServerMessageType.LOAD_GAME)){
+            GameMessages mess = new Gson().fromJson(message, GameMessages.class);
+            //now we print the board
+            DrawBoard print = new DrawBoard();
+            System.out.println("\n"+ print.draw(mess.getGame(), "WHITE"));
         }
     }
 

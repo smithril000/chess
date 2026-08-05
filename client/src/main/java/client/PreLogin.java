@@ -14,6 +14,7 @@ public class PreLogin {
     private final String regString = "register <USERNAME> <PASSWORD> <EMAIL> - creates a new user";
     private final String loginString = "login <USERNAME> <PASSWORD> - logs into an existing user";
     private String authToken;
+    String username = "";
 
 
     public PreLogin(int port){
@@ -33,7 +34,7 @@ public class PreLogin {
                 System.out.println(result);
                 if(loggedIn){
                     //now that we are logged in we can pause here and run our other ui
-                    PostLogin post = new PostLogin(authToken, server);
+                    PostLogin post = new PostLogin(authToken, server, username);
                     post.run();
                     loggedIn = false;
                 }
@@ -79,6 +80,7 @@ public class PreLogin {
         try {
             var res = server.register(data);
             authToken = res.authToken();
+            this.username = params[0];
             loggedIn = true;
             return "";
         }catch(ResponseException ex){
@@ -98,6 +100,7 @@ public class PreLogin {
             var res = server.login(data);
             authToken = res.authToken();
             loggedIn = true;
+            this.username = params[0];
             return "";
         }catch(ResponseException ex){
             System.out.println(ex.getMessage());

@@ -18,16 +18,18 @@ public class PostLogin {
     private final ServerFacade server;
     private final Map<Integer, ChessGame> gamesById = new HashMap<>();
     private final Map<Integer, Integer> idLog = new HashMap<>();
+    private final String username;
     //these are for post login
     private Boolean join = false;
     private ChessGame gameToJoin;
     private String joinColor;
     private ClientWebSocket ws;
 
-    public PostLogin(String authToken, ServerFacade server) throws ResponseException {
+    public PostLogin(String authToken, ServerFacade server, String username) throws ResponseException {
         this.authToken = authToken;
         this.server = server;
         ws = new ClientWebSocket("http://localhost:8080");
+        this.username = username;
     }
     public void run(){
         System.out.println("Welcome");
@@ -131,8 +133,12 @@ public class PostLogin {
             DrawBoard printBoard = new DrawBoard();
             this.join = true;
             UserGameCommand com = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, id);
+            //sending the ws message
+            //have to get the name to send out
+            com.setName(this.username);
+            com.setGame(game);
             ws.sendCommand(new Gson().toJson(com));
-            return printBoard.draw(game, params[0].toUpperCase());
+            return "printBoard.draw(game, params[0].toUpperCase());";
         }catch(ResponseException ex){
             System.out.println(ex.getMessage());
         }

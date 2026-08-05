@@ -1,5 +1,6 @@
 package server.WebSocket;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import io.javalin.websocket.WsCloseContext;
 import io.javalin.websocket.WsCloseHandler;
@@ -9,6 +10,7 @@ import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.UserGameCommand;
+import websocket.messages.GameMessages;
 import websocket.messages.NotiMessages;
 import websocket.messages.ServerMessage;
 
@@ -28,9 +30,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     public void handleMessage(WsMessageContext ctx) {
         try {
             UserGameCommand action = new Gson().fromJson(ctx.message(), UserGameCommand.class);
-            System.out.println("REMOVE" + action.getCommandType());
             switch (action.getCommandType()) {
-                case CONNECT -> enter(action.getGameID(), ctx.session);
+                case CONNECT -> enter(action.getName(), action.getGame(), ctx.session);
                 //case EXIT -> exit(action.visitorName(), ctx.session);
             }
         } catch (IOException ex) {
@@ -38,9 +39,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void enter(int gameid, Session session) throws IOException {
+    private void enter(String username, ChessGame game, Session session) throws IOException {
+        //we send a loadgame just to client, notification to everyone
+        //sending the load_game - we need to find the game
+        GameMessages gameMessage = new GameMessages(game);
+        //sending jus the game
+        session.getRemote().sendString(new Gson().toJson(gameMessage));
         connections.add(session);
-        var message = ("Someone joined");
+        var message = (username + " joined the game");
         var notification = new NotiMessages(message);
         connections.broadcast(session, notification);
     }

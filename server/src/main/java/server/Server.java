@@ -130,7 +130,6 @@ public class Server {
         javalin.stop();
     }
     private void clear(Context ctx){
-        System.out.println("running clear");
         try {
             userService.clear();
         }catch(ResponseException ex){
