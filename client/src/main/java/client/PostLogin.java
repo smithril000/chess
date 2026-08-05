@@ -101,7 +101,10 @@ public class PostLogin {
         this.gameToJoin = game;
         this.joinColor = "WHITE";
         //we need to send out ws
-
+        UserGameCommand com = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, Integer.parseInt(params[0]));
+        com.setName(this.username);
+        com.setPlayerColor("an observer");
+        ws.sendCommand(new Gson().toJson(com));
         return printBoard.draw(game, "WHITE");
     }
 
