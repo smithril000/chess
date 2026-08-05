@@ -31,7 +31,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         try {
             UserGameCommand action = new Gson().fromJson(ctx.message(), UserGameCommand.class);
             switch (action.getCommandType()) {
-                case CONNECT -> enter(action.getName(), action.getGame(), ctx.session);
+                case CONNECT -> enter(action, ctx.session);
                 //case EXIT -> exit(action.visitorName(), ctx.session);
             }
         } catch (IOException ex) {
@@ -39,14 +39,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void enter(String username, ChessGame game, Session session) throws IOException {
+    private void enter(UserGameCommand action, Session session) throws IOException {
         //we send a loadgame just to client, notification to everyone
         //sending the load_game - we need to find the game
-        GameMessages gameMessage = new GameMessages(game);
+        GameMessages gameMessage = new GameMessages(action.getGame(), action.getPlayerColor());
         //sending jus the game
         session.getRemote().sendString(new Gson().toJson(gameMessage));
         connections.add(session);
-        var message = (username + " joined the game");
+        var message = (action.getName() + " joined the game");
         var notification = new NotiMessages(message);
         connections.broadcast(session, notification);
     }

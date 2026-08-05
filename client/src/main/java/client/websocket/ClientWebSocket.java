@@ -54,7 +54,7 @@ public class ClientWebSocket extends Endpoint{
             GameMessages mess = new Gson().fromJson(message, GameMessages.class);
             //now we print the board
             DrawBoard print = new DrawBoard();
-            System.out.println("\n"+ print.draw(mess.getGame(), "WHITE"));
+            System.out.println("\n"+ print.draw(mess.getGame(), mess.getColor()));
         }
     }
 

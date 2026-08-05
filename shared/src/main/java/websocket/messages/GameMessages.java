@@ -3,15 +3,18 @@ package websocket.messages;
 import chess.ChessGame;
 
 public class GameMessages extends ServerMessage{
-    private ChessGame game;
+    private final ChessGame game;
+    private String color;
 
-    public GameMessages(ChessGame game){
+    public GameMessages(ChessGame game, String color){
         super(ServerMessageType.LOAD_GAME);
         this.game = game;
+        this.color = color;
     }
 
     public ChessGame getGame(){
         return game;
     }
+    public String getColor(){return color;}
 
 }

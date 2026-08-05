@@ -137,6 +137,7 @@ public class PostLogin {
             //have to get the name to send out
             com.setName(this.username);
             com.setGame(game);
+            com.setPlayerColor(params[0]);
             ws.sendCommand(new Gson().toJson(com));
             return "printBoard.draw(game, params[0].toUpperCase());";
         }catch(ResponseException ex){

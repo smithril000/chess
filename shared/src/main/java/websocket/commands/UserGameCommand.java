@@ -20,11 +20,20 @@ public class UserGameCommand {
 
     private String name = "";
     private ChessGame game;
+    private String playerColor;
 
     public UserGameCommand(CommandType commandType, String authToken, Integer gameID) {
         this.commandType = commandType;
         this.authToken = authToken;
         this.gameID = gameID;
+    }
+
+    public String getPlayerColor() {
+        return playerColor;
+    }
+
+    public void setPlayerColor(String playerColor) {
+        this.playerColor = playerColor;
     }
 
     public enum CommandType {
