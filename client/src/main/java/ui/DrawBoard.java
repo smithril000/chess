@@ -17,7 +17,7 @@ public class DrawBoard {
         game = chessGame;
         StringBuilder out = new StringBuilder();
         out.append(headerRow());
-        if(Objects.equals(color, "BLACK")){
+        if(color.equalsIgnoreCase("BLACK")){
             for(int i = 1; i <= 8; i++){
                 out.append(row(i));
             }

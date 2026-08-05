@@ -139,7 +139,7 @@ public class PostLogin {
             com.setGame(game);
             com.setPlayerColor(params[0]);
             ws.sendCommand(new Gson().toJson(com));
-            return "printBoard.draw(game, params[0].toUpperCase());";
+            return "\n";
         }catch(ResponseException ex){
             System.out.println(ex.getMessage());
         }
