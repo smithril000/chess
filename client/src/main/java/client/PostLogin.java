@@ -104,8 +104,10 @@ public class PostLogin {
         UserGameCommand com = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, Integer.parseInt(params[0]));
         com.setName(this.username);
         com.setPlayerColor("an observer");
+        com.setGame(game);
         ws.sendCommand(new Gson().toJson(com));
-        return printBoard.draw(game, "WHITE");
+
+        return "\n";
     }
 
     private String joinGame(String[] params){

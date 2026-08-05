@@ -15,6 +15,11 @@ public class GameMessages extends ServerMessage{
     public ChessGame getGame(){
         return game;
     }
-    public String getColor(){return color;}
+    public String getColor(){
+        if(color.equalsIgnoreCase("an observer")){
+            return "WHITE";
+        }
+        return color;
+    }
 
 }
