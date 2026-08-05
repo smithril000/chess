@@ -100,6 +100,8 @@ public class PostLogin {
         this.join = true;
         this.gameToJoin = game;
         this.joinColor = "WHITE";
+        //we need to send out ws
+
         return printBoard.draw(game, "WHITE");
     }
 

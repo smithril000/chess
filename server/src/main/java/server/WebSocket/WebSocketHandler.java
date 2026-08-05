@@ -46,7 +46,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         //sending jus the game
         session.getRemote().sendString(new Gson().toJson(gameMessage));
         connections.add(session);
-        var message = (action.getName() + " joined the game");
+        var message = (action.getName() + " joined the game as " + action.getPlayerColor());
         var notification = new NotiMessages(message);
         connections.broadcast(session, notification);
     }
