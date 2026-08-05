@@ -9,6 +9,7 @@ import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.UserGameCommand;
+import websocket.messages.NotiMessages;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -39,8 +40,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     private void enter(int gameid, Session session) throws IOException {
         connections.add(session);
-        var message = String.format("%s is in the shop", gameid);
-        var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+        var message = ("Someone joined");
+        var notification = new NotiMessages(message);
         connections.broadcast(session, notification);
     }
 

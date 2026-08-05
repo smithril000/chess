@@ -12,6 +12,7 @@ import server.Server;
 import ui.DrawBoard;
 import websocket.commands.UserGameCommand;
 import websocket.messages.GameMessages;
+import websocket.messages.NotiMessages;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -34,7 +35,6 @@ public class ClientWebSocket extends Endpoint{
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
-                    System.out.println(message);
                     messageHandle(message);
                 }
             });
@@ -48,11 +48,9 @@ public class ClientWebSocket extends Endpoint{
         System.out.println("Got to the message handler");
         //now we have a json object of our info
         if(Objects.equals(stuff.getServerMessageType(), ServerMessage.ServerMessageType.NOTIFICATION)){
-            GameMessages gameMessage = new Gson().fromJson(message, GameMessages.class);
-
-            ChessGame game = gameMessage.getGame();
-            DrawBoard board = new DrawBoard();
-            board.draw(game, "WHITE");
+            NotiMessages gameMessage = new Gson().fromJson(message, NotiMessages.class);
+            //for this one we just need to output the Notification
+            System.out.println(gameMessage.getMessage());
         }
     }
 
