@@ -8,7 +8,6 @@ import io.javalin.websocket.WsConnectHandler;
 import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
 import org.eclipse.jetty.websocket.api.Session;
-import server.WebSocket.ConnectionManager;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
@@ -28,6 +27,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     public void handleMessage(WsMessageContext ctx) {
         try {
             UserGameCommand action = new Gson().fromJson(ctx.message(), UserGameCommand.class);
+            System.out.println("REMOVE" + action.getCommandType());
             switch (action.getCommandType()) {
                 case CONNECT -> enter(action.getGameID(), ctx.session);
                 //case EXIT -> exit(action.visitorName(), ctx.session);
