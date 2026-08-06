@@ -24,6 +24,7 @@ public class PostLogin {
     private ChessGame gameToJoin;
     private String joinColor;
     private ClientWebSocket ws;
+    private int gameId;
 
     public PostLogin(String authToken, ServerFacade server, String username) throws ResponseException {
         this.authToken = authToken;
@@ -42,7 +43,7 @@ public class PostLogin {
                 result = eval(line);
                 System.out.println(result);
                 if(join){
-                    GamePlay play = new GamePlay(authToken, server, gameToJoin, joinColor);
+                    GamePlay play = new GamePlay(authToken, server, ws, gameToJoin, joinColor, gameId);
                     play.run();
                 }
             }catch (Throwable ex){
@@ -95,13 +96,14 @@ public class PostLogin {
         //we just want to draw the game for now
         //find the game to draw
         ChessGame game = gamesById.get(Integer.parseInt(params[0]));
+        gameId = idLog.get(Integer.parseInt(params[0]));
         //drawing
         DrawBoard printBoard = new DrawBoard();
         this.join = true;
         this.gameToJoin = game;
         this.joinColor = "WHITE";
         //we need to send out ws
-        UserGameCommand com = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, Integer.parseInt(params[0]));
+        UserGameCommand com = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameId);
         com.setName(this.username);
         com.setPlayerColor("an observer");
         com.setGame(game);
@@ -133,6 +135,7 @@ public class PostLogin {
         //first we need to find out actual game
         ChessGame game = gamesById.get(Integer.parseInt(params[1]));
         int id = idLog.get(Integer.parseInt(params[1]));
+        gameId = id;
         try {
             JoinGameRequest join = new JoinGameRequest(params[0].toUpperCase(), id);
             server.joinGame(join, authToken);
@@ -144,7 +147,8 @@ public class PostLogin {
             //have to get the name to send out
             com.setName(this.username);
             com.setGame(game);
-            com.setPlayerColor(params[0]);
+            this.joinColor = params[0];
+            com.setPlayerColor(this.joinColor);
             ws.sendCommand(new Gson().toJson(com));
             return "\n";
         }catch(ResponseException ex){

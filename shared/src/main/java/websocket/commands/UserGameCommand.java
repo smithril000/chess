@@ -29,6 +29,9 @@ public class UserGameCommand {
     }
 
     public String getPlayerColor() {
+        if(playerColor == null){
+            return "Error, color is null";
+        }
         return playerColor;
     }
 

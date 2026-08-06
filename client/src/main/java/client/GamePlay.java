@@ -1,7 +1,10 @@
 package client;
 
 import chess.ChessGame;
+import client.websocket.ClientWebSocket;
+import com.google.gson.Gson;
 import ui.DrawBoard;
+import websocket.commands.UserGameCommand;
 
 import java.util.Arrays;
 import java.util.Scanner;
@@ -11,11 +14,16 @@ public class GamePlay {
     private final ServerFacade server;
     private ChessGame game;
     private final String color;
-    public GamePlay(String auth, ServerFacade server, ChessGame game, String color){
+    private final int id;
+    private final ClientWebSocket ws;
+
+    public GamePlay(String auth, ServerFacade server, ClientWebSocket ws, ChessGame game, String color, int id){
         this.auth = auth;
         this.server = server;
         this.game = game;
         this.color = color;
+        this.id = id;
+        this.ws = ws;
     }
 
     public void run(){
@@ -42,11 +50,20 @@ public class GamePlay {
             String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "redraw" -> redraw();
+                case "leave" -> leave();
                 default -> help();
             };
         } catch (Throwable ex) {
             return ex.getMessage();
         }
+    }
+
+    private String leave() {
+        //we need to send a ws and make sure the game gets updated in db
+        UserGameCommand com = new UserGameCommand(UserGameCommand.CommandType.LEAVE, auth, id);
+        com.setPlayerColor(this.color);
+        ws.sendCommand(new Gson().toJson(com));
+        return null;
     }
 
     private String redraw() {

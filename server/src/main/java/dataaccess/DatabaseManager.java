@@ -55,7 +55,7 @@ public class DatabaseManager {
     }
 
 
-    static Connection getConnection() throws ResponseException {
+    static public Connection getConnection() throws ResponseException {
         try {
             //do not wrap the following line with a try-with-resources
             var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
