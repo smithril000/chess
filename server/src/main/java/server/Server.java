@@ -64,10 +64,8 @@ public class Server {
         String auth = ctx.header("authorization");
         try{
             userService.checkAuth(auth);
-            System.out.println("CheckedAuth fine");
             try{
                 userService.joinGame(join, auth);
-                System.out.println("Got to join correct");
             }catch(ResponseException ex){
                 ctx.status(ex.getCode());
                 ctx.result(ex.toJson());

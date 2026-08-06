@@ -81,6 +81,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     private void enter(UserGameCommand action, Session session) throws IOException, ResponseException {
         //we send a loadgame just to client, notification to everyone
+
+        //before anything check auth
+        if(!checkAuth(action.getAuthToken())){
+            //end - go no further
+            ErrorMessages mess = new ErrorMessages("Error, unauthorized");
+            session.getRemote().sendString(new Gson().toJson(mess));
+            return;
+        }
         //sending the load_game - we need to find the game - not thorugh action
         int gameId = action.getGameID();
         //use db to get the game
@@ -123,5 +131,28 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     @Override
     public void handleClose(WsCloseContext ctx) {
         System.out.println("Websocket closed");
+    }
+
+    private Boolean checkAuth(String auth){
+        //use this function to see if we can connect to auth
+        String sql = "SELECT username FROM authData WHERE authToken=?";
+        String username = null;
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setString(1, auth);
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (rs.next()) {
+                    username = rs.getString("username");
+                }
+
+                if(username == null){
+                    return false;
+                }
+            }
+        }catch(ResponseException | SQLException _){
+
+        }
+        return false;
     }
 }
