@@ -10,6 +10,7 @@ import io.javalin.websocket.WsConnectContext;
 import io.javalin.websocket.WsConnectHandler;
 import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
+import model.GameID;
 import model.ResponseException;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.UserGameCommand;
@@ -42,6 +43,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             }
         } catch (IOException ex) {
             ex.printStackTrace();
+        } catch (ResponseException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -75,10 +78,29 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     }
 
-    private void enter(UserGameCommand action, Session session) throws IOException {
+    private void enter(UserGameCommand action, Session session) throws IOException, ResponseException {
         //we send a loadgame just to client, notification to everyone
-        //sending the load_game - we need to find the game
-        GameMessages gameMessage = new GameMessages(action.getGame(), action.getPlayerColor());
+        //sending the load_game - we need to find the game - not thorugh action
+        int gameId = action.getGameID();
+        //use db to get the game
+        ChessGame game = null;
+        String query = "SELECT game FROM games WHERE id=?";
+
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement(query)) {
+            preparedStatement.setString(1, String.valueOf(gameId));
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (rs.next()) {
+                    game =  new Gson().fromJson(rs.getString("game"), ChessGame.class);
+                }
+            }
+
+        } catch (SQLException | ResponseException ex) {
+            throw new ResponseException(500, "Error, failed to execute statement " + ex.getMessage());
+        }
+        
+        GameMessages gameMessage = new GameMessages(game, action.getPlayerColor());
         //sending jus the game
         session.getRemote().sendString(new Gson().toJson(gameMessage));
         connections.add(session);
