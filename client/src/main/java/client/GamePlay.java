@@ -81,6 +81,7 @@ public class GamePlay {
         int rowEnd = chars[1] - '0';
         ChessPosition startPos = new ChessPosition(rowStart, colStart);
         ChessPosition endPos = new ChessPosition(rowEnd, colEnd);
+        //FIX PROMO PIECE
         ChessMove move = new ChessMove(startPos, endPos, null);
         comm.setMove(move);
         ws.sendCommand(new Gson().toJson(comm));

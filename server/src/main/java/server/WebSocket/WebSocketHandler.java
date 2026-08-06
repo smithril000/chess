@@ -69,6 +69,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         ChessBoard board = game.getBoard();
         ChessPiece piece = board.getPiece(action.getMove().getStartPosition());
         Collection<ChessMove> moves = piece.pieceMoves(board, action.getMove().getStartPosition());
+        System.out.println(moves);
     }
 
     private void exit(UserGameCommand action, Session session) throws IOException {
