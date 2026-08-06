@@ -43,8 +43,9 @@ public class PostLogin {
                 result = eval(line);
                 System.out.println(result);
                 if(join){
-                    GamePlay play = new GamePlay(authToken, server, ws, gameToJoin, joinColor, gameId);
+                    GamePlay play = new GamePlay(authToken, server, ws, gameToJoin, joinColor, gameId, username);
                     play.run();
+                    join = false;
                 }
             }catch (Throwable ex){
                 var errorMessage = ex.toString();

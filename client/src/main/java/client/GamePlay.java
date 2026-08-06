@@ -16,14 +16,16 @@ public class GamePlay {
     private final String color;
     private final int id;
     private final ClientWebSocket ws;
+    private final String name;
 
-    public GamePlay(String auth, ServerFacade server, ClientWebSocket ws, ChessGame game, String color, int id){
+    public GamePlay(String auth, ServerFacade server, ClientWebSocket ws, ChessGame game, String color, int id, String name){
         this.auth = auth;
         this.server = server;
         this.game = game;
         this.color = color;
         this.id = id;
         this.ws = ws;
+        this.name = name;
     }
 
     public void run(){
@@ -62,8 +64,9 @@ public class GamePlay {
         //we need to send a ws and make sure the game gets updated in db
         UserGameCommand com = new UserGameCommand(UserGameCommand.CommandType.LEAVE, auth, id);
         com.setPlayerColor(this.color);
+        com.setName(this.name);
         ws.sendCommand(new Gson().toJson(com));
-        return null;
+        return "goodbye";
     }
 
     private String redraw() {

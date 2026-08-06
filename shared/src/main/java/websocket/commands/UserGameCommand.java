@@ -68,6 +68,9 @@ public class UserGameCommand {
     }
 
     public String getName(){
+        if(this.name == null){
+            return "Error, name is null";
+        }
         return this.name;
     }
 

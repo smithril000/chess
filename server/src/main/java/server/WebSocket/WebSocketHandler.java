@@ -45,7 +45,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void exit(UserGameCommand action, Session session){
+    private void exit(UserGameCommand action, Session session) throws IOException {
         //we need to broadcast a message that they are leaving and remove the player in db
         //first get the player out of the game - maybe just connect db here?
         //get the player in game from db
@@ -67,6 +67,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         } catch (SQLException | ResponseException e) {
             throw new RuntimeException(e);
         }
+
+        //now we need to broadcast that people left
+        var message = action.getName() + " left the game";
+        NotiMessages noti = new NotiMessages(message);
+        connections.broadcast(session, noti);
 
     }
 
