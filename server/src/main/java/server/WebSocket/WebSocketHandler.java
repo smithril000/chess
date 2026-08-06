@@ -14,6 +14,7 @@ import model.GameID;
 import model.ResponseException;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessages;
 import websocket.messages.GameMessages;
 import websocket.messages.NotiMessages;
 import websocket.messages.ServerMessage;
@@ -96,17 +97,27 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 }
             }
 
+            if(game == null){
+                ErrorMessages mess = new ErrorMessages("Error, cant find game");
+                session.getRemote().sendString(new Gson().toJson(mess));
+            }else {
+                GameMessages gameMessage = new GameMessages(game, action.getPlayerColor());
+                //sending jus the game
+                session.getRemote().sendString(new Gson().toJson(gameMessage));
+                connections.add(session);
+                var message = (action.getName() + " joined the game as " + action.getPlayerColor());
+                var notification = new NotiMessages(message);
+                connections.broadcast(session, notification);
+            }
+
         } catch (SQLException | ResponseException ex) {
-            throw new ResponseException(500, "Error, failed to execute statement " + ex.getMessage());
+            //if we got here we need to throw an error message
+            ErrorMessages mess = new ErrorMessages("Error, cant find game");
+            connections.add(session);
+            connections.broadcast(session, mess);
         }
         
-        GameMessages gameMessage = new GameMessages(game, action.getPlayerColor());
-        //sending jus the game
-        session.getRemote().sendString(new Gson().toJson(gameMessage));
-        connections.add(session);
-        var message = (action.getName() + " joined the game as " + action.getPlayerColor());
-        var notification = new NotiMessages(message);
-        connections.broadcast(session, notification);
+
     }
 
     @Override
