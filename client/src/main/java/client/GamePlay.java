@@ -1,6 +1,8 @@
 package client;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
 import client.websocket.ClientWebSocket;
 import com.google.gson.Gson;
 import ui.DrawBoard;
@@ -53,11 +55,42 @@ public class GamePlay {
             return switch (cmd) {
                 case "redraw" -> redraw();
                 case "leave" -> leave();
+                case "valid" -> moves(params);
+                case "move" -> makeMove(params);
                 default -> help();
             };
         } catch (Throwable ex) {
             return ex.getMessage();
         }
+    }
+
+    private String makeMove(String[] params) {
+        //check auth - check valid moves - make move - update
+        UserGameCommand comm = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, auth, id);
+        comm.setPlayerColor(this.color);
+        comm.setName(this.name);
+        //set the move we want to make - parse the info
+        int rowStart;
+        int colStart;
+
+        char[] chars = params[0].toCharArray();
+        colStart = chars[0] - 'a';
+        rowStart = chars[1] - '0';
+        chars = params[1].toCharArray();
+        int colEnd = chars[0] - 'a';
+        int rowEnd = chars[1] - '0';
+        ChessPosition startPos = new ChessPosition(rowStart, colStart);
+        ChessPosition endPos = new ChessPosition(rowEnd, colEnd);
+        ChessMove move = new ChessMove(startPos, endPos, null);
+        comm.setMove(move);
+        ws.sendCommand(new Gson().toJson(comm));
+        return "";
+    }
+
+    private String moves(String[] params) {
+        //get new board with highlighted moves
+
+        return "";
     }
 
     private String leave() {

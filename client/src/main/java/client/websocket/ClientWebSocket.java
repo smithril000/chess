@@ -55,9 +55,9 @@ public class ClientWebSocket extends Endpoint{
             //now we print the board
             DrawBoard print = new DrawBoard();
             System.out.println("\n"+ print.draw(mess.getGame(), mess.getColor()));
+            System.out.println("\n >>");
         }else if(Objects.equals(stuff.getServerMessageType(), ServerMessage.ServerMessageType.ERROR)){
             //we just out the error
-            System.out.println("we caught the error");
             System.out.println(message);
         }
     }

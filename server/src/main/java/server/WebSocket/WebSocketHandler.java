@@ -1,6 +1,9 @@
 package server.WebSocket;
 
+import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPiece;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
@@ -23,6 +26,7 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Collection;
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
 
@@ -41,12 +45,30 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             switch (action.getCommandType()) {
                 case CONNECT -> enter(action, ctx.session);
                 case LEAVE -> exit(action, ctx.session);
+                case MAKE_MOVE ->  makeMove(action, ctx.session);
             }
         } catch (IOException ex) {
             ex.printStackTrace();
         } catch (ResponseException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void makeMove(UserGameCommand action, Session session) throws IOException {
+        //first verify auth
+        if(!checkAuth(action.getAuthToken())){
+            ErrorMessages mess = new ErrorMessages("Error, unauthorized");
+            session.getRemote().sendString(new Gson().toJson(mess));
+            return;
+        }
+        //then make sure the inputed move has a peice of color at origan
+        //so we want to get the game
+        ChessGame game = getGame(action.getGameID(), session);
+        //make sure the piece we got is our players color
+        assert game != null;
+        ChessBoard board = game.getBoard();
+        ChessPiece piece = board.getPiece(action.getMove().getStartPosition());
+        Collection<ChessMove> moves = piece.pieceMoves(board, action.getMove().getStartPosition());
     }
 
     private void exit(UserGameCommand action, Session session) throws IOException {
@@ -133,6 +155,36 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         System.out.println("Websocket closed");
     }
 
+    private ChessGame getGame(int gameId, Session session) throws IOException {
+        ChessGame game = null;
+        String query = "SELECT game FROM games WHERE id=?";
+
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement(query)) {
+            preparedStatement.setString(1, String.valueOf(gameId));
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (rs.next()) {
+                    game =  new Gson().fromJson(rs.getString("game"), ChessGame.class);
+                }
+            }
+
+            if(game == null){
+                ErrorMessages mess = new ErrorMessages("Error, cant find game");
+                session.getRemote().sendString(new Gson().toJson(mess));
+            }else{
+                return game;
+            }
+
+        } catch (SQLException | ResponseException | IOException ex) {
+            //if we got here we need to throw an error message
+            ErrorMessages mess = new ErrorMessages("Error, cant find game");
+            connections.add(session);
+            connections.broadcast(session, mess);
+        }
+        return null;
+    }
+
     private Boolean checkAuth(String auth){
         //use this function to see if we can connect to auth
         String sql = "SELECT username FROM authData WHERE authToken=?";
@@ -145,14 +197,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 if (rs.next()) {
                     username = rs.getString("username");
                 }
-
-                if(username == null){
-                    return false;
-                }
+                System.out.println(username);
+                return username != null;
             }
         }catch(ResponseException | SQLException _){
 
         }
-        return false;
+        return true;
     }
 }
