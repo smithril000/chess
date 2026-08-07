@@ -70,7 +70,6 @@ public class GamePlay {
     private String makeMove(String[] params) {
         //check auth - check valid moves - make move - update
         UserGameCommand comm = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, auth, id);
-        System.out.println("my color is" + this.color);
         comm.setPlayerColor(this.color);
         comm.setName(this.name);
         //set the move we want to make - parse the info
@@ -89,6 +88,7 @@ public class GamePlay {
         ChessMove move = new ChessMove(startPos, endPos, null);
         comm.setMove(move);
         ws.sendCommand(new Gson().toJson(comm));
+        //we need to check if game is over
         return "";
     }
 

@@ -111,8 +111,15 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
         //so we want to get the game
         ChessGame game = getGame(action.getGameID(), session);
+        //check if game is over
+        assert game != null;
+        if(game.isInCheckmate(ChessGame.TeamColor.WHITE) || game.isInCheckmate(ChessGame.TeamColor.BLACK)){
+            System.out.println("GAME IS OVER");
+            ErrorMessages er = new ErrorMessages("Game is over");
+            session.getRemote().sendString(new Gson().toJson(er));
+            return;
+        }
         //make sure the piece we got is our players color
-        System.out.println(getPlayerData(action, session) + " " + game.getBoard().getPiece(action.getMove().getStartPosition()).getTeamColor().toString());
         if(!game.getBoard().getPiece(action.getMove().getStartPosition()).getTeamColor().toString().equalsIgnoreCase(getPlayerData(action, session))){
             //add error handlers
             ErrorMessages er = new ErrorMessages("Invalid move attempted");
@@ -137,10 +144,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             session.getRemote().sendString(new Gson().toJson(gameMessage));
         }catch(Exception ex){
             //add error handlers
+            System.out.println("Found an error");
             ErrorMessages er = new ErrorMessages("Invalid move attempted");
             session.getRemote().sendString(new Gson().toJson(er));
         }
-
+        //now we need to check if game is over
 
     }
 
