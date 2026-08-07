@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
+import java.util.Objects;
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
 
@@ -59,9 +60,16 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             return;
         }
         //then make sure the inputed move has a peice of color at origan
+
         //so we want to get the game
         ChessGame game = getGame(action.getGameID(), session);
         //make sure the piece we got is our players color
+        if(!Objects.equals(game.getBoard().getPiece(action.getMove().getStartPosition()).getTeamColor().toString(), action.getPlayerColor())){
+            //add error handlers
+            ErrorMessages er = new ErrorMessages("Invalid move attempted");
+            session.getRemote().sendString(new Gson().toJson(er));
+            return;
+        }
         assert game != null;
         //make the move - add piece at move, delete piece at start
         try{
