@@ -31,6 +31,7 @@ public class GamePlay {
     }
 
     public void run() {
+        System.out.println("Welcome to the Game");
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while (!result.equals("goodbye")) {
@@ -85,7 +86,7 @@ public class GamePlay {
         comm.setMove(move);
         ws.sendCommand(new Gson().toJson(comm));
         //we need to check if game is over
-        return "";
+        return "done with move";
     }
 
     private String moves() {

@@ -33,11 +33,13 @@ public class PostLogin {
     public void run() {
         Scanner scanner = new Scanner(System.in);
         var result = "";
+        System.out.println("Welcome");
         while (!result.equals("goodbye")) {
             System.out.print("[Logged in] >> ");
             String line = scanner.nextLine();
             try {
                 result = eval(line);
+                System.out.println(result);
                 if (join) {
                     GamePlay play = new GamePlay(authToken, ws, gameToJoin, joinColor, gameId, username);
                     play.run();
@@ -118,6 +120,7 @@ public class PostLogin {
         try{
             Integer.parseInt(params[1]);
         }catch(NumberFormatException ex) {
+            System.out.println("Hmm, something seems to be wrong with you game ID");
             return "";
         }
         if(!params[0].equalsIgnoreCase("BLACK")){
@@ -203,6 +206,7 @@ public class PostLogin {
         try {
             server.createGame(data, this.authToken);
         }catch(ResponseException ex) {
+            System.out.println(ex.getMessage());
             return "";
         }
         return "Game created successfully!";
@@ -215,6 +219,7 @@ public class PostLogin {
         try {
             server.logout(this.authToken);
         }catch(ResponseException ex) {
+            System.out.println(ex.getMessage());
             return "";
         }
         return "goodbye";
