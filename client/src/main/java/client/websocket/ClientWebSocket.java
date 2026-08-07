@@ -1,17 +1,11 @@
 package client.websocket;
 
-import chess.ChessGame;
-import client.GamePlay;
 import com.google.gson.Gson;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import model.ResponseException;
 
 import jakarta.websocket.*;
-import server.Server;
 import ui.DrawBoard;
-import websocket.commands.UserGameCommand;
 import websocket.messages.GameMessages;
 import websocket.messages.NotiMessages;
 import websocket.messages.ServerMessage;
@@ -23,12 +17,6 @@ import java.util.Objects;
 
 public class ClientWebSocket extends Endpoint{
     Session session;
-    ServerMessage message;
-    GamePlay main = null;
-
-    public String getColor() {
-        return color;
-    }
 
     public void setColor(String color) {
         this.color = color;
@@ -50,12 +38,7 @@ public class ClientWebSocket extends Endpoint{
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
 
-            this.session.addMessageHandler(new MessageHandler.Whole<String>() {
-                @Override
-                public void onMessage(String message) {
-                    messageHandle(message);
-                }
-            });
+            this.session.addMessageHandler((MessageHandler.Whole<String>) this::messageHandle);
         } catch (DeploymentException | IOException | URISyntaxException ex) {
             throw new ResponseException(500, ex.getMessage());
         }

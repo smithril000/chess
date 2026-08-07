@@ -67,7 +67,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         assert game != null;
 
         //make sure we arent an observer
-        if(getPlayerData(action, session) == null){
+        if(getPlayerData(action) == null){
             ErrorMessages mess = new ErrorMessages("Error, unauthorized");
             session.getRemote().sendString(new Gson().toJson(mess));
             return;
@@ -83,17 +83,17 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         game.setDone(true);
         try {
             setGame(game, action.getGameID());
-        }catch(Exception ex){
+        }catch(Exception _){
 
         }
         //send out the notis
-        NotiMessages noti = new NotiMessages(getPlayerData(action, session) + "resigned");
+        NotiMessages noti = new NotiMessages(getPlayerData(action) + "resigned");
         connections.add(session);
-        broadcastMessage(session, action.getGameID(), getPlayerData(action, session) + "resigned", false);
+        broadcastMessage(session, action.getGameID(), getPlayerData(action) + "resigned", false);
         session.getRemote().sendString(new Gson().toJson(noti));
     }
 
-    private String getPlayerData(UserGameCommand action, Session session){
+    private String getPlayerData(UserGameCommand action){
         String que = "SELECT username FROM authData WHERE authToken =?";
         String username = "";
         //get the username to get the color
@@ -109,7 +109,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
         catch (SQLException | ResponseException ex) {
             //if we got here we need to throw an error message
-            ErrorMessages mess = new ErrorMessages("Error, cant find game");
         }
         //now that we got the username, use it to get the right color
         //get the game
@@ -131,7 +130,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
         catch (SQLException | ResponseException ex) {
             //if we got here we need to throw an error message
-            ErrorMessages mess = new ErrorMessages("Error, cant find game");
         }
         if(Objects.equals(white, username)){
             return "WHITE";
@@ -159,20 +157,18 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             return;
         }
         //check if game is over
-        assert game != null;
         if(game.isInCheckmate(ChessGame.TeamColor.WHITE) || game.isInCheckmate(ChessGame.TeamColor.BLACK)){
             ErrorMessages er = new ErrorMessages("Game is over");
             session.getRemote().sendString(new Gson().toJson(er));
             return;
         }
         //make sure the piece we got is our players color
-        if(!game.getBoard().getPiece(action.getMove().getStartPosition()).getTeamColor().toString().equalsIgnoreCase(getPlayerData(action, session))){
+        if(!game.getBoard().getPiece(action.getMove().getStartPosition()).getTeamColor().toString().equalsIgnoreCase(getPlayerData(action))){
             //add error handlers
             ErrorMessages er = new ErrorMessages("Invalid move attempted");
             session.getRemote().sendString(new Gson().toJson(er));
             return;
         }
-        assert game != null;
         //make the move - add piece at move, delete piece at start
         try{
             game.makeMove(action.getMove());
@@ -180,11 +176,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             setGame(game, action.getGameID());
 
             //send ws to re-draw everones board
-            GameMessages gameMessage = new GameMessages(game);
             broadcastGame(session, action.getGameID(), game, true);
             broadcastGame(session, action.getGameID(), game, false);
             //send noti message
-            NotiMessages noti = new NotiMessages(action.getName() + " made a move");
+            new NotiMessages(action.getName() + " made a move");
+            NotiMessages noti;
             broadcastMessage(session, action.getGameID(), action.getName() + " made a move", false);
             //update root too
 //            session.getRemote().sendString(new Gson().toJson(gameMessage));
@@ -193,7 +189,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 noti = new NotiMessages("Game is over");
                 session.getRemote().sendString(new Gson().toJson(noti));
                 connections.broadcast(session, noti);
-                return;
             }
         }catch(Exception ex){
             //add error handlers
@@ -205,7 +200,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     }
 
-    private void setGame(ChessGame game, int id) throws ResponseException {
+    private void setGame(ChessGame game, int id) {
         String upd = "UPDATE games SET game=? WHERE id=?";
         try (var conn = DatabaseManager.getConnection();
              var preparedStatement = conn.prepareStatement(upd)) {
@@ -214,7 +209,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             preparedStatement.executeUpdate();
         } catch (SQLException | ResponseException ex) {
             //if we got here we need to throw an error message
-            ErrorMessages mess = new ErrorMessages("Error, cant find game");
+            new ErrorMessages("Error, cant find game");
         }
     }
 
@@ -222,14 +217,13 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         //we need to broadcast a message that they are leaving and remove the player in db
         //first get the player out of the game - maybe just connect db here?
         //get the player in game from db
-        ChessGame game;
 
-        String stuff = "";
-        if(getPlayerData(action, session) == null){
+        String stuff;
+        if(getPlayerData(action) == null){
             //we are just an observer
             
         }else {
-            if (getPlayerData(action, session).equalsIgnoreCase("WHITE")) {
+            if (Objects.requireNonNull(getPlayerData(action)).equalsIgnoreCase("WHITE")) {
                 stuff = "UPDATE games SET whiteUsername=? WHERE id=?";
             } else {
                 System.out.println(action.getPlayerColor() + ", " + action.getGameID());
@@ -246,8 +240,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
 
         //now we need to broadcast that people left
-        var message = getPlayerData(action, session) + " left the game";
-        NotiMessages noti = new NotiMessages(message);
+        var message = getPlayerData(action) + " left the game";
         broadcastMessage(session, action.getGameID(), message, false);
         gameSessions.put(session, 0);
         connections.remove(session);
@@ -284,14 +277,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 ErrorMessages mess = new ErrorMessages("Error, cant find game");
                 session.getRemote().sendString(new Gson().toJson(mess));
             }else {
-                GameMessages gameMessage = new GameMessages(game);
                 //sending just the game
                 //session.getRemote().sendString(new Gson().toJson(gameMessage));
                 connections.add(session);
                 gameSessions.put(session, action.getGameID());
                 broadcastGame(session, action.getGameID(), game, true);
-                String message = (getPlayerData(action, session) + " joined the game as " + action.getPlayerColor());
-                var notification = new NotiMessages(message);
+                String message = (getPlayerData(action) + " joined the game as " + action.getPlayerColor());
                 broadcastMessage(session, action.getGameID(), message, false);
             }
 
