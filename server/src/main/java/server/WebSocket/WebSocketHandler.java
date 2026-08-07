@@ -1,9 +1,6 @@
 package server.WebSocket;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessMove;
-import chess.ChessPiece;
+import chess.*;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
@@ -66,10 +63,18 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         ChessGame game = getGame(action.getGameID(), session);
         //make sure the piece we got is our players color
         assert game != null;
-        ChessBoard board = game.getBoard();
-        ChessPiece piece = board.getPiece(action.getMove().getStartPosition());
-        Collection<ChessMove> moves = piece.pieceMoves(board, action.getMove().getStartPosition());
-        System.out.println(moves);
+        //make the move - add piece at move, delete piece at start
+        try{
+            game.makeMove(action.getMove());
+            System.out.println("We made a move");
+        }catch(Exception ex){
+            //add error handlers
+        }
+
+        //send ws to re-draw everones board
+        GameMessages gameMessage = new GameMessages(game);
+        connections.add(session);
+        connections.broadcast(session, gameMessage);
     }
 
     private void exit(UserGameCommand action, Session session) throws IOException {
@@ -132,8 +137,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 ErrorMessages mess = new ErrorMessages("Error, cant find game");
                 session.getRemote().sendString(new Gson().toJson(mess));
             }else {
-                GameMessages gameMessage = new GameMessages(game, action.getPlayerColor());
-                //sending jus the game
+                GameMessages gameMessage = new GameMessages(game);
+                //sending just the game
                 session.getRemote().sendString(new Gson().toJson(gameMessage));
                 connections.add(session);
                 var message = (action.getName() + " joined the game as " + action.getPlayerColor());

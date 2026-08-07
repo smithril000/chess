@@ -5,6 +5,7 @@ import chess.ChessMove;
 import chess.ChessPosition;
 import client.websocket.ClientWebSocket;
 import com.google.gson.Gson;
+import model.ResponseException;
 import ui.DrawBoard;
 import websocket.commands.UserGameCommand;
 
@@ -20,7 +21,7 @@ public class GamePlay {
     private final ClientWebSocket ws;
     private final String name;
 
-    public GamePlay(String auth, ServerFacade server, ClientWebSocket ws, ChessGame game, String color, int id, String name){
+    public GamePlay(String auth, ServerFacade server, ClientWebSocket ws, ChessGame game, String color, int id, String name) throws ResponseException {
         this.auth = auth;
         this.server = server;
         this.game = game;
@@ -28,6 +29,8 @@ public class GamePlay {
         this.id = id;
         this.ws = ws;
         this.name = name;
+        //TEST UPDATE MY WS
+        this.ws.setColor(color);
     }
 
     public void run(){
@@ -105,9 +108,16 @@ public class GamePlay {
 
     private String redraw() {
         //we just need to re-print out the board
+        //FIX
         DrawBoard printBoard = new DrawBoard();
         return printBoard.draw(this.game, this.color);
     }
+    public String redraw(ChessGame game){
+        DrawBoard printBoard = new DrawBoard();
+        this.game = game;
+        return printBoard.draw(this.game, this.color);
+    }
+
 
     private String help(){
         return "Replace this with help";

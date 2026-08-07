@@ -1,6 +1,7 @@
 package client.websocket;
 
 import chess.ChessGame;
+import client.GamePlay;
 import com.google.gson.Gson;
 
 import com.google.gson.JsonObject;
@@ -23,6 +24,23 @@ import java.util.Objects;
 public class ClientWebSocket extends Endpoint{
     Session session;
     ServerMessage message;
+    GamePlay main = null;
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+    private String getStraightColor(){
+        if(Objects.equals(this.color, "an observer")){
+            return "WHITE";
+        }
+        return this.color;
+    }
+
+    String color;
 
     public ClientWebSocket(String url) throws ResponseException {
         try {
@@ -54,8 +72,9 @@ public class ClientWebSocket extends Endpoint{
             GameMessages mess = new Gson().fromJson(message, GameMessages.class);
             //now we print the board
             DrawBoard print = new DrawBoard();
-            System.out.println("\n"+ print.draw(mess.getGame(), mess.getColor()));
+            System.out.println("\n"+ print.draw(mess.getGame(), getStraightColor()));
             System.out.println("\n >>");
+
         }else if(Objects.equals(stuff.getServerMessageType(), ServerMessage.ServerMessageType.ERROR)){
             //we just out the error
             System.out.println(message);
@@ -70,6 +89,7 @@ public class ClientWebSocket extends Endpoint{
     //Endpoint requires this method, but you don't have to do anything
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
+
     }
 
 
