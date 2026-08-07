@@ -7,10 +7,8 @@ import model.ResponseException;
 import model.Game;
 import model.GamesReturned;
 import model.JoinGameRequest;
-import ui.DrawBoard;
 import websocket.commands.UserGameCommand;
 
-import java.net.http.WebSocket;
 import java.util.*;
 
 public class PostLogin {
@@ -23,7 +21,7 @@ public class PostLogin {
     private Boolean join = false;
     private ChessGame gameToJoin;
     private String joinColor;
-    private ClientWebSocket ws;
+    private final ClientWebSocket ws;
     private int gameId;
 
     public PostLogin(String authToken, ServerFacade server, String username) throws ResponseException {
@@ -32,28 +30,25 @@ public class PostLogin {
         ws = new ClientWebSocket("http://localhost:8080");
         this.username = username;
     }
-    public void run(){
-        System.out.println("Welcome");
+    public void run() {
         Scanner scanner = new Scanner(System.in);
         var result = "";
-        while(!result.equals("goodbye")){
+        while (!result.equals("goodbye")) {
             System.out.print("[Logged in] >> ");
             String line = scanner.nextLine();
-            try{
+            try {
                 result = eval(line);
-                System.out.println(result);
-                if(join){
-                    GamePlay play = new GamePlay(authToken, server, ws, gameToJoin, joinColor, gameId, username);
+                if (join) {
+                    GamePlay play = new GamePlay(authToken, ws, gameToJoin, joinColor, gameId, username);
                     play.run();
                     join = false;
                 }
-            }catch (Throwable ex){
+            } catch (Throwable ex) {
                 var errorMessage = ex.toString();
                 System.out.println(errorMessage);
             }
             //check if we still have an auth
-            if(authToken==null){
-                System.out.println("Sorry, there has been an issue with your account");
+            if (authToken == null) {
                 result = "goodbye";
             }
         }
@@ -99,7 +94,6 @@ public class PostLogin {
         ChessGame game = gamesById.get(Integer.parseInt(params[0]));
         gameId = idLog.get(Integer.parseInt(params[0]));
         //drawing
-        DrawBoard printBoard = new DrawBoard();
         this.join = true;
         this.gameToJoin = game;
         this.joinColor = "WHITE";
@@ -123,8 +117,7 @@ public class PostLogin {
         //we need to check that we have the right arguments here as well
         try{
             Integer.parseInt(params[1]);
-        }catch(NumberFormatException ex){
-            System.out.println("Hmm, something seems to be wrong with you game ID");
+        }catch(NumberFormatException ex) {
             return "";
         }
         if(!params[0].equalsIgnoreCase("BLACK")){
@@ -141,7 +134,6 @@ public class PostLogin {
             JoinGameRequest join = new JoinGameRequest(params[0].toUpperCase(), id);
             server.joinGame(join, authToken);
             //now we need to display the game
-            DrawBoard printBoard = new DrawBoard();
             this.join = true;
             UserGameCommand com = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, id);
             //sending the ws message
@@ -210,8 +202,7 @@ public class PostLogin {
         data.put("gameName", params[0]);
         try {
             server.createGame(data, this.authToken);
-        }catch(ResponseException ex){
-            System.out.println(ex.getMessage());
+        }catch(ResponseException ex) {
             return "";
         }
         return "Game created successfully!";
@@ -223,8 +214,7 @@ public class PostLogin {
         //we need my auth token
         try {
             server.logout(this.authToken);
-        }catch(ResponseException ex){
-            System.out.println(ex.getMessage());
+        }catch(ResponseException ex) {
             return "";
         }
         return "goodbye";

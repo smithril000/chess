@@ -5,7 +5,6 @@ import chess.ChessMove;
 import chess.ChessPosition;
 import client.websocket.ClientWebSocket;
 import com.google.gson.Gson;
-import model.ResponseException;
 import ui.DrawBoard;
 import websocket.commands.UserGameCommand;
 
@@ -14,16 +13,14 @@ import java.util.Scanner;
 
 public class GamePlay {
     private final String auth;
-    private final ServerFacade server;
-    private ChessGame game;
+    private final ChessGame game;
     private final String color;
     private final int id;
     private final ClientWebSocket ws;
     private final String name;
 
-    public GamePlay(String auth, ServerFacade server, ClientWebSocket ws, ChessGame game, String color, int id, String name) throws ResponseException {
+    public GamePlay(String auth, ClientWebSocket ws, ChessGame game, String color, int id, String name) {
         this.auth = auth;
-        this.server = server;
         this.game = game;
         this.color = color;
         this.id = id;
@@ -33,17 +30,16 @@ public class GamePlay {
         this.ws.setColor(color);
     }
 
-    public void run(){
-        System.out.println("Welcome to the Game");
+    public void run() {
         Scanner scanner = new Scanner(System.in);
         var result = "";
-        while(!result.equals("goodbye")){
+        while (!result.equals("goodbye")) {
             System.out.print("[Logged in - in game] >> ");
             String line = scanner.nextLine();
-            try{
+            try {
                 result = eval(line);
                 System.out.println(result);
-            }catch (Throwable ex){
+            } catch (Throwable ex) {
                 var errorMessage = ex.toString();
                 System.out.println(errorMessage);
             }
@@ -58,7 +54,7 @@ public class GamePlay {
             return switch (cmd) {
                 case "redraw" -> redraw();
                 case "leave" -> leave();
-                case "valid" -> moves(params);
+                case "valid" -> moves();
                 case "move" -> makeMove(params);
                 default -> help();
             };
@@ -92,7 +88,7 @@ public class GamePlay {
         return "";
     }
 
-    private String moves(String[] params) {
+    private String moves() {
         //get new board with highlighted moves
 
         return "";
@@ -111,11 +107,6 @@ public class GamePlay {
         //we just need to re-print out the board
         //FIX
         DrawBoard printBoard = new DrawBoard();
-        return printBoard.draw(this.game, this.color);
-    }
-    public String redraw(ChessGame game){
-        DrawBoard printBoard = new DrawBoard();
-        this.game = game;
         return printBoard.draw(this.game, this.color);
     }
 
