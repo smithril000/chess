@@ -50,6 +50,19 @@ public class UserGameCommand {
         this.playerColor = playerColor;
     }
 
+    @Override
+    public String toString() {
+        return "UserGameCommand{" +
+                "commandType=" + commandType +
+                ", authToken='" + authToken + '\'' +
+                ", gameID=" + gameID +
+                ", name='" + name + '\'' +
+                ", game=" + game +
+                ", playerColor='" + playerColor + '\'' +
+                ", move=" + move +
+                '}';
+    }
+
     public enum CommandType {
         CONNECT,
         MAKE_MOVE,

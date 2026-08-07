@@ -52,6 +52,54 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
+    private String getPlayerData(UserGameCommand action, Session session){
+        String que = "SELECT username FROM authData WHERE authToken =?";
+        String username = "";
+        //get the username to get the color
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement(que)) {
+            preparedStatement.setString(1, action.getAuthToken());
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (rs.next()) {
+                    username = new Gson().fromJson(rs.getString("username"), String.class);
+                }
+            }
+        }
+        catch (SQLException | ResponseException ex) {
+            //if we got here we need to throw an error message
+            ErrorMessages mess = new ErrorMessages("Error, cant find game");
+        }
+        //now that we got the username, use it to get the right color
+        //get the game
+        que = "SELECT whiteUsername, blackUsername FROM games WHERE id=?";
+        String white = "";
+        String black = "";
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement(que)) {
+            preparedStatement.setString(1, String.valueOf(action.getGameID()));
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (rs.next()) {
+                    white = new Gson().fromJson(rs.getString("whiteUsername"), String.class);
+                    black = new Gson().fromJson(rs.getString("blackUsername"), String.class);
+                }
+            }
+
+
+        }
+        catch (SQLException | ResponseException ex) {
+            //if we got here we need to throw an error message
+            ErrorMessages mess = new ErrorMessages("Error, cant find game");
+        }
+        if(Objects.equals(white, username)){
+            return "WHITE";
+        }else if(Objects.equals(black, username)){
+            return "BLACK";
+        }
+        return null;
+    }
+
     private void makeMove(UserGameCommand action, Session session) throws IOException {
         //first verify auth
         if(!checkAuth(action.getAuthToken())){
@@ -64,7 +112,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         //so we want to get the game
         ChessGame game = getGame(action.getGameID(), session);
         //make sure the piece we got is our players color
-        if(!Objects.equals(game.getBoard().getPiece(action.getMove().getStartPosition()).getTeamColor().toString(), action.getPlayerColor())){
+        System.out.println(getPlayerData(action, session) + " " + game.getBoard().getPiece(action.getMove().getStartPosition()).getTeamColor().toString());
+        if(!game.getBoard().getPiece(action.getMove().getStartPosition()).getTeamColor().toString().equalsIgnoreCase(getPlayerData(action, session))){
             //add error handlers
             ErrorMessages er = new ErrorMessages("Invalid move attempted");
             session.getRemote().sendString(new Gson().toJson(er));
