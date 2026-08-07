@@ -57,11 +57,19 @@ public class GamePlay {
                 case "leave" -> leave();
                 case "valid" -> moves();
                 case "move" -> makeMove(params);
+                case "resign" -> resign();
                 default -> help();
             };
         } catch (Throwable ex) {
             return ex.getMessage();
         }
+    }
+
+    private String resign() {
+        //remove player from game and db - game over
+        UserGameCommand comm = new UserGameCommand(UserGameCommand.CommandType.RESIGN, auth, id);
+        ws.sendCommand(new Gson().toJson(comm));
+        return "goodbye";
     }
 
     private String makeMove(String[] params) {

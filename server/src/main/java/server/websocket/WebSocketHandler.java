@@ -40,12 +40,37 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 case CONNECT -> enter(action, ctx.session);
                 case LEAVE -> exit(action, ctx.session);
                 case MAKE_MOVE ->  makeMove(action, ctx.session);
+                case RESIGN -> resign(action, ctx.session);
             }
         } catch (IOException ex) {
             ex.printStackTrace();
         } catch (ResponseException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void resign(UserGameCommand action, Session session) throws IOException {
+        //get game
+        //first verify auth
+        if(!checkAuth(action.getAuthToken())){
+            ErrorMessages mess = new ErrorMessages("Error, unauthorized");
+            session.getRemote().sendString(new Gson().toJson(mess));
+            return;
+        }
+        ChessGame game = getGame(action.getGameID(), session);
+        //make sure the game isn't marked as done
+        assert game != null;
+        game.setDone(true);
+        try {
+            setGame(game, action.getGameID());
+        }catch(Exception ex){
+
+        }
+        //send out the notis
+        NotiMessages noti = new NotiMessages(getPlayerData(action, session) + "resigned");
+        connections.add(session);
+        connections.broadcast(session, noti);
+        session.getRemote().sendString(new Gson().toJson(noti));
     }
 
     private String getPlayerData(UserGameCommand action, Session session){
@@ -103,10 +128,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             session.getRemote().sendString(new Gson().toJson(mess));
             return;
         }
-        //then make sure the inputed move has a peice of color at origan
 
         //so we want to get the game
         ChessGame game = getGame(action.getGameID(), session);
+        //make sure the game isn't marked as done
+        assert game != null;
+        if(game.isDone()){
+            return;
+        }
         //check if game is over
         assert game != null;
         if(game.isInCheckmate(ChessGame.TeamColor.WHITE) || game.isInCheckmate(ChessGame.TeamColor.BLACK)){

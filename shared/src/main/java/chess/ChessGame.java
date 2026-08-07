@@ -15,6 +15,16 @@ public class ChessGame {
 
     private TeamColor teamTurn;
     private ChessBoard board;
+
+    public boolean isDone() {
+        return done;
+    }
+
+    public void setDone(boolean done) {
+        this.done = done;
+    }
+
+    private boolean done = false;
     public ChessGame() {
         this.teamTurn = TeamColor.WHITE;
         this.board = new ChessBoard();
