@@ -65,7 +65,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         assert game != null;
         //make the move - add piece at move, delete piece at start
         try{
-            System.out.println("We made a move");
             game.makeMove(action.getMove());
 
             setGame(game, action.getGameID());
@@ -74,8 +73,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             GameMessages gameMessage = new GameMessages(game);
             connections.add(session);
             connections.broadcast(session, gameMessage);
-
-            //sned to db
+            //send noti message
+            NotiMessages noti = new NotiMessages(action.getName() + " made a move");
+            connections.broadcast(session, noti);
+            //update root too
+            session.getRemote().sendString(new Gson().toJson(gameMessage));
         }catch(Exception ex){
             //add error handlers
         }
