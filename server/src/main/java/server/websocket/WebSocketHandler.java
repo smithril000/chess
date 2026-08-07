@@ -153,7 +153,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         try (var conn = DatabaseManager.getConnection();
              var preparedStatement = conn.prepareStatement(upd)) {
             preparedStatement.setString(1, new Gson().toJson(game));
-            preparedStatement.setString(2, String.valueOf(id));
+            preparedStatement.setInt(2, id);
+            preparedStatement.executeUpdate();
         } catch (SQLException | ResponseException ex) {
             //if we got here we need to throw an error message
             ErrorMessages mess = new ErrorMessages("Error, cant find game");
