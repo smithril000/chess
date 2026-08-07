@@ -10,7 +10,7 @@ import model.GameName;
 import model.JoinGameRequest;
 import model.UserData;
 import org.jetbrains.annotations.NotNull;
-import server.WebSocket.WebSocketHandler;
+import server.websocket.WebSocketHandler;
 import service.UserService;
 
 public class Server {

@@ -1,8 +1,7 @@
-package server.WebSocket;
+package server.websocket;
 
 import chess.*;
 import com.google.gson.Gson;
-import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import io.javalin.websocket.WsCloseContext;
 import io.javalin.websocket.WsCloseHandler;
@@ -10,20 +9,17 @@ import io.javalin.websocket.WsConnectContext;
 import io.javalin.websocket.WsConnectHandler;
 import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
-import model.GameID;
 import model.ResponseException;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessages;
 import websocket.messages.GameMessages;
 import websocket.messages.NotiMessages;
-import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Collection;
 import java.util.Objects;
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
