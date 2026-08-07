@@ -110,7 +110,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         //check if game is over
         assert game != null;
         if(game.isInCheckmate(ChessGame.TeamColor.WHITE) || game.isInCheckmate(ChessGame.TeamColor.BLACK)){
-            System.out.println("GAME IS OVER");
             ErrorMessages er = new ErrorMessages("Game is over");
             session.getRemote().sendString(new Gson().toJson(er));
             return;
@@ -138,6 +137,13 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             connections.broadcast(session, noti);
             //update root too
             session.getRemote().sendString(new Gson().toJson(gameMessage));
+            //check if game is over
+            if(game.isInCheckmate(ChessGame.TeamColor.WHITE) || game.isInCheckmate(ChessGame.TeamColor.BLACK)){
+                noti = new NotiMessages("Game is over");
+                session.getRemote().sendString(new Gson().toJson(noti));
+                connections.broadcast(session, noti);
+                return;
+            }
         }catch(Exception ex){
             //add error handlers
             System.out.println("Found an error");
