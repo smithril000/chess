@@ -5,6 +5,7 @@ import chess.ChessMove;
 import chess.ChessPosition;
 import client.websocket.ClientWebSocket;
 import com.google.gson.Gson;
+import model.ResponseException;
 import ui.DrawBoard;
 import websocket.commands.UserGameCommand;
 
@@ -16,15 +17,15 @@ public class GamePlay {
     private final ChessGame game;
     private final String color;
     private final int id;
-    private final ClientWebSocket ws;
+    private ClientWebSocket ws;
     private final String name;
 
-    public GamePlay(String auth, ClientWebSocket ws, ChessGame game, String color, int id, String name) {
+    public GamePlay(String auth, ClientWebSocket ws, ChessGame game, String color, int id, String name) throws ResponseException {
         this.auth = auth;
         this.game = game;
         this.color = color;
         this.id = id;
-        this.ws = ws;
+        this.ws = new ClientWebSocket("http://localhost:8080");
         this.name = name;
         //TEST UPDATE MY WS
         this.ws.setColor(color);
@@ -72,7 +73,7 @@ public class GamePlay {
         return "goodbye";
     }
 
-    private String makeMove(String[] params) {
+    private String makeMove(String[] params) throws ResponseException {
         //check auth - check valid moves - make move - update
         UserGameCommand comm = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, auth, id);
         comm.setPlayerColor(this.color);

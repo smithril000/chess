@@ -20,11 +20,14 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
 
     private final ConnectionManager connections = new ConnectionManager();
+    static Map<Session, Integer> gameSessions = new HashMap<>();
 
     @Override
     public void handleConnect(WsConnectContext ctx) {
@@ -51,6 +54,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     private void resign(UserGameCommand action, Session session) throws IOException {
         //get game
+
         //first verify auth
         if(!checkAuth(action.getAuthToken())){
             ErrorMessages mess = new ErrorMessages("Error, unauthorized");
@@ -58,8 +62,24 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             return;
         }
         ChessGame game = getGame(action.getGameID(), session);
+
         //make sure the game isn't marked as done
         assert game != null;
+
+        //make sure we arent an observer
+        if(getPlayerData(action, session) == null){
+            ErrorMessages mess = new ErrorMessages("Error, unauthorized");
+            session.getRemote().sendString(new Gson().toJson(mess));
+            return;
+        }
+
+        //make sure we haven't already resigned
+        if(game.isDone()){
+            ErrorMessages mess = new ErrorMessages("Error, already done");
+            session.getRemote().sendString(new Gson().toJson(mess));
+            return;
+        }
+
         game.setDone(true);
         try {
             setGame(game, action.getGameID());
@@ -134,6 +154,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         //make sure the game isn't marked as done
         assert game != null;
         if(game.isDone()){
+            ErrorMessages er = new ErrorMessages("Game is over");
+            session.getRemote().sendString(new Gson().toJson(er));
             return;
         }
         //check if game is over
@@ -159,13 +181,13 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
             //send ws to re-draw everones board
             GameMessages gameMessage = new GameMessages(game);
-            connections.add(session);
-            connections.broadcast(session, gameMessage);
+            broadcastGame(session, action.getGameID(), game, true);
+            broadcastGame(session, action.getGameID(), game, false);
             //send noti message
             NotiMessages noti = new NotiMessages(action.getName() + " made a move");
-            connections.broadcast(session, noti);
+            broadcastMessage(session, action.getGameID(), action.getName() + " made a move", false);
             //update root too
-            session.getRemote().sendString(new Gson().toJson(gameMessage));
+//            session.getRemote().sendString(new Gson().toJson(gameMessage));
             //check if game is over
             if(game.isInCheckmate(ChessGame.TeamColor.WHITE) || game.isInCheckmate(ChessGame.TeamColor.BLACK)){
                 noti = new NotiMessages("Game is over");
@@ -202,27 +224,32 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         //get the player in game from db
         ChessGame game;
 
-        String stuff;
-        if(action.getPlayerColor().equalsIgnoreCase("WHITE")){
-            System.out.println("It thisnks its white");
-            stuff = "UPDATE games SET whiteUsername=? WHERE id=?";
-        }else{
-            System.out.println(action.getPlayerColor() + ", " + action.getGameID());
-            stuff = "UPDATE games SET blackUsername=? WHERE id=?";
-        }
-        try (var conn = DatabaseManager.getConnection();
-             var statement = conn.prepareStatement(stuff)) {
-            statement.setNull(1, Types.VARCHAR);
-            statement.setString(2, action.getGameID().toString());
-            statement.executeUpdate();
-        } catch (SQLException | ResponseException e) {
-            throw new RuntimeException(e);
+        String stuff = "";
+        if(getPlayerData(action, session) == null){
+            //we are just an observer
+            
+        }else {
+            if (getPlayerData(action, session).equalsIgnoreCase("WHITE")) {
+                stuff = "UPDATE games SET whiteUsername=? WHERE id=?";
+            } else {
+                System.out.println(action.getPlayerColor() + ", " + action.getGameID());
+                stuff = "UPDATE games SET blackUsername=? WHERE id=?";
+            }
+            try (var conn = DatabaseManager.getConnection();
+                 var statement = conn.prepareStatement(stuff)) {
+                statement.setNull(1, Types.VARCHAR);
+                statement.setInt(2, action.getGameID());
+                statement.executeUpdate();
+            } catch (SQLException | ResponseException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         //now we need to broadcast that people left
-        var message = action.getName() + " left the game";
+        var message = getPlayerData(action, session) + " left the game";
         NotiMessages noti = new NotiMessages(message);
         connections.broadcast(session, noti);
+        connections.remove(session);
 
     }
 
@@ -258,11 +285,13 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             }else {
                 GameMessages gameMessage = new GameMessages(game);
                 //sending just the game
-                session.getRemote().sendString(new Gson().toJson(gameMessage));
+                //session.getRemote().sendString(new Gson().toJson(gameMessage));
                 connections.add(session);
-                var message = (action.getName() + " joined the game as " + action.getPlayerColor());
+                gameSessions.put(session, action.getGameID());
+                broadcastGame(session, action.getGameID(), game, true);
+                String message = (getPlayerData(action, session) + " joined the game as " + action.getPlayerColor());
                 var notification = new NotiMessages(message);
-                connections.broadcast(session, notification);
+                broadcastMessage(session, action.getGameID(), message, false);
             }
 
         } catch (SQLException | ResponseException ex) {
@@ -329,5 +358,35 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
         }
         return true;
+    }
+    public void broadcastGame(Session session, Integer gameID, ChessGame game, boolean self) throws IOException {
+        System.out.println("BROADCASTING GAME");
+        if(self){
+            session.getRemote().sendString(new Gson().toJson(new GameMessages(game)));
+        }
+        else{
+            for (Session gameSession : gameSessions.keySet()) {
+                if(Objects.equals(gameSessions.get(gameSession), gameID)){
+                    if(session != gameSession){
+                        gameSession.getRemote().sendString(new Gson().toJson(new GameMessages(game)));
+                    }
+                }
+            }
+        }
+    }
+    public void broadcastMessage(Session session, Integer gameID, String message, boolean self) throws IOException {
+        System.out.println("BROADCASTING MESSAGE: " + message);
+        if(self){
+            session.getRemote().sendString(new Gson().toJson(new NotiMessages(message)));
+        }
+        else{
+            for (Session gameSession : gameSessions.keySet()) {
+                if(Objects.equals(gameSessions.get(gameSession), gameID)){
+                    if(session != gameSession && gameSession.isOpen()){
+                        gameSession.getRemote().sendString(new Gson().toJson(new NotiMessages(message)));
+                    }
+                }
+            }
+        }
     }
 }
