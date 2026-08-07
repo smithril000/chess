@@ -65,16 +65,34 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         assert game != null;
         //make the move - add piece at move, delete piece at start
         try{
-            game.makeMove(action.getMove());
             System.out.println("We made a move");
+            game.makeMove(action.getMove());
+
+            setGame(game, action.getGameID());
+
+            //send ws to re-draw everones board
+            GameMessages gameMessage = new GameMessages(game);
+            connections.add(session);
+            connections.broadcast(session, gameMessage);
+
+            //sned to db
         }catch(Exception ex){
             //add error handlers
         }
 
-        //send ws to re-draw everones board
-        GameMessages gameMessage = new GameMessages(game);
-        connections.add(session);
-        connections.broadcast(session, gameMessage);
+
+    }
+
+    private void setGame(ChessGame game, int id) throws ResponseException {
+        String upd = "UPDATE games SET game=? WHERE id=?";
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement(upd)) {
+            preparedStatement.setString(1, new Gson().toJson(game));
+            preparedStatement.setString(2, String.valueOf(id));
+        } catch (SQLException | ResponseException ex) {
+            //if we got here we need to throw an error message
+            ErrorMessages mess = new ErrorMessages("Error, cant find game");
+        }
     }
 
     private void exit(UserGameCommand action, Session session) throws IOException {
