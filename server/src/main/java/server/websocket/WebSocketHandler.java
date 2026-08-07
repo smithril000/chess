@@ -89,7 +89,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         //send out the notis
         NotiMessages noti = new NotiMessages(getPlayerData(action, session) + "resigned");
         connections.add(session);
-        connections.broadcast(session, noti);
+        broadcastMessage(session, action.getGameID(), getPlayerData(action, session) + "resigned", false);
         session.getRemote().sendString(new Gson().toJson(noti));
     }
 
@@ -249,7 +249,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         var message = getPlayerData(action, session) + " left the game";
         NotiMessages noti = new NotiMessages(message);
         broadcastMessage(session, action.getGameID(), message, false);
-        gameSessions.remove(session);
+        gameSessions.put(session, 0);
         connections.remove(session);
 
     }
