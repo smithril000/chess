@@ -248,7 +248,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         //now we need to broadcast that people left
         var message = getPlayerData(action, session) + " left the game";
         NotiMessages noti = new NotiMessages(message);
-        connections.broadcast(session, noti);
+        broadcastMessage(session, action.getGameID(), message, false);
+        gameSessions.remove(session);
         connections.remove(session);
 
     }
@@ -367,7 +368,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         else{
             for (Session gameSession : gameSessions.keySet()) {
                 if(Objects.equals(gameSessions.get(gameSession), gameID)){
-                    if(session != gameSession){
+                    if(session != gameSession && gameSession.isOpen()){
                         gameSession.getRemote().sendString(new Gson().toJson(new GameMessages(game)));
                     }
                 }
