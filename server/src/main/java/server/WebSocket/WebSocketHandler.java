@@ -80,6 +80,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             session.getRemote().sendString(new Gson().toJson(gameMessage));
         }catch(Exception ex){
             //add error handlers
+            ErrorMessages er = new ErrorMessages("Invalid move attempted");
+            session.getRemote().sendString(new Gson().toJson(er));
         }
 
 
